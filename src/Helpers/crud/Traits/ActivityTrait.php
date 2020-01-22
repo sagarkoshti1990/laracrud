@@ -1,7 +1,7 @@
 <?php
 
-namespace App\Helpers\crud\Traits;
-use App\Models\Activity;
+namespace Sagartakle\laracrud\Helpers\crud\Traits;
+use Sagartakle\laracrud\Models\Activity;
 
 trait ActivityTrait
 {

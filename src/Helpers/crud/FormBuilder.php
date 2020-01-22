@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Helpers\crud;
+namespace Sagartakle\laracrud\Helpers\crud;
 
 use Schema;
 use Collective\Html\FormFacade as Form;
 use DB;
-use App\Models\Module;
-use App\Models\FieldType;
-use App\Models\Field;
-use App\Models\Upload;
-use App\Models\Page;
-use App\Helpers\Inflect;
+use Sagartakle\laracrud\Models\Module;
+use Sagartakle\laracrud\Models\FieldType;
+use Sagartakle\laracrud\Models\Field;
+use Sagartakle\laracrud\Models\Upload;
+use Sagartakle\laracrud\Models\Page;
+use Sagartakle\laracrud\Helpers\Inflect;
 
 /**
  * Class FormBuilder

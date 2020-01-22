@@ -1,6 +1,6 @@
 <?php
     
-    namespace App\Helpers;
+    namespace Sagartakle\laracrud\Helpers;
     
     // original source: http://kuwamoto.org/2007/12/17/improved-pluralizing-in-php-actionscript-and-ror/
     

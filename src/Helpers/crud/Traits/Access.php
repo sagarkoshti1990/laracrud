@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Helpers\crud\Traits;
-use App\Models\Module;
-use App\Models\Page;
+namespace Sagartakle\laracrud\Helpers\crud\Traits;
+use Sagartakle\laracrud\Models\Module;
+use Sagartakle\laracrud\Models\Page;
 
 trait Access
 {

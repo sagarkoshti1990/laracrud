@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Helpers\crud\Traits;
+namespace Sagartakle\laracrud\Helpers\crud\Traits;
 
 trait Delete
 {

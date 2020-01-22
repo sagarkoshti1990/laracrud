@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Helpers\crud;
+namespace Sagartakle\laracrud\Helpers\crud;
 
-use App\Helpers\crud\Traits\Create;
-use App\Helpers\crud\Traits\Update;
-use App\Helpers\crud\Traits\Delete;
-use App\Helpers\crud\Traits\Fields;
-use App\Helpers\crud\Traits\Access;
+use Sagartakle\laracrud\Helpers\crud\Traits\Create;
+use Sagartakle\laracrud\Helpers\crud\Traits\Update;
+use Sagartakle\laracrud\Helpers\crud\Traits\Delete;
+use Sagartakle\laracrud\Helpers\crud\Traits\Fields;
+use Sagartakle\laracrud\Helpers\crud\Traits\Access;
 
 class ObjectHelper
 {

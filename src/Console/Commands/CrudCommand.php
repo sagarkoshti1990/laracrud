@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Console\Commands;
+namespace Sagartakle\laracrud\Console\Commands;
 
 use Artisan;
 use Illuminate\Console\Command;
-use App\Models\Module;
+use Sagartakle\laracrud\Models\Module;
 
 class CrudCommand extends Command
 {

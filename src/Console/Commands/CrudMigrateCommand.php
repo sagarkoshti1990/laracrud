@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Console\Commands;
+namespace Sagartakle\laracrud\Console\Commands;
 
 use Illuminate\Console\GeneratorCommand;
-use App\Helpers\Inflect;
-use App\Models\Module;
-use App\Models\FieldType;
+use Sagartakle\laracrud\Helpers\Inflect;
+use Sagartakle\laracrud\Models\Module;
+use Sagartakle\laracrud\Models\FieldType;
 
 class CrudMigrateCommand extends GeneratorCommand
 {

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Console\Commands;
+namespace Sagartakle\laracrud\Console\Commands;
 
 use Illuminate\Console\GeneratorCommand;
-use App\Helpers\Inflect;
-use App\Models\Module;
+use Sagartakle\laracrud\Helpers\Inflect;
+use Sagartakle\laracrud\Models\Module;
 
 class CrudViewEditCommand extends GeneratorCommand
 {

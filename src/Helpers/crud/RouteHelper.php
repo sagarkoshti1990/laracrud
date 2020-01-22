@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Helpers\crud;
+namespace Sagartakle\laracrud\Helpers\crud;
 
 use Route;
 
