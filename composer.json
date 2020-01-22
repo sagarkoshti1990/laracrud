@@ -10,6 +10,13 @@
     ],
     "minimum-stability": "dev",
     "require": {},
+    "extra": {
+        "laravel": {
+            "providers": [
+                "sagar\\laracrud\\LaraCrudServiceProvider.php"
+            ]
+        }
+    },
     "autoload": {
         "psr-4": {
             "sagar\\laracrud\\": "src/"
