@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Providers;
+namespace Sagartakle\laracrud;
 
 use Illuminate\Support\ServiceProvider;
 
@@ -13,7 +13,7 @@ class LaraCrudServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->make('sagar\laracrud\TodolistController');
+        $this->app->make('sagartakle\laracrud\TodolistController');
     }
 
     /**
