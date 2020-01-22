@@ -1,0 +1,20 @@
+<?php
+
+return [
+
+
+    'CREATED' => 'Created',
+    'UPDATED' => 'Updated',
+    'DELETED' => 'Deleted',
+    /*
+    |--------------------------------------------------------------------------
+    | Activity Config values
+    |--------------------------------------------------------------------------
+    |
+    | This file is for Mudule default value for add Logs configuration
+    |
+    */
+
+    '__ArrayDate__'
+
+];
