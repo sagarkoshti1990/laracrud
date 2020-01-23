@@ -1,9 +1,9 @@
 <?php
 
-namespace Sagartakle\laracrud\Helpers\crud\Traits;
+namespace Sagartakle\Laracrud\Helpers\crud\Traits;
 
-use Sagartakle\laracrud\Models\FieldType;
-use Sagartakle\laracrud\Models\RelationalDataTable;
+use Sagartakle\Laracrud\Models\FieldType;
+use Sagartakle\Laracrud\Models\RelationalDataTable;
 Use Exception;
 
 trait Create

@@ -1,9 +1,9 @@
 <?php
 
-namespace Sagartakle\laracrud\Console\Commands;
+namespace Sagartakle\Laracrud\Console\Commands;
 
 use Illuminate\Console\GeneratorCommand;
-use Sagartakle\laracrud\Helpers\Inflect;
+use Sagartakle\Laracrud\Helpers\Inflect;
 
 class CrudModelCommand extends GeneratorCommand
 {

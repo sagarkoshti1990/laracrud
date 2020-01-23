@@ -1,14 +1,14 @@
 <?php
 
-namespace Sagartakle\laracrud\Helpers\crud;
+namespace Sagartakle\Laracrud\Helpers\crud;
 
 use DB;
 use Log;
 
-use Sagartakle\laracrud\Models\Menu;
-use Sagartakle\laracrud\Models\Page;
-use Sagartakle\laracrud\Models\Module;
-use Sagartakle\laracrud\Models\Upload;
+use Sagartakle\Laracrud\Models\Menu;
+use Sagartakle\Laracrud\Models\Page;
+use Sagartakle\Laracrud\Models\Module;
+use Sagartakle\Laracrud\Models\Upload;
 use Jenssegers\Date\Date;
 use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;

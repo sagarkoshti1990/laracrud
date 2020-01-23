@@ -1,6 +1,6 @@
 <?php
 
-namespace Sagartakle\laracrud\Helpers\crud\Traits;
+namespace Sagartakle\Laracrud\Helpers\crud\Traits;
 
 trait Fields
 {
