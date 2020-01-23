@@ -1,8 +1,8 @@
 <?php
 
-use App\Models\Field;
-use App\Models\FieldType;
-use App\Models\Module;
+use Sagartakle\Laracrud\Models\Field;
+use Sagartakle\Laracrud\Models\FieldType;
+use Sagartakle\Laracrud\Models\Module;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 

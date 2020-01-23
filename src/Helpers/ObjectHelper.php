@@ -46,7 +46,7 @@ class ObjectHelper
      * This function binds the CRUD to its corresponding Model (which extends Eloquent).
      * All Create-Read-Update-Delete operations are done using that Eloquent Collection.
      *
-     * @param [string] Full model namespace. Ex: App\Models\Article
+     * @param [string] Full model namespace. Ex: Sagartakle\Laracrud\Models\Article
      */
     public function setModel($model_namespace)
     {

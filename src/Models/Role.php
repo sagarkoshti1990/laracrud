@@ -1,13 +1,14 @@
 <?php
 
-namespace DummyNamespace;
+namespace Sagartakle\Laracrud;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 // use Actuallymab\LaravelComment\Commentable;
-use Sagartakle\Laracrud\Helpers\Traits\ActivityTrait;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use App\Helpers\crud\Traits\ActivityTrait;
 
-class DummyClassSingular extends Model
+class Role extends Model
 {
     use SoftDeletes;
     // use Commentable;
@@ -18,7 +19,7 @@ class DummyClassSingular extends Model
     |--------------------------------------------------------------------------
     */
 
-    protected $table = 'DummyTable';
+    protected $table = 'roles';
 	
 	protected $hidden = [
         
@@ -37,7 +38,7 @@ class DummyClassSingular extends Model
     |--------------------------------------------------------------------------
     */
     /**
-     * get module info of this DummyClass.
+     * get module info of this Roles.
      *
      * @param module
      *
@@ -45,7 +46,24 @@ class DummyClassSingular extends Model
      */
     public Static function get_module()
     {
-        return \Module::where('name', 'DummyClass')->first();
+        return \Module::where('name', 'Roles')->first();
+    }
+
+    /**
+     * get module info of this Roles.
+     *
+     * @param module
+     *
+     * @return void
+     */
+    public Static function roles()
+    {
+        return self::where('parent_id', '!=', null)->get();
+    }
+
+    public static function get_all_admin_role()
+    {
+        return self::where('name', '!=', "Super_admin")->get();
     }
 
     /*
@@ -53,6 +71,18 @@ class DummyClassSingular extends Model
     | RELATIONS
     |--------------------------------------------------------------------------
     */
+    public function users()
+    {
+        return $this->belongsToMany('App\User', null);
+    }
+
+    /**
+     * A user belongs to some users of the model associated with its guard.
+     */
+    public function access_modules()
+    {
+        return $this->morphMany('Sagartakle\Laracrud\\AccessModule', 'assessor');
+    }
 
     /*
     |--------------------------------------------------------------------------

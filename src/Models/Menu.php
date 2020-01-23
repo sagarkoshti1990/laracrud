@@ -1,24 +1,21 @@
 <?php
 
-namespace DummyNamespace;
+namespace Sagartakle\Laracrud\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-// use Actuallymab\LaravelComment\Commentable;
-use Sagartakle\Laracrud\Helpers\Traits\ActivityTrait;
+// use Illuminate\Database\Eloquent\SoftDeletes;
 
-class DummyClassSingular extends Model
+class Menu extends Model
 {
-    use SoftDeletes;
-    // use Commentable;
-    use ActivityTrait;
+    // use SoftDeletes;
+
      /*
     |--------------------------------------------------------------------------
     | GLOBAL VARIABLES
     |--------------------------------------------------------------------------
     */
 
-    protected $table = 'DummyTable';
+    protected $table = 'menus';
 	
 	protected $hidden = [
         
@@ -27,27 +24,21 @@ class DummyClassSingular extends Model
 	protected $guarded = [];
 
 	protected $dates = ['deleted_at'];
-    
-    protected $mustBeApproved = false;
-    protected $canBeRated = false;
 
     /*
     |--------------------------------------------------------------------------
     | FUNCTIONS
     |--------------------------------------------------------------------------
     */
-    /**
-     * get module info of this DummyClass.
-     *
-     * @param module
-     *
-     * @return void
-     */
-    public Static function get_module()
+    public function childrensMenu()
     {
-        return \Module::where('name', 'DummyClass')->first();
+        return $this->hasMany('Sagartakle\Laracrud\Models\Menu', 'parent', 'id')->orderBy('rank');
     }
 
+    public function parentMenu()
+    {
+        return $this->belongsTo('Sagartakle\Laracrud\Models\Menu', 'parent', 'id');
+    }
     /*
     |--------------------------------------------------------------------------
     | RELATIONS

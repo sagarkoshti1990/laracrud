@@ -8,9 +8,9 @@
         $img = "";
         if((isset($field['value']) && is_array(json_decode($field['value'])) && count(json_decode($field['value']))) || (isset($field['default']) && is_array(json_decode($field['default'])) && count(json_decode($field['default'])))) {
             if((isset($field['value'])) && is_array(json_decode($field['value'])) && count(json_decode($field['value']))) {
-                $uploads = App\Models\Upload::whereIn('id',json_decode($field['value']))->get();
+                $uploads = Sagartakle\Laracrud\Models\Upload::whereIn('id',json_decode($field['value']))->get();
             } else if((isset($field['default'])) && is_array(json_decode($field['default'])) && count(json_decode($field['default']))) {
-                $uploads = App\Models\Upload::whereIn('id',json_decode($field['default']))->get();
+                $uploads = Sagartakle\Laracrud\Models\Upload::whereIn('id',json_decode($field['default']))->get();
             }
             $img = "<div class='uploaded_files'>";
             foreach ($uploads as $key => $upload) {

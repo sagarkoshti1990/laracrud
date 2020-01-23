@@ -18,7 +18,7 @@ Route::group([
 ], function () {
     
     if(Schema::hasTable('modules')) {
-        $modules = \App\Models\Module::all();
+        $modules = \Sagartakle\Laracrud\Models\Module::all();
         if(isset($modules) && count($modules)) {
             foreach ($modules as $key => $module) {
                 if(!in_array($module->name, ['Users','Permissions','Notifications','Settings','Devicetokens'])) {
@@ -28,14 +28,13 @@ Route::group([
         }
     }
     
-    // if not otherwise configured, setup the "my account" routes
-    if (config('lara.base.setup_my_account_routes')) {
-        Route::get('edit-account-info', 'Auth\MyAccountController@getAccountInfoForm')->name('lara.account.info');
-        Route::post('edit-account-info', 'Auth\MyAccountController@postAccountInfoForm');
-        Route::get('change-password', 'Auth\MyAccountController@getChangePasswordForm')->name('lara.account.password');
-        Route::post('change-password', 'Auth\MyAccountController@postChangePasswordForm');
-    }
-    
+});
+
+Route::group([
+    'prefix'     => config('lara.base.route_prefix', 'admin'),
+    'middleware' => ['admin'],
+    'namespace'  => '\Sagartakle\Laracrud\Controllers',
+], function () {
     // modules
     Crud::resource("modules", "ModulesController");
     Route::get('data_select', 'ModulesController@select2');
@@ -74,13 +73,4 @@ Route::group([
     Route::post('/uploads_update_filename', 'UploadsController@update_filename');
     Route::post('/uploads_update_public', 'UploadsController@update_public');
     Route::post('/uploads_delete_file', 'UploadsController@delete_file');
-
-    // migration data of relis one
-    Route::get('migration','MasterUsersController@migration');
-    Route::Post('migrationUserSave','MasterUsersController@migrationUser');
-
-    // import export
-    Route::get('import/events', 'EventsController@import');
-    // Route::Post('import/events', 'EventsController@import_store');
-    Route::get('export/events', 'EventsController@export');
 });

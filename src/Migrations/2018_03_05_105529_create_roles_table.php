@@ -2,10 +2,10 @@
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
-use App\Models\Module;
-use App\Models\FieldType;
-use App\Models\Field;
-use App\Models\Role;
+use Sagartakle\Laracrud\Models\Module;
+use Sagartakle\Laracrud\Models\FieldType;
+use Sagartakle\Laracrud\Models\Field;
+use Sagartakle\Laracrud\Models\Role;
 
 class CreateRolesTable extends Migration
 {

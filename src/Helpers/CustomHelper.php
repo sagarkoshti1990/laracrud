@@ -33,7 +33,7 @@ class CustomHelper
      */
     public static function img($upload_id, $size = "")
     {
-        $upload = \App\Models\Upload::find($upload_id);
+        $upload = \Sagartakle\Laracrud\Models\Upload::find($upload_id);
         if(isset($size) && $size != "") {
             $size = "?s=".$size;
         }
@@ -126,7 +126,7 @@ class CustomHelper
 			<div class="dd-handle dd3-handle"></div>
 			<div class="dd3-content"><i class="fa ' . $menu->icon . '"></i> ' . $menu->name . ' ' . $editing . '</div>';
         
-        $childrens = \App\Models\Menu::where("parent", $menu->id)->orderBy('hierarchy', 'asc')->get();
+        $childrens = \Sagartakle\Laracrud\Models\Menu::where("parent", $menu->id)->orderBy('hierarchy', 'asc')->get();
         
         if(count($childrens) > 0) {
             $str .= '<ol class="dd-list">';

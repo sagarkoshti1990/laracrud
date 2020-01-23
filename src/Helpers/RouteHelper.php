@@ -56,4 +56,9 @@ class RouteHelper
             $this->{$method}($parameters);
         }
     }
+    
+    public static function resource($name, $controller, array $options = [])
+    {
+        return new RouteHelper($name, $controller, $options);
+    }
 }

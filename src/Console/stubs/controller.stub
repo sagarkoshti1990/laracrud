@@ -8,10 +8,10 @@ use Illuminate\Http\Request;
 use DB;
 use Validator;
 use Yajra\DataTables\Datatables;
-use App\Models\Module;
-use App\Models\Field;
+use Sagartakle\Laracrud\Models\Module;
+use Sagartakle\Laracrud\Models\Field;
 use Collective\Html\FormFacade as Form;
-use App\Models\__ModelName__;
+use Sagartakle\Laracrud\Models\__ModelName__;
 
 class __Class__Controller extends Controller
 {

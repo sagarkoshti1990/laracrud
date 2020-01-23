@@ -1,32 +1,30 @@
 <?php
 
-namespace DummyNamespace;
+namespace Sagartakle\Laracrud;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 // use Actuallymab\LaravelComment\Commentable;
-use Sagartakle\Laracrud\Helpers\Traits\ActivityTrait;
+// use App\Helpers\crud\Traits\ActivityTrait;
 
-class DummyClassSingular extends Model
+class AccessModule extends Model
 {
     use SoftDeletes;
     // use Commentable;
-    use ActivityTrait;
+    // use ActivityTrait;
      /*
     |--------------------------------------------------------------------------
     | GLOBAL VARIABLES
     |--------------------------------------------------------------------------
     */
 
-    protected $table = 'DummyTable';
+    protected $table = 'access_modules';
 	
 	protected $hidden = [
         
     ];
 
 	protected $guarded = [];
-
-	protected $dates = ['deleted_at'];
     
     protected $mustBeApproved = false;
     protected $canBeRated = false;
@@ -37,22 +35,29 @@ class DummyClassSingular extends Model
     |--------------------------------------------------------------------------
     */
     /**
-     * get module info of this DummyClass.
+     * get module info of this AccessModules.
      *
      * @param module
      *
      * @return void
      */
-    public Static function get_module()
-    {
-        return \Module::where('name', 'DummyClass')->first();
-    }
+    // public Static function get_module()
+    // {
+    //     return \Module::where('name', 'AccessModules')->first();
+    // }
 
     /*
     |--------------------------------------------------------------------------
     | RELATIONS
     |--------------------------------------------------------------------------
     */
+    /**
+     * A model may have module.
+     */
+    public function module()
+    {
+        return $this->belongsTo('Sagartakle\Laracrud\\Module','module_id');
+    }
 
     /*
     |--------------------------------------------------------------------------

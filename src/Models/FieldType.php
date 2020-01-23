@@ -1,24 +1,19 @@
 <?php
 
-namespace DummyNamespace;
+namespace Sagartakle\Laracrud\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
-// use Actuallymab\LaravelComment\Commentable;
-use Sagartakle\Laracrud\Helpers\Traits\ActivityTrait;
 
-class DummyClassSingular extends Model
+class FieldType extends Model
 {
-    use SoftDeletes;
-    // use Commentable;
-    use ActivityTrait;
+
      /*
     |--------------------------------------------------------------------------
     | GLOBAL VARIABLES
     |--------------------------------------------------------------------------
     */
 
-    protected $table = 'DummyTable';
+    protected $table = 'field_types';
 	
 	protected $hidden = [
         
@@ -26,28 +21,37 @@ class DummyClassSingular extends Model
 
 	protected $guarded = [];
 
-	protected $dates = ['deleted_at'];
-    
-    protected $mustBeApproved = false;
-    protected $canBeRated = false;
+    public $timestamps = false;
+
+	// protected $dates = ['deleted_at'];
 
     /*
     |--------------------------------------------------------------------------
     | FUNCTIONS
     |--------------------------------------------------------------------------
     */
-    /**
-     * get module info of this DummyClass.
-     *
-     * @param module
-     *
-     * @return void
-     */
-    public Static function get_module()
-    {
-        return \Module::where('name', 'DummyClass')->first();
-    }
 
+    // FieldType::getFTypes()
+    public static function getFTypes()
+    {
+        $fields = FieldType::all();
+        $fields2 = array();
+        foreach($fields as $field) {
+            $fields2[$field['name']] = $field['id'];
+        }
+        return $fields2;
+    }
+    
+    // FieldType::getFTypes2()
+    public static function getFTypes2()
+    {
+        $fields = FieldType::all();
+        $fields2 = array();
+        foreach($fields as $field) {
+            $fields2[$field['id']] = $field['name'];
+        }
+        return $fields2;
+    }
     /*
     |--------------------------------------------------------------------------
     | RELATIONS

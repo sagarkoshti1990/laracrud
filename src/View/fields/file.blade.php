@@ -7,7 +7,7 @@
     @php
         $img = "";
         if((isset($field['value']) && is_numeric($field['value']) && $field['value']) || (isset($field['default']) && is_numeric($field['default']) && $field['default'])) {
-            $upload = App\Models\Upload::find($field['value']);
+            $upload = Sagartakle\Laracrud\Models\Upload::find($field['value']);
             $url_file = url("files/" . $upload->hash . DIRECTORY_SEPARATOR . $upload->name);
             $img = "<a class='uploaded_file' target='_blank' href='".$url_file."'>";
 

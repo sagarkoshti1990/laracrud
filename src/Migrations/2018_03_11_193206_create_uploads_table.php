@@ -2,9 +2,9 @@
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
-use App\Models\Module;
-use App\Models\FieldType;
-use App\Models\Field;
+use Sagartakle\Laracrud\Models\Module;
+use Sagartakle\Laracrud\Models\FieldType;
+use Sagartakle\Laracrud\Models\Field;
 
 class CreateUploadsTable extends Migration
 {

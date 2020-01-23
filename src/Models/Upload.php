@@ -1,24 +1,23 @@
 <?php
 
-namespace DummyNamespace;
+namespace Sagartakle\Laracrud;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 // use Actuallymab\LaravelComment\Commentable;
-use Sagartakle\Laracrud\Helpers\Traits\ActivityTrait;
 
-class DummyClassSingular extends Model
+class Upload extends Model
 {
     use SoftDeletes;
     // use Commentable;
-    use ActivityTrait;
+
      /*
     |--------------------------------------------------------------------------
     | GLOBAL VARIABLES
     |--------------------------------------------------------------------------
     */
 
-    protected $table = 'DummyTable';
+    protected $table = 'uploads';
 	
 	protected $hidden = [
         
@@ -37,7 +36,7 @@ class DummyClassSingular extends Model
     |--------------------------------------------------------------------------
     */
     /**
-     * get module info of this DummyClass.
+     * get module info of this Uploads.
      *
      * @param module
      *
@@ -45,9 +44,26 @@ class DummyClassSingular extends Model
      */
     public Static function get_module()
     {
-        return \Module::where('name', 'DummyClass')->first();
+        return \Module::where('name', 'Uploads')->first();
     }
 
+    public function path()
+    {
+        return url("files/".$this->hash."/".$this->name);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | RELATIONS
+    |--------------------------------------------------------------------------
+    */
+	/**
+     * Get the user that owns upload.
+     */
+    public function user()
+    {
+        return $this->belongsTo('App\User');
+    }
     /*
     |--------------------------------------------------------------------------
     | RELATIONS
