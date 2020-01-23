@@ -13,13 +13,16 @@
     "extra": {
         "laravel": {
             "providers": [
-                "sagartakle\\laracrud\\LaraCrudServiceProvider.php"
+                "Sagartakle\\Laracrud\\LaraCrudServiceProvider.php"
             ]
         }
     },
     "autoload": {
+        "classmap": [
+            "src/"
+        ],
         "psr-4": {
-            "sagartakle\\laracrud\\": "src/"
+            "Sagartakle\\Laracrud\\": "src/"
         }
     }
 }
