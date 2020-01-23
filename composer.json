@@ -10,19 +10,14 @@
     ],
     "minimum-stability": "dev",
     "require": {},
-    "extra": {
-        "laravel": {
-            "providers": [
-                "Sagartakle\\Laracrud\\LaraCrudServiceProvider.php"
-            ]
-        }
-    },
+    "classmap": [
+        "src/"
+    ],
     "autoload": {
-        "classmap": [
-            "src/"
-        ],
         "psr-4": {
             "Sagartakle\\Laracrud\\": "src/"
-        }
+        },
+        "files": [
+        ]
     }
 }
