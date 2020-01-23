@@ -1,6 +1,6 @@
 <?php
 
-namespace Sagartakle\Laracrud\Helpers\crud\Traits;
+namespace Sagartakle\Laracrud\Helpers\Traits;
 use Sagartakle\Laracrud\Models\Module;
 use Sagartakle\Laracrud\Models\Page;
 

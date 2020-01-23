@@ -2,11 +2,11 @@
 
 namespace Sagartakle\Laracrud\Helpers\crud;
 
-use Sagartakle\Laracrud\Helpers\crud\Traits\Create;
-use Sagartakle\Laracrud\Helpers\crud\Traits\Update;
-use Sagartakle\Laracrud\Helpers\crud\Traits\Delete;
-use Sagartakle\Laracrud\Helpers\crud\Traits\Fields;
-use Sagartakle\Laracrud\Helpers\crud\Traits\Access;
+use Sagartakle\Laracrud\Helpers\Traits\Create;
+use Sagartakle\Laracrud\Helpers\Traits\Update;
+use Sagartakle\Laracrud\Helpers\Traits\Delete;
+use Sagartakle\Laracrud\Helpers\Traits\Fields;
+use Sagartakle\Laracrud\Helpers\Traits\Access;
 
 class ObjectHelper
 {

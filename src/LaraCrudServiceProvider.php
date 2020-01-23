@@ -16,7 +16,7 @@ class LaraCrudServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->make('Sagartakle\Laracrud\LaraCrudServiceProvider');
+        // $this->app->make('Sagartakle\Laracrud\LaraCrudServiceProvider');
         /*
         |--------------------------------------------------------------------------
         | Register the Commands
@@ -24,16 +24,15 @@ class LaraCrudServiceProvider extends ServiceProvider
         */
         
         $this->commands([
-            Sagartakle\Laracrud\Console\Commands\ConfigActivityLogsCommand::class,
-            Sagartakle\Laracrud\Console\Commands\CrudCommand::class,
-            Sagartakle\Laracrud\Console\Commands\CrudControllerCommand::class,
-            Sagartakle\Laracrud\Console\Commands\CrudMigrateCommand::class,
-            Sagartakle\Laracrud\Console\Commands\CrudViewCreateCommand::class,
-            Sagartakle\Laracrud\Console\Commands\CrudViewEditCommand::class,
-            Sagartakle\Laracrud\Console\Commands\CrudViewIndexCommand::class,
-            Sagartakle\Laracrud\Console\Commands\CrudViewShowCommand::class,
-            Sagartakle\Laracrud\Console\Commands\Inspire::class,
-            Sagartakle\Laracrud\Console\Commands\CrudModelCommand::class
+            \Sagartakle\Laracrud\Console\Commands\ConfigActivityLogsCommand::class,
+            \Sagartakle\Laracrud\Console\Commands\CrudCommand::class,
+            \Sagartakle\Laracrud\Console\Commands\CrudControllerCommand::class,
+            \Sagartakle\Laracrud\Console\Commands\CrudMigrateCommand::class,
+            \Sagartakle\Laracrud\Console\Commands\CrudViewCreateCommand::class,
+            \Sagartakle\Laracrud\Console\Commands\CrudViewEditCommand::class,
+            \Sagartakle\Laracrud\Console\Commands\CrudViewIndexCommand::class,
+            \Sagartakle\Laracrud\Console\Commands\CrudViewShowCommand::class,
+            \Sagartakle\Laracrud\Console\Commands\CrudModelCommand::class
         ]);
     }
 
@@ -44,13 +43,11 @@ class LaraCrudServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->loadRoutesFrom(__DIR__.'/admin.php');
-        $this->loadRoutesFrom(__DIR__.'/base.php');
+        $this->loadRoutesFrom(__DIR__.'/Routes/admin.php');
+        $this->loadRoutesFrom(__DIR__.'/Routes/base.php');
         $this->loadMigrationsFrom(__DIR__.'/Migrations');
         // $this->publishes([
         //     __DIR__.'/views' => base_path('View'),
         // ]);
-
-
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Sagartakle\Laracrud\Helpers\crud\Traits;
+namespace Sagartakle\Laracrud\Helpers\Traits;
 use Sagartakle\Laracrud\Models\Activity;
 
 trait ActivityTrait

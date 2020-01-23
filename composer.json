@@ -10,14 +10,21 @@
     ],
     "minimum-stability": "dev",
     "require": {},
-    "classmap": [
-        "src/"
-    ],
     "autoload": {
         "psr-4": {
             "Sagartakle\\Laracrud\\": "src/"
         },
         "files": [
         ]
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Sagartakle\\Laracrud\\LaraCrudServiceProvider"
+            ],
+            "aliases": {
+                "Crud": "Sagartakle\\Laracrud\\Helpers\\crud\\RouteHelper"
+            }
+        }
     }
 }
