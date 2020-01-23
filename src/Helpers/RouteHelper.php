@@ -1,6 +1,6 @@
 <?php
 
-namespace Sagartakle\Laracrud\Helpers\crud;
+namespace Sagartakle\Laracrud\Helpers;
 
 use Route;
 

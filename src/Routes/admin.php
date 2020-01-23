@@ -28,6 +28,14 @@ Route::group([
         }
     }
     
+    // if not otherwise configured, setup the "my account" routes
+    if (config('lara.base.setup_my_account_routes')) {
+        Route::get('edit-account-info', 'Auth\MyAccountController@getAccountInfoForm')->name('lara.account.info');
+        Route::post('edit-account-info', 'Auth\MyAccountController@postAccountInfoForm');
+        Route::get('change-password', 'Auth\MyAccountController@getChangePasswordForm')->name('lara.account.password');
+        Route::post('change-password', 'Auth\MyAccountController@postChangePasswordForm');
+    }
+    
     // modules
     Crud::resource("modules", "ModulesController");
     Route::get('data_select', 'ModulesController@select2');

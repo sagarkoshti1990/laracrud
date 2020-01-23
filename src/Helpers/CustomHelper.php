@@ -1,6 +1,6 @@
 <?php
 
-namespace Sagartakle\Laracrud\Helpers\crud;
+namespace Sagartakle\Laracrud\Helpers;
 
 use DB;
 use Log;
@@ -9,7 +9,6 @@ use Sagartakle\Laracrud\Models\Menu;
 use Sagartakle\Laracrud\Models\Page;
 use Sagartakle\Laracrud\Models\Module;
 use Sagartakle\Laracrud\Models\Upload;
-use Jenssegers\Date\Date;
 use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
 use Collective\Html\FormFacade;
@@ -24,268 +23,6 @@ use Illuminate\Support\Facades\Schema;
  */
 class CustomHelper
 {
-    /**
-     * Gives various names of Module in Object like label, table, model, controller, singular
-     *
-     * $names = CustomHelper::generateModuleNames($module_name);
-     *
-     * @param $module_name module name
-     * @param $icon module icon in FontAwesome
-     * @return object
-     */
-    public static function generateModuleNames($module_name, $icon)
-    {
-        $array = array();
-        $module_name = trim($module_name);
-        $module_name = str_replace(" ", "_", $module_name);
-        
-        $array['module'] = ucfirst(\Str::plural($module_name));
-        $array['label'] = ucfirst(\Str::plural(preg_replace('/[A-Z]/', ' $0', $module_name)));
-        $array['table'] = \Str::plural(ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', $module_name)), '_'));
-        $array['model'] = ucfirst(\Str::singular($module_name));
-        $array['fa_icon'] = $icon;
-        $array['controller'] = $array['module'] . "Controller";
-        $array['singular_l'] = strtolower(\Str::singular($module_name));
-        $array['singular_c'] = ucfirst(\Str::singular($module_name));
-        
-        return (object)$array;
-    }
-    
-    /**
-     * Get list of Database tables excluding  Context tables like
-     * backups, configs, menus, migrations, modules, module_fields, module_field_types
-     * password_resets, permissions, permission_role, role_module, role_module_fields, role_user
-     *
-     * Method currently supports MySQL and SQLite databases
-     *
-     * You can exclude additional tables by $$remove_tables
-     *
-     * $tables = CustomHelper::getDBTables([]);
-     *
-     * @param array $remove_tables exclude additional tables
-     * @return array
-     */
-    public static function getDBTables($remove_tables = [])
-    {
-        if(env('DB_CONNECTION') == "sqlite") {
-            $tables_sqlite = DB::select('select * from sqlite_master where type="table"');
-            $tables = array();
-            foreach($tables_sqlite as $table) {
-                if($table->tbl_name != 'sqlite_sequence') {
-                    $tables[] = $table->tbl_name;
-                }
-            }
-        } else if(env('DB_CONNECTION') == "pgsql") {
-            $tables_pgsql = DB::select("SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE' AND table_schema = 'public' ORDER BY table_name;");
-            $tables = array();
-            foreach($tables_pgsql as $table) {
-                $tables[] = $table->table_name;
-            }
-        } else if(env('DB_CONNECTION') == "mysql") {
-            $tables = DB::select('SHOW TABLES');
-        } else {
-            $tables = DB::select('SHOW TABLES');
-        }
-        
-        $tables_out = array();
-        foreach($tables as $table) {
-            $table = (Array)$table;
-            $tables_out[] = array_values($table)[0];
-        }
-        if(in_array(-1, $remove_tables)) {
-            $remove_tables2 = array();
-        } else {
-            $remove_tables2 = array(
-                'backups',
-                'configs',
-                'menus',
-                'migrations',
-                'modules',
-                'module_fields',
-                'module_field_types',
-                'password_resets',
-                'permissions',
-                'permission_role',
-                'role_module',
-                'role_module_fields',
-                'role_user'
-            );
-        }
-        $remove_tables = array_merge($remove_tables, $remove_tables2);
-        $remove_tables = array_unique($remove_tables);
-        $tables_out = array_diff($tables_out, $remove_tables);
-        
-        $tables_out2 = array();
-        foreach($tables_out as $table) {
-            $tables_out2[$table] = $table;
-        }
-        
-        return $tables_out2;
-    }
-    
-    /**
-     * Get Array of All Modules
-     *
-     * $modules = CustomHelper::getModuleNames([]);
-     *
-     * @param array $remove_modules to exclude certain modules.
-     * @return array Array of Modules
-     */
-    public static function getModuleNames($remove_modules = [])
-    {
-        $modules = Module::all();
-        
-        $modules_out = array();
-        foreach($modules as $module) {
-            $modules_out[] = $module->name;
-        }
-        $modules_out = array_diff($modules_out, $remove_modules);
-        
-        $modules_out2 = array();
-        foreach($modules_out as $module) {
-            $modules_out2[$module] = $module;
-        }
-        
-        return $modules_out2;
-    }
-    
-    /**
-     * Method to parse the dropdown, Multiselect, Taginput and radio values which are linked with
-     * either other tables via "@" e.g. "@employees" or string array of values
-     *
-     * This function parse the either case and gives output in html labels.
-     * Used only in show.blade.php of modules
-     *
-     * CustomHelper::parseValues($field['json_values']);
-     *
-     * @param $value value source for column e.g. @employees / ["Marvel","Universal"]
-     * @return string html labeled values
-     */
-    public static function parseValues($value)
-    {
-        // return $value;
-        $valueOut = "";
-        if(strpos($value, '[') !== false) {
-            $arr = json_decode($value);
-            foreach($arr as $key) {
-                $valueOut .= "<div class='label label-primary'>" . $key . "</div> ";
-            }
-        } else if(strpos($value, ',') !== false) {
-            $arr = array_map('trim', explode(",", $value));
-            foreach($arr as $key) {
-                $valueOut .= "<div class='label label-primary'>" . $key . "</div> ";
-            }
-        } else if(strpos($value, '@') !== false) {
-            $valueOut .= "<b data-toggle='tooltip' data-placement='top' title='From " . str_replace("@", "", $value) . " table' class='text-primary'>" . $value . "</b>";
-        } else if($value == "") {
-            $valueOut .= "";
-        } else {
-            $valueOut = "<div class='label label-primary'>" . $value . "</div> ";
-        }
-        return $valueOut;
-    }
-    
-    /**
-     * Log method to log either in command line or in Log file depending on $type.
-     *
-     * CustomHelper::log("info", "", $commandObject);
-     *
-     * @param $type where to put log - error / info / debug
-     * @param $text text to put in log
-     * @param $commandObject command object if log is to be put on commandline
-     */
-    public static function log($type, $text, $commandObject)
-    {
-        if($commandObject) {
-            $commandObject->$type($text);
-        } else {
-            if($type == "line") {
-                $type = "info";
-            }
-            Log::$type($text);
-        }
-    }
-    
-    /**
-     * Method copies folder recursively into another
-     *
-     * CustomHelper::recurse_copy("", "");
-     *
-     * @param $src source folder
-     * @param $dst destination folder
-     */
-    public static function recurse_copy($src, $dst)
-    {
-        $dir = opendir($src);
-        @mkdir($dst, 0777, true);
-        while(false !== ($file = readdir($dir))) {
-            if(($file != '.') && ($file != '..')) {
-                if(is_dir($src . '/' . $file)) {
-                    self::recurse_copy($src . '/' . $file, $dst . '/' . $file);
-                } else {
-                    // ignore files
-                    if(!in_array($file, [".DS_Store"])) {
-                        copy($src . '/' . $file, $dst . '/' . $file);
-                    }
-                }
-            }
-        }
-        closedir($dir);
-    }
-    
-    /**
-     * Method deletes folder and its content
-     *
-     * CustomHelper::recurse_delete("");
-     *
-     * @param $dir directory name
-     */
-    public static function recurse_delete($dir)
-    {
-        if(is_dir($dir)) {
-            $objects = scandir($dir);
-            foreach($objects as $object) {
-                if($object != "." && $object != "..") {
-                    if(is_dir($dir . "/" . $object))
-                        self::recurse_delete($dir . "/" . $object);
-                    else
-                        unlink($dir . "/" . $object);
-                }
-            }
-            rmdir($dir);
-        }
-    }
-    
-    /**
-     * Generate Random Password
-     *
-     * $password = CustomHelper::gen_password();
-     *
-     * @param int $chars_min minimum characters
-     * @param int $chars_max maximum characters
-     * @param bool $use_upper_case allowed uppercase characters
-     * @param bool $include_numbers includes numbers or not
-     * @param bool $include_special_chars include special charactors or not
-     * @return string random password according to configuration
-     */
-    public static function gen_password($chars_min = 6, $chars_max = 8, $use_upper_case = false, $include_numbers = false, $include_special_chars = false)
-    {
-        $length = rand($chars_min, $chars_max);
-        $selection = 'aeuoyibcdfghjklmnpqrstvwxz';
-        if($include_numbers) {
-            $selection .= "1234567890";
-        }
-        if($include_special_chars) {
-            $selection .= "!@\"#$%&[]{}?|";
-        }
-        $password = "";
-        for($i = 0; $i < $length; $i++) {
-            $current_letter = $use_upper_case ? (rand(0, 1) ? strtoupper($selection[(rand() % strlen($selection))]) : $selection[(rand() % strlen($selection))]) : $selection[(rand() % strlen($selection))];
-            $password .= $current_letter;
-        }
-        return $password;
-    }
-    
     /**
      * Get url of image by using $upload_id
      *
@@ -480,53 +217,12 @@ class CustomHelper
     }
     
     /**
-     * Print the top navbar menu view.
-     * This needs to be done recursively
-     *
-     * CustomHelper::print_menu_topnav($menu)
-     *
-     * @param $menu menu array from database
-     * @param bool $active is this menu active or not
-     * @return string menu in html string
-     */
-    public static function print_menu_topnav($menu, $active = false)
-    {
-        $childrens = \App\Models\Menu::where("parent", $menu->id)->orderBy('hierarchy', 'asc')->get();
-        
-        $treeview = "";
-        $treeview2 = "";
-        $subviewSign = "";
-        if(count($childrens)) {
-            $treeview = " class=\"dropdown\"";
-            $treeview2 = " class=\"dropdown-toggle\" data-toggle=\"dropdown\"";
-            $subviewSign = ' <span class="caret"></span>';
-        }
-        $active_str = '';
-        if($active) {
-            $active_str = 'class="active"';
-        }
-        
-        $str = '<li ' . $treeview . '' . $active_str . '><a ' . $treeview2 . ' href="' . url(config("lara.base.route_prefix") . '/' . $menu->url) . '">' . $menu->label . $subviewSign . '</a>';
-        
-        if(count($childrens)) {
-            $str .= '<ul class="dropdown-menu" role="menu">';
-            foreach($childrens as $children) {
-                $str .= self::print_menu_topnav($children);
-            }
-            $str .= '</ul>';
-        }
-        $str .= '</li>';
-        return $str;
-    }
-    
-    /**
      * delete and regenarate menu links
      * CustomHelper::generateMenu();
      *
      */
     public static function generateMenu()
     {
-        
 		// Generating Module Menus
 		if(Schema::hasTable('modules')) {
 			$modules = Module::all();
@@ -661,80 +357,6 @@ class CustomHelper
     }
     
     /**
-     * Get real Module name by replacing underscores within name
-     *
-     * @param $name Module Name with whitespace filled by underscores
-     * @return mixed return Module Name
-     */
-    public static function real_module_name($name)
-    {
-        $name = preg_replace('/(?<!\ )[A-Z]/', ' $0', $name);
-        $name = preg_replace('/[^A-Za-z0-9\-]/', ' ', $name);
-        // $name = str_replace('/[?-_]/', ' ', $name);
-        return $name;
-    }
-    
-    /**
-     * Get complete line within file by comparing passed substring $str
-     *
-     * CustomHelper::getLineWithString()
-     *
-     * @param $fileName file name to be scanned
-     * @param $str substring to be checked for line match
-     * @return int/string return -1 if failed to find otherwise complete line in string format
-     */
-    public static function getLineWithString($fileName, $str)
-    {
-        $lines = file($fileName);
-        foreach($lines as $lineNumber => $line) {
-            if(strpos($line, $str) !== false) {
-                return $line;
-            }
-        }
-        return -1;
-    }
-    
-    /**
-     * Get complete line within given file contents by comparing passed substring $str
-     *
-     * CustomHelper::getLineWithString2()
-     *
-     * @param $content content to be scanned
-     * @param $str substring to be checked for line match
-     * @return int/string return -1 if failed to find otherwise complete line in string format
-     */
-    public static function getLineWithString2($content, $str)
-    {
-        $lines = explode(PHP_EOL, $content);
-        foreach($lines as $lineNumber => $line) {
-            if(strpos($line, $str) !== false) {
-                return $line;
-            }
-        }
-        return -1;
-    }
-    
-    /**
-     * Method sets parameter in ".env" file as well as into php environment.
-     *
-     * CustomHelper::setenv("CACHE_DRIVER", "array");
-     *
-     * @param $param parameter name
-     * @param $value parameter value
-     */
-    public static function setenv($param, $value)
-    {
-        
-        $envfile = self::openFile('.env');
-        $line = self::getLineWithString('.env', $param . '=');
-        $envfile = str_replace($line, $param . "=" . $value . "\n", $envfile);
-        file_put_contents('.env', $envfile);
-        
-        $_ENV[$param] = $value;
-        putenv($param . "=" . $value);
-    }
-    
-    /**
      * Get file contents
      *
      * @param $from file path
@@ -746,71 +368,6 @@ class CustomHelper
         return $md;
     }
     
-    /**
-     * Delete file
-     *
-     * CustomHelper::deleteFile();
-     *
-     * @param $file_path file's path to be deleted
-     */
-    public static function deleteFile($file_path)
-    {
-        if(file_exists($file_path)) {
-            unlink($file_path);
-        }
-    }
-    
-    /**
-     * Get Migration file name by passing matching table name
-     *
-     * CustomHelper::get_migration_file("students_table");
-     *
-     * @param $file_name matching table name like 'create_employees_table'
-     * @return string returns migration file name if found else blank string
-     */
-    public static function get_migration_file($file_name)
-    {
-        $mfiles = scandir(base_path('database/migrations/'));
-        foreach($mfiles as $mfile) {
-            if(\Str::contains($mfile, $file_name)) {
-                $mgr_file = base_path('database/migrations/' . $mfile);
-                if(file_exists($mgr_file)) {
-                    return 'database/migrations/' . $mfile;
-                }
-            }
-        }
-        return "";
-    }
-    
-    /**
-     * Check if passed array is associative
-     *
-     * @param array $array array to be checked associative or not
-     * @return bool true if associative
-     */
-    public static function is_assoc_array(array $array)
-    {
-        // Keys of the array
-        $keys = array_keys($array);
-        
-        // If the array keys of the keys match the keys, then the array must
-        // not be associative (e.g. the keys array looked like {0:0, 1:1...}).
-        return array_keys($keys) !== $keys;
-    }
-    
-    /**
-     * arrya splice kay
-     *
-     * @param array $array array
-     * @return array
-     */
-    public static function array_splice_key(array $old_array, $first_index, $second_index,array $push_array)
-    {
-        return array_slice($old_array, $first_index, $second_index, true) +
-                $push_array +
-                array_slice($old_array, $second_index, NULL, true);
-    }
-
     /**
      * date change formate
      * 
@@ -844,45 +401,6 @@ class CustomHelper
             return $date;
         }
     }
-    
-    /**
-     * columns alphbet of excel column
-     *
-     * @param array date string
-     * @return columns alphbet of excel column
-     */
-    public static function alphabetRange($count = '26', $end_column = 'ZZ', $first_letters = '') {
-        $columns = array();
-        $lenth = $count;
-        $length = strlen($end_column);
-        $letters = range('A', 'Z');
-
-        // Iterate over 26 letters.
-        foreach ($letters as $letter) {
-            if($lenth <= "0") {
-                break;
-            }
-            // Paste the $first_letters before the next.
-            $column = $first_letters . $letter; 
-            // Add the column to the final array.
-            $columns[] = $column;
-            // If it was the end column that was added, return the columns.
-            if ($column == $end_column) {
-                return $columns;
-            }
-            $lenth--;
-        }
-        // Add the column children.
-        foreach ($columns as $column) {
-            if (!in_array($end_column, $columns) && strlen($column) < $length) {
-                $new_columns = self::alphabetRange(($count - count($columns)) ,$end_column, $column);
-                // Merge the new columns which were created with the final columns array.
-                $columns = array_merge($columns, $new_columns);
-            }
-        }
-
-        return $columns;
-    }
 
     /**
      * columns alphbet of excel column
@@ -906,10 +424,8 @@ class CustomHelper
             $arr['password'] = "123456";
             $arr['sender'] = "CRMPWR";
             $arr['dest'] = $data['phone'] ?? "";
-            $arr['apid'] = "60264";
             $arr['text'] = $data['massage'] ?? "";
-            $arr['dcs'] = "0";
-            $url = "http://5.9.69.238/api/sendSMS.php?".http_build_query($arr);
+            $url = "http://api?".http_build_query($arr);
             
             $ch = curl_init($url);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -922,16 +438,7 @@ class CustomHelper
             return $data;
         }
     }
-
-    public static function execInBackground($cmd) {
-        if (substr(php_uname(), 0, 7) == "Windows"){
-            pclose(popen("start /B ". $cmd, "r")); 
-        }
-        else {
-            exec($cmd . " > /dev/null &");  
-        }
-    }
-
+    
     /**
      * upload file
      * 

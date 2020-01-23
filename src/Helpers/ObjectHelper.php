@@ -1,6 +1,6 @@
 <?php
 
-namespace Sagartakle\Laracrud\Helpers\crud;
+namespace Sagartakle\Laracrud\Helpers;
 
 use Sagartakle\Laracrud\Helpers\Traits\Create;
 use Sagartakle\Laracrud\Helpers\Traits\Update;

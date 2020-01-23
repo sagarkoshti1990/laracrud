@@ -23,7 +23,7 @@
                 "Sagartakle\\Laracrud\\LaraCrudServiceProvider"
             ],
             "aliases": {
-                "Crud": "Sagartakle\\Laracrud\\Helpers\\crud\\RouteHelper"
+                "Crud": "Sagartakle\\Laracrud\\Helpers\\RouteHelper"
             }
         }
     }
