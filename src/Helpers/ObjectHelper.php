@@ -89,7 +89,10 @@ class ObjectHelper
             $this->setFields($module->fields);
         }
 
-        if($module->name == "Users") {
+        if(isset($module->name) && in_array($module->name, ["Modules","Activities","Uploads","Fields"])) {
+            $this->setModel("Sagartakle\\Laracrud\\Models\\".$module->model);
+            $this->setColumnNames($module->table_name);
+        } else if($module->name == "Users") {
             $this->setModel("App\\".$module->model);
             $this->setColumnNames('users');
         } else {
@@ -102,7 +105,7 @@ class ObjectHelper
             $this->setColumns($module->fields);
         }
 
-        $this->setEntityNameStrings(\Inflect::singularize($module->label),$module->label);
+        $this->setEntityNameStrings(\Str::singular($module->label),$module->label);
     }
     
     /**

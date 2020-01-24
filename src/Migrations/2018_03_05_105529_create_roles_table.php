@@ -126,34 +126,6 @@ class CreateRolesTable extends Migration
         $role_super_admin->context_type = "Employees";
         $role_super_admin->parent_id = Null;
         $role_super_admin->save();
-
-        $role_admin = new Role;
-        $role_admin->name = "Admin";
-        $role_admin->label = "Admin";
-        $role_admin->context_type = "Employees";
-        $role_admin->parent_id = $role_super_admin->id;
-		$role_admin->save();
-		
-        $role_employee = new Role;
-        $role_employee->name = "Employee";
-        $role_employee->label = "Employee";
-        $role_employee->context_type = "Employees";
-        $role_employee->parent_id = $role_admin->id;
-        $role_employee->save();
-
-        $role_employee = new Role;
-        $role_employee->name = "PartnerUser";
-        $role_employee->label = "Master Users";
-        $role_employee->context_type = "PartnerUsers";
-        $role_employee->parent_id = $role_admin->id;
-        $role_employee->save();
-
-        $role_employee = new Role;
-        $role_employee->name = "MasterUser";
-        $role_employee->label = "Master Users";
-        $role_employee->context_type = "MasterUsers";
-        $role_employee->parent_id = $role_admin->id;
-        $role_employee->save();
     }
 
     /**
@@ -163,8 +135,6 @@ class CreateRolesTable extends Migration
      */
     public function down()
     {
-        if(Schema::hasTable('roles')) {
-            Schema::drop('roles');
-        }
+        Schema::dropIfExists('roles');
     }
 }

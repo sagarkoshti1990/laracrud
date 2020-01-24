@@ -124,8 +124,6 @@ class CreateUploadsTable extends Migration
      */
     public function down()
     {
-        if(Schema::hasTable('uploads')) {
-            Schema::drop('uploads');
-        }
+		Schema::dropIfExists('uploads');
     }
 }

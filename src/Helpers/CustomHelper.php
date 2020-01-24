@@ -24,6 +24,47 @@ use Illuminate\Support\Facades\Schema;
 class CustomHelper
 {
     /**
+     * Gives various names of Module in Object like label, table, model, controller, singular
+     *
+     * $names = CustomHelper::generateModuleNames($module_name);
+     *
+     * @param $module_name module name
+     * @param $icon module icon in FontAwesome
+     * @return object
+     */
+    public static function generateModuleNames($module_name, $icon)
+    {
+        $array = [];
+        $module_name = trim($module_name);
+        $module_name = str_replace(" ", "_", $module_name);
+        $array['module'] = ucfirst(\Str::plural($module_name));
+        $array['label'] = ucfirst(\Str::plural(preg_replace('/[A-Z]/', ' $0', $module_name)));
+        $array['table'] = \Str::plural(ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', $module_name)), '_'));
+        $array['model'] = ucfirst(\Str::singular($module_name));
+        $array['fa_icon'] = $icon;
+        $array['controller'] = $array['module'] . "Controller";
+        $array['singular_l'] = strtolower(\Str::singular($module_name));
+        $array['singular_c'] = ucfirst(\Str::singular($module_name));
+        return (object)$array;
+    }
+
+    /**
+     * Check if passed array is associative
+     *
+     * @param array $array array to be checked associative or not
+     * @return bool true if associative
+     */
+    public static function is_assoc_array(array $array)
+    {
+        // Keys of the array
+        $keys = array_keys($array);
+        
+        // If the array keys of the keys match the keys, then the array must
+        // not be associative (e.g. the keys array looked like {0:0, 1:1...}).
+        return array_keys($keys) !== $keys;
+    }
+    
+    /**
      * Get url of image by using $upload_id
      *
      * CustomHelper::img($upload_id);

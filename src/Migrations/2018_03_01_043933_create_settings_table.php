@@ -108,8 +108,6 @@ class CreateSettingsTable extends Migration
      */
     public function down()
     {
-        if(Schema::hasTable('settings')) {
-            Schema::drop('settings');
-        }
+        Schema::dropIfExists('settings');
     }
 }
