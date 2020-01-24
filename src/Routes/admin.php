@@ -12,18 +12,19 @@
 */
 
 Route::group([
-    'prefix'     => config('lara.base.route_prefix', 'admin'),
-    'middleware' => ['admin'],
-    'namespace'  => 'Admin',
+    'prefix'     => config('stlc.route_prefix', 'admin'),
+    'middleware' => config('stlc.route_group_middleware_all', 'auth'),
+    'namespace'  => config('stlc.route_group_namespace', 'Admin'),
 ], function () {
     
     if(Schema::hasTable('modules')) {
-        $modules = \Sagartakle\Laracrud\Models\Module::all();
+        $modules = \Sagartakle\Laracrud\Models\Module::whereNotIn('name',[
+                        'Users','Permissions','Notifications',
+                        'Settings','Roles','Uploads'
+                    ])->get();
         if(isset($modules) && count($modules)) {
             foreach ($modules as $key => $module) {
-                if(!in_array($module->name, ['Users','Permissions','Notifications','Settings','Devicetokens'])) {
-                    Crud::resource($module->table_name, $module->controller);
-                }
+                Crud::resource($module->table_name, $module->controller);
             }
         }
     }
@@ -31,12 +32,14 @@ Route::group([
 });
 
 Route::group([
-    'prefix'     => config('lara.base.route_prefix', 'admin'),
-    'middleware' => ['admin'],
+    'prefix'     => config('stlc.stlc_route_prefix', 'developer'),
+    'middleware' => config('stlc.stlc_route_group_middleware', 'auth'),
     'namespace'  => '\Sagartakle\Laracrud\Controllers',
 ], function () {
     // modules
     Crud::resource("modules", "ModulesController");
+    Crud::resource('roles', 'RolesController');
+    Crud::resource('upload', 'UploadsController');
     Route::get('data_select', 'ModulesController@select2');
     Route::get('fields', 'ModulesController@index');
     Route::post('fields', 'ModulesController@add_field');

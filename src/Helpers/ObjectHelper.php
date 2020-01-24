@@ -89,7 +89,7 @@ class ObjectHelper
             $this->setFields($module->fields);
         }
 
-        if(isset($module->name) && in_array($module->name, ["Modules","Activities","Uploads","Fields"])) {
+        if(isset($module->name) && in_array($module->name, ["Modules","Activities","Uploads","Fields","Settings","Roles"])) {
             $this->setModel("Sagartakle\\Laracrud\\Models\\".$module->model);
             $this->setColumnNames($module->table_name);
         } else if($module->name == "Users") {

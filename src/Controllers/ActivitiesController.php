@@ -12,12 +12,13 @@ use Sagartakle\Laracrud\Models\Module;
 use Sagartakle\Laracrud\Models\Field;
 use Collective\Html\FormFacade as Form;
 use Sagartakle\Laracrud\Models\Activity;
+use Sagartakle\Laracrud\Helpers\ObjectHelper;
 
 class ActivitiesController extends Controller
 {
     function __construct() {
         
-        $this->crud = new \ObjectHelper;
+        $this->crud = new ObjectHelper;
         $module = (object)[];
         $module->name = "Activities";
         $module->label = "Activities";

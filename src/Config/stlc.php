@@ -2,6 +2,7 @@
 
 return [
 
+
     /*
     |--------------------------------------------------------------------------
     | Look & feel customizations
@@ -10,32 +11,11 @@ return [
     | Make it yours.
     |
     */
-
-    // Project name. Shown in the breadcrumbs and a few other places.
-    'project_name' => 'PeCfy',
-
-    'project_nick_name' => 'P ',
-    'project_sub_name' => 'Pc',
-
-    // Menu logos
-    'logo_lg'   => '<b>P</b>eCfy',
-    'logo_mini' => '<b>P</b>C',
-
-    // Developer or company name. Shown in footer.
-    'developer_name' => '',
-
-    // Developer website. Link in footer.
-    'developer_link' => '',
-
-    // Show powered by CRM in the footer?
-    'show_powered_by' => false,
-
     // The AdminLTE skin. Affects menu color and primary/secondary colors used throughout the application.
     'skin' => 'skin-purple',
     // Options: skin-black, skin-blue, skin-purple, skin-red, skin-yellow, skin-green, skin-blue-light, skin-black-light, skin-purple-light, skin-green-light, skin-red-light, skin-yellow-light
 
-    // Date & Datetime Format Syntax: https://github.com/jenssegers/date#usage
-    // (same as Carbon)
+    // Date & Datetime Format Carbon
     'default_date_format'     => 'j F Y',
     'default_datetime_format' => 'j F Y H:i',
 
@@ -60,18 +40,12 @@ return [
 
     // The prefix used in all base routes (the 'admin' in admin/dashboard)
     'route_prefix' => 'admin',
+    'route_group_middleware_all' => 'auth',
+    'route_group_namespace' => 'Admin',
 
-    // Set this to false if you would like to use your own AuthController and PasswordController
-    // (you then need to setup your auth routes manually in your routes.php file)
-    'setup_auth_routes' => true,
-
-    // Set this to false if you would like to skip adding the dashboard routes
-    // (you then need to overwrite the login route on your AuthController)
-    'setup_dashboard_routes' => true,
-
-    // Set this to false if you would like to skip adding "my account" routes
-    // (you then need to manually define the routes in your web.php)
-    'setup_my_account_routes' => true,
+    //stlc
+    'stlc_route_prefix' => 'developer',
+    'stlc_route_group_middleware' => 'auth',
 
     /*
     |--------------------------------------------------------------------------
@@ -85,6 +59,49 @@ return [
     'setting_keys' => [
         ['key' => "COMPANY_NAME", "type" => "Text"],
         ['key' => "COMPANY_LOGO", "type" => "Image"]
-    ]
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | propadmin\CRUD preferences
+    |--------------------------------------------------------------------------
+    */
+
+    /*
+    |------------
+    | READ
+    |------------
+    */
+    // LIST VIEW (table view)
+        // How many items should be shown by default by the Datatable?
+        // This value can be overwritten on a specific CRUD by calling
+        // $this->crud->setDefaultPageLength(50);
+        'default_page_length' => 10,
+
+    // PREVIEW
+
+    /*
+    |------------
+    | DELETE
+    |------------
+    */
+
+    /*
+    |------------
+    | REORDER
+    |------------
+    */
+
+    /*
+    |------------
+    | DETAILS ROW
+    |------------
+    */
+
+    /*
+    |-------------------
+    | TRANSLATABLE CRUDS
+    |-------------------
+    */
 
 ];

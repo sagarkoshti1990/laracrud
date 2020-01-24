@@ -45,8 +45,8 @@ class LaraCrudServiceProvider extends ServiceProvider
     {
         $this->loadRoutesFrom(__DIR__.'/Routes/admin.php');
         $this->loadMigrationsFrom(__DIR__.'/Migrations');
-        // $this->publishes([
-        //     __DIR__.'/views' => base_path('View'),
-        // ]);
+        $this->publishes([
+            __DIR__.'/Config/stlc.php' => base_path('config/stlc.php'),
+        ]);
     }
 }
