@@ -11,8 +11,8 @@ use DB;
 
 use Sagartakle\Laracrud\Models\Field;
 use Sagartakle\Laracrud\Models\FieldType;
-use Sagartakle\Laracrud\Helpers\crud\ObjectHelper;
-use Sagartakle\Laracrud\Helpers\crud\CustomHelper;
+use Sagartakle\Laracrud\Helpers\ObjectHelper;
+use Sagartakle\Laracrud\Helpers\CustomHelper;
 use Sagartakle\Laracrud\User;
 use Sagartakle\Laracrud\Models\AccessModule;
 use Sagartakle\Laracrud\Models\Page;

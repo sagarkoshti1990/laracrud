@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 // use Actuallymab\LaravelComment\Commentable;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use App\Helpers\crud\Traits\ActivityTrait;
+use Sagartakle\Laracrud\Helpers\Traits\ActivityTrait;
 
 class Role extends Model
 {

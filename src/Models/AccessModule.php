@@ -5,7 +5,7 @@ namespace Sagartakle\Laracrud;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 // use Actuallymab\LaravelComment\Commentable;
-// use App\Helpers\crud\Traits\ActivityTrait;
+// use Sagartakle\Laracrud\Helpers\Traits\ActivityTrait;
 
 class AccessModule extends Model
 {

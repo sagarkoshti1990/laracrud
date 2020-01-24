@@ -58,7 +58,7 @@ class Setting extends Model
     {
 		if(\Schema::hasTable('menus')) {
             $value = self::where('key', $key)->first();
-            $crud = app('App\Http\Controllers\Admin\ModulesController')->setting_crud;
+            $crud = app('Sagartakle\Laracrud\Controllers\ModulesController')->setting_crud;
             if(isset($value->value)) {
                 return \FormBuilder::get_field_value($crud, 'value', $value->value, collect(config('lara.base.setting_keys'))->where('key',$value->key)->first()['type'],'value');
             } elseif(isset($default)) {

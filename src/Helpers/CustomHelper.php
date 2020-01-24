@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Schema;
 
 /**
  * Class CustomHelper
- * @package App\Helpers
+ * @package Sagartakle\Laracrud\Helpers
  *
  * This is  Helper class contains methods required for Admin Panel functionality.
  */

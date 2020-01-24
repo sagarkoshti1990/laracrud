@@ -14,7 +14,7 @@ use Yajra\DataTables\Datatables;
 use Collective\Html\FormFacade as Form;
 use Sagartakle\Laracrud\Models\Setting;
 use Sagartakle\Laracrud\Models\Module;
-use Sagartakle\Laracrud\Helpers\crud\ObjectHelper;
+use Sagartakle\Laracrud\Helpers\ObjectHelper;
 use Prologue\Alerts\Facades\Alert;
 use Sagartakle\Laracrud\Models\AccessModule;
 use Sagartakle\Laracrud\Models\Employee;

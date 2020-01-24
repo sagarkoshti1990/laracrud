@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 
 use Illuminate\Database\Eloquent\Model;
-use Sagartakle\Laracrud\Helpers\crud\ObjectHelper;
+use Sagartakle\Laracrud\Helpers\ObjectHelper;
 
 class Activity extends Model
 {
