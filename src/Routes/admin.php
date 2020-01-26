@@ -14,7 +14,7 @@
 Route::group([
     'prefix'     => config('stlc.route_prefix', 'admin'),
     'middleware' => config('stlc.route_group_middleware_all', 'auth'),
-    'namespace'  => config('stlc.route_group_namespace', 'Admin'),
+    'namespace'  => config('stlc.route_group_namespace', '\App\Http\Controllers\Admin'),
 ], function () {
     
     if(Schema::hasTable('modules')) {
@@ -33,6 +33,14 @@ Route::group([
     'middleware' => config('stlc.stlc_route_group_middleware', 'auth'),
     'namespace'  => '\Sagartakle\Laracrud\Controllers',
 ], function () {
+    
+    // if not otherwise configured, setup the "my account" routes
+    if (config('lara.base.setup_my_account_routes')) {
+        Route::get('edit-account-info', 'Auth\MyAccountController@getAccountInfoForm')->name('lara.account.info');
+        Route::post('edit-account-info', 'Auth\MyAccountController@postAccountInfoForm');
+        Route::get('change-password', 'Auth\MyAccountController@getChangePasswordForm')->name('lara.account.password');
+        Route::post('change-password', 'Auth\MyAccountController@postChangePasswordForm');
+    }
     // modules
     Crud::resource("modules", "ModulesController");
     Crud::resource('roles', 'RolesController');
@@ -69,4 +77,57 @@ Route::group([
     Route::post('/uploads_update_filename', 'UploadsController@update_filename');
     Route::post('/uploads_update_public', 'UploadsController@update_public');
     Route::post('/uploads_delete_file', 'UploadsController@delete_file');
+});
+
+Route::group([
+    'namespace'  => '\App\Http\Controllers\StlcAuth',
+    'middleware' => 'web',
+    'prefix'     => config('stlc.route_prefix', 'admin'),
+],function () {
+    // if not otherwise configured, setup the auth routes
+    // Authentication Routes...
+    Route::get('login', [
+    'as' => 'login',
+    'uses' => 'LoginController@showLoginForm'
+    ]);
+    Route::post('login', [
+    'as' => '',
+    'uses' => 'LoginController@login'
+    ]);
+    Route::post('logout', [
+    'as' => 'logout',
+    'uses' => 'LoginController@logout'
+    ]);
+
+    // Password Reset Routes...
+    Route::post('password/email', [
+    'as' => 'password.email',
+    'uses' => 'ForgotPasswordController@sendResetLinkEmail'
+    ]);
+    Route::get('password/reset', [
+    'as' => 'password.request',
+    'uses' => 'ForgotPasswordController@showLinkRequestForm'
+    ]);
+    Route::post('password/reset', [
+    'as' => 'password.update',
+    'uses' => 'ResetPasswordController@reset'
+    ]);
+    Route::get('password/reset/{token}', [
+    'as' => 'password.reset',
+    'uses' => 'ResetPasswordController@showResetForm'
+    ]);
+
+    // Registration Routes...
+    Route::get('register', [
+    'as' => 'register',
+    'uses' => 'RegisterController@showRegistrationForm'
+    ]);
+    Route::post('register', [
+    'as' => '',
+    'uses' => 'RegisterController@register'
+    ]);
+    Route::get('logout', 'LoginController@logout');
+    // if not otherwise configured, setup the dashboard routes
+    // Route::get('dashboard', 'AdminController@dashboard');
+    // Route::get('/', 'AdminController@redirect');
 });
