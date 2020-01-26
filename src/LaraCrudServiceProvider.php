@@ -43,10 +43,25 @@ class LaraCrudServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        $this->loadRoutesFrom(__DIR__.'/Routes/admin.php');
-        $this->loadMigrationsFrom(__DIR__.'/Migrations');
+        $this->loadRoutesFrom(base_path('routes'.DIRECTORY_SEPARATOR.'stlc.php'));
+        // $this->loadMigrationsFrom(__DIR__.'/Migrations');
         $this->publishes([
-            __DIR__.'/Config/stlc.php' => base_path('config/stlc.php'),
+            __DIR__.DIRECTORY_SEPARATOR.'Config'.DIRECTORY_SEPARATOR.'stlc.php' => base_path('config'.DIRECTORY_SEPARATOR.'stlc.php'),
+
+            // Routes
+            __DIR__.DIRECTORY_SEPARATOR.'Routes'.DIRECTORY_SEPARATOR.'admin.php' => base_path('routes'.DIRECTORY_SEPARATOR.'stlc.php'),
+
+            // stlc auth
+            __DIR__.DIRECTORY_SEPARATOR.'Controllers'.DIRECTORY_SEPARATOR.'StlcAuth' => base_path('app'.DIRECTORY_SEPARATOR.'Http'.DIRECTORY_SEPARATOR.'Controllers'.DIRECTORY_SEPARATOR.'StlcAuth'),
+            
+            // stlc auth view
+            __DIR__.DIRECTORY_SEPARATOR.'View'.DIRECTORY_SEPARATOR.'auth' => base_path('resources'.DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.'stlcauth'),
+
+            // migration
+            __DIR__.DIRECTORY_SEPARATOR.'Migrations' => base_path('database'.DIRECTORY_SEPARATOR.'migrations'),
+
+            // 
+            __DIR__.DIRECTORY_SEPARATOR.'package.json' => base_path('package.json'),
         ]);
     }
 }
