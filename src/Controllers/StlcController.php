@@ -1,6 +1,6 @@
 <?php
 
-namespace DummyNamespace;
+namespace Sagartakle\Laracrud\Controllers;
 
 use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
@@ -11,14 +11,9 @@ use Yajra\DataTables\Datatables;
 use Sagartakle\Laracrud\Models\Module;
 use Sagartakle\Laracrud\Models\Field;
 use Collective\Html\FormFacade as Form;
-use App\Models\__ModelName__;
 
-class __Class__Controller extends Controller
+class StlcController extends Controller
 {
-    function __construct() {
-        $this->crud = Module::make('__Class__');
-    }
-
     /**
      * Display a listing of the resource.
      *
@@ -29,9 +24,9 @@ class __Class__Controller extends Controller
 		if($this->crud->hasAccess('view')) {
             
             $crud = $this->crud;
-            $item = __ModelName__::all();
+            $item = Employee::all();
 
-            return view('__ViewFilePathIndex__', [
+            return view('crud.index', [
                 'crud' => $crud,
                 'item' => $item
             ]);
@@ -56,7 +51,7 @@ class __Class__Controller extends Controller
             
             $crud = $this->crud;
 
-            return view('__ViewFilePathCreate__', [
+            return view('crud.form', [
                 'crud' => $crud,
                 'src' => $src
             ]);
@@ -78,7 +73,7 @@ class __Class__Controller extends Controller
                 $request = \Request::instance();
             }
             
-            $rules = Module::validateRules("__Class__", $request);
+            $rules = Module::validateRules("Employees", $request);
 			$validator = Validator::make($request->all(), $rules);
 			
 			if ($validator->fails()) {
@@ -141,7 +136,7 @@ class __Class__Controller extends Controller
                 $src = Null;
             }
 
-            $item = __ModelName__::find($id);
+            $item = Employee::find($id);
             if(isset($item->id)) {
                 
                 $crud = $this->crud;
@@ -151,7 +146,7 @@ class __Class__Controller extends Controller
                 if(isset($request->get_data_ajax) && $request->get_data_ajax) {
                     return response()->json(['status' => 'success', 'massage' => 'updated', 'item' => $item]);
                 } else {
-                    return view('__ViewFilePathShow__', [
+                    return view('crud.show', [
                         'crud' => $crud,
                         'item' => $item,
                         'src' => $src,
@@ -164,7 +159,7 @@ class __Class__Controller extends Controller
                 } else {
                     return view('errors.404', [
                         'record_id' => $id,
-                        'record_name' => ucfirst("__smallPlural__"),
+                        'record_name' => ucfirst("employees"),
                     ]);
                 }
             }
@@ -192,13 +187,13 @@ class __Class__Controller extends Controller
                 $src = Null;
             }
             
-            $item = __ModelName__::find($id);
+            $item = Employee::find($id);
             if(isset($item->id)) {
                 
                 $crud = $this->crud;
                 $crud->row = $item;
             
-                return view('__ViewFilePathEdit__', [
+                return view('crud.form', [
                     'crud' => $crud,
                     'item' => $item,
                     'src' => $src
@@ -206,7 +201,7 @@ class __Class__Controller extends Controller
             } else {
                 return view('errors.404', [
                     'record_id' => $id,
-                    'record_name' => ucfirst("__smallPlural__"),
+                    'record_name' => ucfirst("employees"),
                 ]);
             }
         } else {
@@ -225,13 +220,13 @@ class __Class__Controller extends Controller
     {
         if($this->crud->hasAccess('edit')) {
             // old data
-            $old_item = __ModelName__::find($id);
+            $old_item = Employee::find($id);
             if(isset($old_item->id)) {
                 if (is_null($request)) {
                     $request = \Request::instance();
                 }
 
-                $rules = Module::validateRules("__Class__", $request, true);
+                $rules = Module::validateRules("Employees", $request, true);
                 $validator = Validator::make($request->all(), $rules);
                 
                 if ($validator->fails()) {
@@ -285,7 +280,7 @@ class __Class__Controller extends Controller
     {
         if($this->crud->hasAccess('delete')) {
             // old data
-            $old_item = __ModelName__::find($id);
+            $old_item = Employee::find($id);
             if(isset($old_item->id)) {
                 $item = $this->crud->delete($id);
 
@@ -297,7 +292,7 @@ class __Class__Controller extends Controller
                 } else if(isset($request->src)) {
                     return redirect($request->src);
                 } else {
-                    // return redirect()->route(config('lara.base.route_prefix') . 'crud.__smallPlural__.index');
+                    // return redirect()->route(config('lara.base.route_prefix') . 'crud.employees.index');
                     return (string) $item;
                 }
             } else {
@@ -326,9 +321,9 @@ class __Class__Controller extends Controller
     {
         if($this->crud->hasAccess('deactivate')) {
             // old data
-            $old_item = __ModelName__::onlyTrashed()->find($id);
+            $old_item = Employee::onlyTrashed()->find($id);
             if(isset($old_item->id)) {
-                $item = __ModelName__::onlyTrashed()->find($id)->restore();
+                $item = Employee::onlyTrashed()->find($id)->restore();
 
                 // add activity log
                 // \Activity::log(config('App.activity_log.restore'), $this->crud, ['old' => $old_item]);
@@ -338,7 +333,7 @@ class __Class__Controller extends Controller
                 } else if(isset($request->src)) {
                     return redirect($request->src);
                 } else {
-                    // return redirect()->route(config('lara.base.route_prefix') . 'crud.__smallPlural__.index');
+                    // return redirect()->route(config('lara.base.route_prefix') . 'crud.employees.index');
                     return (string) $item;
                 }
             } else {
@@ -366,24 +361,24 @@ class __Class__Controller extends Controller
     public function datatable(Request $request)
     {
         $crud = $this->crud;
-        $listing_cols = Module::getListingColumns('__Class__');
+        $listing_cols = Module::getListingColumns('Employees');
         
         if(isset($request->filter)) {
-			$values = DB::table('__smallPlural__')->select($listing_cols)->whereNull('deleted_at')->where($request->filter);
+			$values = DB::table('employees')->select($listing_cols)->whereNull('deleted_at')->where($request->filter);
 		} else {
-			$values = DB::table('__smallPlural__')->select($listing_cols)->whereNull('deleted_at');
+			$values = DB::table('employees')->select($listing_cols)->whereNull('deleted_at');
 		}
         
         $out = Datatables::of($values)->make();
         $data = $out->getData();
         
-        $fields_popup = Field::getFields('__Class__');
+        $fields_popup = Field::getFields('Employees');
         
         // array_splice($listing_cols, 2, 0, "index_name");
         
         for($i = 0; $i < count($data->data); $i++) {
             $data->data[$i] = collect($data->data[$i])->values()->all();
-            $item = __ModelName__::find($data->data[$i][0]);
+            $item = Employee::find($data->data[$i][0]);
             // array_splice($data->data[$i], 2, 0, true);
             for($j = 0; $j < count($listing_cols); $j++) {
                 $col = $listing_cols[$j];

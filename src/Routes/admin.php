@@ -18,10 +18,7 @@ Route::group([
 ], function () {
     
     if(Schema::hasTable('modules')) {
-        $modules = \Sagartakle\Laracrud\Models\Module::whereNotIn('name',[
-                        'Users','Permissions','Notifications',
-                        'Settings','Roles','Uploads'
-                    ])->get();
+        $modules = \Sagartakle\Laracrud\Models\Module::whereNotIn('name',['Users','Roles','Uploads'])->get();
         if(isset($modules) && count($modules)) {
             foreach ($modules as $key => $module) {
                 Crud::resource($module->table_name, $module->controller);
@@ -47,10 +44,6 @@ Route::group([
     Route::get('fields/{id}/edit', 'ModulesController@edit_field');
     Route::put('fields/{id}', 'ModulesController@update_field');
     Route::delete('fields/{id}', 'ModulesController@destroy_field');
-    Route::get('settings', 'ModulesController@setting_list');
-    Route::post('settings', 'ModulesController@setting_store');
-    Route::get('settings/{id}/edit', 'ModulesController@setting_edit');
-    Route::put('settings/{id}', 'ModulesController@setting_update');
 
     Route::post('context/{id}/comment', 'ModulesController@comment');
     Route::post('context/{id}/comment_history', 'ModulesController@comment_history');

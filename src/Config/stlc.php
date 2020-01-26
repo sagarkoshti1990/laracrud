@@ -56,11 +56,6 @@ return [
     // Fully qualified namespace of the User model
     'user_model_fqn' => '\App\User',
 
-    'setting_keys' => [
-        ['key' => "COMPANY_NAME", "type" => "Text"],
-        ['key' => "COMPANY_LOGO", "type" => "Image"]
-    ],
-
     /*
     |--------------------------------------------------------------------------
     | propadmin\CRUD preferences

@@ -3,7 +3,6 @@
 namespace Sagartakle\Laracrud\Console\Commands;
 
 use Illuminate\Console\GeneratorCommand;
-use Sagartakle\Laracrud\Helpers\Inflect;
 use Sagartakle\Laracrud\Models\Module;
 
 class ConfigActivityLogsCommand extends GeneratorCommand
@@ -13,14 +12,14 @@ class ConfigActivityLogsCommand extends GeneratorCommand
      *
      * @var string
      */
-    protected $name = 'lara:log_config';
+    protected $name = 'stlc:log_config';
 
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'lara:log_config{name=activity_log}';
+    protected $signature = 'stlc:log_config{name=activity_log}';
 
     /**
      * The console command description.
@@ -43,7 +42,7 @@ class ConfigActivityLogsCommand extends GeneratorCommand
      */
     protected function getStub()
     {
-        return __DIR__.'/../stubs/activity_config.stub';
+        return __DIR__.'/../Stubs/activity_config.stub';
     }
 
     /**

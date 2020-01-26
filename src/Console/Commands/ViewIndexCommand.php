@@ -3,38 +3,37 @@
 namespace Sagartakle\Laracrud\Console\Commands;
 
 use Illuminate\Console\GeneratorCommand;
-use Sagartakle\Laracrud\Helpers\Inflect;
 use Sagartakle\Laracrud\Models\Module;
 
-class CrudViewCreateCommand extends GeneratorCommand
+class ViewIndexCommand extends GeneratorCommand
 {
     /**
      * The console command name.
      *
      * @var string
      */
-    protected $name = 'lara:viewCreate';
+    protected $name = 'stlc:viewIndex';
 
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'lara:viewCreate {name}';
+    protected $signature = 'stlc:viewIndex {name}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Generate a Create templated view';
+    protected $description = 'Generate a index list templated view';
 
     /**
      * The type of class being generated.
      *
      * @var string
      */
-    protected $type = 'ViewCreate';
+    protected $type = 'ViewIndex';
 
     /**
      * Get the stub file for the generator.
@@ -44,10 +43,10 @@ class CrudViewCreateCommand extends GeneratorCommand
     protected function getStub()
     {
         // if ($this->option('plain')) {
-        //     return __DIR__.'/../stubs/view-plain.stub';
+        //     return __DIR__.'/../Stubs/view-plain.stub';
         // }
 
-        return __DIR__.'/../stubs/viewCreate.stub';
+        return __DIR__.'/../Stubs/viewIndex.stub';
     }
 
     /**
@@ -64,17 +63,13 @@ class CrudViewCreateCommand extends GeneratorCommand
         $modul = Module::where('name', $name)->first();
         $out = "";
         if(isset($modul) && $modul->id) {
+            $out .= "\t\t\t\t\t\t\t<div class='row'>\n";
             foreach ($modul->fields as $key => $field) {
-                if($key % 2 == 0){
-                    $out .= "\t\t\t\t\t\t\t<div class='row'>\n";
-                }
-
-                $out .= "\t\t\t\t\t\t\t\t<div class='col-md-6'>@input($" . "crud, '" . $field['name'] . "')</div>\n";
-                
-                if(($key % 2 != 0) || ($key == count($modul->fields)-1)){
-                    $out .= "\t\t\t\t\t\t\t</div>\n";
+                if($field->required) {
+                    $out .= "\t\t\t\t\t\t\t\t<div class='col-md-6'>@input($" . "crud, '" . $field['name'] . "')</div>\n";
                 }
             }
+            $out .= "\t\t\t\t\t\t\t</div>\n";
         } else {
             $out .= '__single_input__';
         }
@@ -108,7 +103,7 @@ class CrudViewCreateCommand extends GeneratorCommand
     protected function getPath($name)
     {
         $name = str_replace($this->laravel->getNamespace(), '', $name);
-        return $this->laravel['path'].'/../resources/views/admin/'.$name.'/'.str_replace('\\', '/', 'create').'.blade.php';
+        return $this->laravel['path'].'/../resources/views/admin/'.$name.'/'.str_replace('\\', '/', 'index').'.blade.php';
     }
 
     /**
@@ -119,7 +114,7 @@ class CrudViewCreateCommand extends GeneratorCommand
      * @return string
      */
     protected function buildClass($name)
-    {   
+    {
         $stub = $this->files->get($this->getStub());
         // return $stub;
         return $this->replaceNameStrings($stub);

@@ -25,14 +25,14 @@ class LaraCrudServiceProvider extends ServiceProvider
         
         $this->commands([
             \Sagartakle\Laracrud\Console\Commands\ConfigActivityLogsCommand::class,
-            \Sagartakle\Laracrud\Console\Commands\CrudCommand::class,
-            \Sagartakle\Laracrud\Console\Commands\CrudControllerCommand::class,
-            \Sagartakle\Laracrud\Console\Commands\CrudMigrateCommand::class,
-            \Sagartakle\Laracrud\Console\Commands\CrudViewCreateCommand::class,
-            \Sagartakle\Laracrud\Console\Commands\CrudViewEditCommand::class,
-            \Sagartakle\Laracrud\Console\Commands\CrudViewIndexCommand::class,
-            \Sagartakle\Laracrud\Console\Commands\CrudViewShowCommand::class,
-            \Sagartakle\Laracrud\Console\Commands\CrudModelCommand::class
+            \Sagartakle\Laracrud\Console\Commands\StlcCommand::class,
+            \Sagartakle\Laracrud\Console\Commands\ControllerCommand::class,
+            \Sagartakle\Laracrud\Console\Commands\MigrateCommand::class,
+            \Sagartakle\Laracrud\Console\Commands\ViewCreateCommand::class,
+            \Sagartakle\Laracrud\Console\Commands\ViewEditCommand::class,
+            \Sagartakle\Laracrud\Console\Commands\ViewIndexCommand::class,
+            \Sagartakle\Laracrud\Console\Commands\ViewShowCommand::class,
+            \Sagartakle\Laracrud\Console\Commands\ModelCommand::class
         ]);
     }
 

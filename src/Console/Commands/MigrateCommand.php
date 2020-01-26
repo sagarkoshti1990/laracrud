@@ -3,25 +3,24 @@
 namespace Sagartakle\Laracrud\Console\Commands;
 
 use Illuminate\Console\GeneratorCommand;
-use Sagartakle\Laracrud\Helpers\Inflect;
 use Sagartakle\Laracrud\Models\Module;
 use Sagartakle\Laracrud\Models\FieldType;
 
-class CrudMigrateCommand extends GeneratorCommand
+class MigrateCommand extends GeneratorCommand
 {
     /**
      * The console command name.
      *
      * @var string
      */
-    protected $name = 'lara:migrate';
+    protected $name = 'stlc:migrate';
 
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'lara:migrate {name}';
+    protected $signature = 'stlc:migrate {name}';
 
     /**
      * The console command description.
@@ -44,7 +43,7 @@ class CrudMigrateCommand extends GeneratorCommand
      */
     protected function getStub()
     {
-        return __DIR__.'/../stubs/crud-migration.stub';
+        return __DIR__.'/../Stubs/crud-migration.stub';
     }
 
     /**
@@ -57,11 +56,11 @@ class CrudMigrateCommand extends GeneratorCommand
      */
     protected function replaceTable(&$stub, $name)
     {
-        $table = ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', str_replace($this->getNamespace($name).'\\', '', Inflect::pluralize($name)))), '_');
+        $table = ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', str_replace($this->getNamespace($name).'\\', '', \Str::plural($name)))), '_');
 
-        $stub = str_replace('__Class__', ucfirst(str_replace($this->getNamespace($name).'\\', '', Inflect::pluralize($name))), $stub);
+        $stub = str_replace('__Class__', ucfirst(str_replace($this->getNamespace($name).'\\', '', \Str::plural($name))), $stub);
         $stub = str_replace('__Table__', $table, $stub);
-        $stub = str_replace('__Class_Singular__', ucfirst(str_replace($this->getNamespace($name).'\\', '', Inflect::singularize($name))), $stub);
+        $stub = str_replace('__Class_Singular__', ucfirst(str_replace($this->getNamespace($name).'\\', '', \Str::singular($name))), $stub);
 
         return $this;
     }
@@ -202,7 +201,7 @@ class CrudMigrateCommand extends GeneratorCommand
      */
     protected function getPath($name)
     {
-        $table = ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', str_replace($this->getNamespace($name).'\\', '', Inflect::pluralize($name)))), '_');
+        $table = ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', str_replace($this->getNamespace($name).'\\', '', \Str::plural($name)))), '_');
 
         $mfiles = scandir(base_path('database/migrations/'));
         // print_r($mfiles);

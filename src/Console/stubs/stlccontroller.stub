@@ -1,15 +1,15 @@
 <?php
 
-namespace Sagartakle\Laracrud\Controllers;
+namespace DummyNamespace;
 
 use Sagartakle\Laracrud\Controllers\StlcController;
 use Sagartakle\Laracrud\Models\Module;
-use Sagartakle\Laracrud\Models\Role;
+use App\Models\__ModelName__;
 
-class RolesController extends StlcController
+class __Class__Controller extends StlcController
 {
     function __construct() {
-        $this->crud = Module::make('Roles');
+        $this->crud = Module::make('__Class__');
     }
     
     // write custom function or override function.

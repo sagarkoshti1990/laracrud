@@ -61,7 +61,15 @@ class CreateRolesTable extends Migration
 				'json_values' => '@Roles'
 			]
         ]);
-        
+		
+		
+        Schema::create('role_user', function (Blueprint $table) {
+			$table->increments('id');
+			$table->integer('role_id')->unsigned();
+			$table->foreign('role_id')->references('id')->on('roles')->onUpdate('cascade')->onDelete('cascade');
+			$table->integer('user_id')->unsigned();
+			$table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
+        });
         /*
         Module::generate('Roles' 'roles', 'name', 'fa-user', [
             [
@@ -135,6 +143,7 @@ class CreateRolesTable extends Migration
      */
     public function down()
     {
+        Schema::dropIfExists('role_user');
         Schema::dropIfExists('roles');
     }
 }

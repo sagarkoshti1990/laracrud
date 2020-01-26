@@ -3,38 +3,37 @@
 namespace Sagartakle\Laracrud\Console\Commands;
 
 use Illuminate\Console\GeneratorCommand;
-use Sagartakle\Laracrud\Helpers\Inflect;
 use Sagartakle\Laracrud\Models\Module;
 
-class CrudViewIndexCommand extends GeneratorCommand
+class ViewEditCommand extends GeneratorCommand
 {
     /**
      * The console command name.
      *
      * @var string
      */
-    protected $name = 'lara:viewIndex';
+    protected $name = 'stlc:viewEdit';
 
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'lara:viewIndex {name}';
+    protected $signature = 'stlc:viewEdit {name}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Generate a index list templated view';
+    protected $description = 'Generate a Edit templated view';
 
     /**
      * The type of class being generated.
      *
      * @var string
      */
-    protected $type = 'ViewIndex';
+    protected $type = 'ViewEdit';
 
     /**
      * Get the stub file for the generator.
@@ -44,10 +43,10 @@ class CrudViewIndexCommand extends GeneratorCommand
     protected function getStub()
     {
         // if ($this->option('plain')) {
-        //     return __DIR__.'/../stubs/view-plain.stub';
+        //     return __DIR__.'/../Stubs/view-plain.stub';
         // }
 
-        return __DIR__.'/../stubs/viewIndex.stub';
+        return __DIR__.'/../Stubs/viewEdit.stub';
     }
 
     /**
@@ -61,16 +60,21 @@ class CrudViewIndexCommand extends GeneratorCommand
     protected function replaceNameStrings(&$stub)
     {
         $name = $this->getNameInput();
+        $table = \Str::plural(ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', str_replace($this->getNamespace($name).'\\', '', \Str::plural($name)))), '_'));
         $modul = Module::where('name', $name)->first();
         $out = "";
         if(isset($modul) && $modul->id) {
-            $out .= "\t\t\t\t\t\t\t<div class='row'>\n";
             foreach ($modul->fields as $key => $field) {
-                if($field->required) {
-                    $out .= "\t\t\t\t\t\t\t\t<div class='col-md-6'>@input($" . "crud, '" . $field['name'] . "')</div>\n";
+                if($key % 2 == 0){
+                    $out .= "\t\t\t\t\t\t\t<div class='row'>\n";
+                }
+
+                $out .= "\t\t\t\t\t\t\t\t<div class='col-md-6'>@input($" . "crud, '" . $field['name'] . "')</div>\n";
+                
+                if(($key % 2 != 0) || ($key == count($modul->fields)-1)){
+                    $out .= "\t\t\t\t\t\t\t</div>\n";
                 }
             }
-            $out .= "\t\t\t\t\t\t\t</div>\n";
         } else {
             $out .= '__single_input__';
         }
@@ -78,6 +82,10 @@ class CrudViewIndexCommand extends GeneratorCommand
         $out = trim($out);
         // $this->info($out);
         $stub = str_replace('__single_input__', $out, $stub);
+        
+        $stub = str_replace('__tablename__', $table, $stub);
+        $stub = str_replace('__smallPlural__', strtolower(str_replace($this->getNamespace($table).'\\', '', \Str::plural($table))), $stub);
+        $stub = str_replace('__smallSingular__', strtolower(str_replace($this->getNamespace($table).'\\', '', \Str::singular($table))), $stub);
         
         return $stub;
     }
@@ -104,7 +112,7 @@ class CrudViewIndexCommand extends GeneratorCommand
     protected function getPath($name)
     {
         $name = str_replace($this->laravel->getNamespace(), '', $name);
-        return $this->laravel['path'].'/../resources/views/admin/'.$name.'/'.str_replace('\\', '/', 'index').'.blade.php';
+        return $this->laravel['path'].'/../resources/views/admin/'.$name.'/'.str_replace('\\', '/', 'edit').'.blade.php';
     }
 
     /**

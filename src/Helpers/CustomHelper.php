@@ -280,71 +280,14 @@ class CustomHelper
 				"name" => "Profile","label" => 'Profile',"link" => "#",
 				"icon" => "fa-group","type" => 'custom',"hierarchy" => 1
 			]);
-            // $scMenu = Menu::create([
-			// 	"name" => "SportsAndCommunities","label" => 'Sports && Communities',"link" => "#",
-			// 	"icon" => "fa-connectdevelop","type" => 'custom',"hierarchy" => 1
-			// ]);
-			$masterMenu = Menu::create([
-				"name" => "Master","label" => 'Master',"link" => "#",
-				"icon" => "fa-cogs","type" => 'custom',"hierarchy" => 1
-            ]);
-            $eventMenu = Menu::create([
-				"name" => "Event","label" => 'Events',"link" => "#",
-				"icon" => "fa-map","type" => 'custom',"hierarchy" => 1
-            ]);
-            $partnerMenu = Menu::create([
-				"name" => "Partner","label" => 'Packages',"link" => "#",
-				"icon" => "fa-wpforms","type" => 'custom',"hierarchy" => 1
-			]);
-			$mcMenu = Menu::create([
-				"name" => "MarketingAndContents","label" => 'Marketing & Contents',"link" => "#",
-				"icon" => "fa-bullhorn","type" => 'custom',"hierarchy" => 1
-            ]);
-			$OthersMenu = Menu::create([
-				"name" => "Others","label" => 'Others',"link" => "#",
-				"icon" => "fa-ellipsis-v","type" => 'custom',"hierarchy" => 1
-            ]);
 		}
 		foreach ($modules as $module) {
 			$parent = Null;
-			if(!in_array($module->name, ["Users","Tests","Uploads",'Devicetokens','Notifications','VerificationTokens','Addresses','Settings','ComplaintReports','PartnerComponents','PartnerUpgrades','Headers','Chats','Posts','UserFavorites','ReportedUsers','BlockedUsers'])) {
+			if(!in_array($module->name, ["Users","Tests","Uploads"])) {
                 $label = $module->label;
-                if($module->name == 'MasterUsers') {
-                    $label = "Users";
-                }  
-				if(in_array($module->name, ["Employees","Roles",'PartnerUsers'])) {
+				if(in_array($module->name, ["Employees","Roles"])) {
                     $parent = $profileMenu->id;
-                    if($module->name == 'PartnerUsers') {
-                        $label = "Partner";
-                    }
-                // } else if(in_array($module->name, [])) { PackageAddons
-                //     $parent = $scMenu->id;
-				} else if(in_array($module->name, ['Events'])) { 
-					$parent = $eventMenu->id;
-				}else if(in_array($module->name, ['Packages','PackageComponents','PackageUpgrades','PackageAddons'])) {
-                    if($module->name == 'PackageComponents') {
-                        $label = "Components";
-                    } else if($module->name == 'PackageUpgrades') {
-                        $label = "Upgrades";
-                    } else if($module->name == 'PackageAddons') {
-                        $label = "Addons";
-                    }else{
-                        $label = "List";
-                    }
-                
-                    $parent = $partnerMenu->id;
-            
-                }else if(in_array($module->name, ['Campaigns','Channels','Campaignchannels','Advertisements','Celebrities','Fansites'])) {
-					$parent = $mcMenu->id;
-				}else if(in_array($module->name, ['Faqs','Messages','Enquiries','PageContents','Stickers'])) {
-					$parent = $OthersMenu->id;
-				} else if(in_array($module->name, [
-                    "Sports","SportCategories",'Communities',
-					"States","Cities",'Memberships','PassionLevels','Subscriptions',
-					'Rewards','Questions','Answers','ComplaintReports','Featurelists','Coupons'
-				])) {
-					$parent = $masterMenu->id;
-				}
+                }
 				if(Schema::hasTable('menus')) {
 					Menu::create([
 						"name" => $module->name,
@@ -354,22 +297,6 @@ class CustomHelper
 						"parent" => $parent
 					]);
 				}
-			}
-		}
-
-		if(Schema::hasTable('menus')) {
-			$ranking = [
-				'Dashboard','Master','MasterUsers','UserConnections',"Sports","SportCategories",'Communities','Profile'
-			];
-			$menus = Menu::all();
-			$count = count($ranking);
-			foreach($menus as $menu) {
-				if(in_array($menu->name,$ranking)) {
-					$menu->rank = array_search($menu->name, $ranking);
-				} else {
-					$menu->rank = ++$count;
-				}
-				$menu->save();
 			}
 		}
     }

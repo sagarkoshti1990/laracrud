@@ -83,6 +83,34 @@ class CreateModulesTable extends Migration
 			$table->boolean('show_index')->default(false);
             $table->text('json_values');
         });
+
+        Schema::create('access_modules', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('assessor_id')->nullable();
+            $table->string('assessor_type')->nullable();
+            $table->index(['assessor_id', 'assessor_type']);
+            
+            $table->string('accessible_id')->nullable();
+            $table->string('accessible_type')->nullable();
+            $table->index(['accessible_id', 'accessible_type']);
+            $table->enum('access', ['view', 'create','edit','deactivate']);
+            $table->softDeletes();
+            $table->timestamps();
+        });
+
+        Schema::create('menus', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name', 100);
+            $table->string('label', 100);
+            $table->string('link', 255)->nullable();
+            $table->string('icon', 50)->default("fa-cube");
+            $table->string('type', 20)->default("module");
+            $table->integer('rank')->default(0);
+            $table->integer('parent')->nullable()->unsigned()->default(Null);
+            $table->foreign('parent')->references('id')->on('menus')->onUpdate('cascade')->onDelete('cascade');
+            $table->integer('hierarchy')->unsigned()->default(0);
+            $table->timestamps();
+        });
     }
 
     /**
@@ -92,6 +120,8 @@ class CreateModulesTable extends Migration
      */
     public function down()
     {
+		Schema::dropIfExists('menus');
+        Schema::dropIfExists('access_modules');
         Schema::dropIfExists('fields');
         Schema::dropIfExists('field_types');
         Schema::dropIfExists('modules');

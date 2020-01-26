@@ -10,7 +10,6 @@ use Sagartakle\Laracrud\Models\FieldType;
 use Sagartakle\Laracrud\Models\Field;
 use Sagartakle\Laracrud\Models\Upload;
 use Sagartakle\Laracrud\Models\Page;
-use Sagartakle\Laracrud\Helpers\Inflect;
 
 /**
  * Class FormBuilder
@@ -1031,7 +1030,7 @@ class FormBuilder
                         $json_values_arr = explode('|',$fields[$field_name]->json_values);
                         $module = (object)[];
                         $module->name = $module->model = collect(str_replace("@", "", $json_values_arr))->first();
-                        $module->table_name = ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', str_replace('\\', '', Inflect::pluralize($module->model)))), '_');
+                        $module->table_name = ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', str_replace('\\', '', \Str::plural($module->model)))), '_');
                         $module->represent_attr = collect(str_replace("|", "", $json_values_arr))->last();
                     }
                     $represent_attr = $module->represent_attr;
@@ -1098,7 +1097,7 @@ class FormBuilder
                         $json_values_arr = explode('|',$fields[$field_name]->json_values);
                         $module = (object)[];
                         $module->name = $module->model = collect(str_replace("@", "", $json_values_arr))->first();
-                        $module->table_name = ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', str_replace('\\', '', Inflect::pluralize($module->model)))), '_');
+                        $module->table_name = ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', str_replace('\\', '', \Str::plural($module->model)))), '_');
                         $module->represent_attr = collect(str_replace("|", "", $json_values_arr))->last();
                     }
                     $represent_attr = $module->represent_attr;
@@ -1125,7 +1124,7 @@ class FormBuilder
                                 $json_values_arr = explode('|',$fields[$field_name]->json_values);
                                 $module = (object)[];
                                 $module->name = $module->model = collect(str_replace("@", "", $json_values_arr))->first();
-                                $module->table_name = ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', str_replace('\\', '', Inflect::pluralize($module->model)))), '_');
+                                $module->table_name = ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', str_replace('\\', '', \Str::plural($module->model)))), '_');
                                 $module->represent_attr = collect(str_replace("|", "", $json_values_arr))->last();
                             }
                             $represent_attr = $module->represent_attr;

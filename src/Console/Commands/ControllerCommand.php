@@ -3,23 +3,22 @@
 namespace Sagartakle\Laracrud\Console\Commands;
 
 use Illuminate\Console\GeneratorCommand;
-use Sagartakle\Laracrud\Helpers\Inflect;
 
-class CrudControllerCommand extends GeneratorCommand
+class ControllerCommand extends GeneratorCommand
 {
     /**
      * The console command name.
      *
      * @var string
      */
-    protected $name = 'lara:controller';
+    protected $name = 'stlc:controller';
 
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'lara:controller {name} {--option=}';
+    protected $signature = 'stlc:controller {name} {--option=}';
 
     /**
      * The console command description.
@@ -55,7 +54,11 @@ class CrudControllerCommand extends GeneratorCommand
      */
     protected function getStub()
     {
-        return __DIR__.'/../stubs/controller.stub';
+        if ($this->option('option') && $this->option('option') == "All") {
+            return __DIR__.'/../Stubs/controller.stub';
+        } else {
+            return __DIR__.'/../Stubs/stlccontroller.stub';
+        }
     }
 
     /**
@@ -80,9 +83,9 @@ class CrudControllerCommand extends GeneratorCommand
      */
     protected function replaceNameStrings(&$stub, $name)
     {
-        $table = \Str::plural(ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', str_replace($this->getNamespace($name).'\\', '', Inflect::pluralize($name)))), '_'));
+        $table = \Str::plural(ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', str_replace($this->getNamespace($name).'\\', '', \Str::plural($name)))), '_'));
         
-        $stub = str_replace('__Class__', ucfirst(str_replace($this->getNamespace($name).'\\', '', Inflect::pluralize($name))), $stub);
+        $stub = str_replace('__Class__', ucfirst(str_replace($this->getNamespace($name).'\\', '', \Str::plural($name))), $stub);
         if($this->option('option') == "with-views") {
             $stub = str_replace('__ViewFilePathIndex__', 'admin.'.ucfirst(str_replace($this->getNamespace($name).'\\', '', $name)).'.index', $stub);
             $stub = str_replace('__ViewFilePathCreate__', 'admin.'.ucfirst(str_replace($this->getNamespace($name).'\\', '', $name)).'.create', $stub);
@@ -94,9 +97,9 @@ class CrudControllerCommand extends GeneratorCommand
             $stub = str_replace('__ViewFilePathEdit__', 'crud.form', $stub);
             $stub = str_replace('__ViewFilePathShow__', 'crud.show', $stub);
         }
-        $stub = str_replace('__ModelName__', ucfirst(str_replace($this->getNamespace($name).'\\', '', Inflect::singularize($name))), $stub);
-        $stub = str_replace('__smallPlural__', strtolower(str_replace($this->getNamespace($table).'\\', '', Inflect::pluralize($table))), $stub);
-        $stub = str_replace('__smallSingular__', strtolower(str_replace($this->getNamespace($table).'\\', '', Inflect::singularize($table))), $stub);
+        $stub = str_replace('__ModelName__', ucfirst(str_replace($this->getNamespace($name).'\\', '', \Str::singular($name))), $stub);
+        $stub = str_replace('__smallPlural__', strtolower(str_replace($this->getNamespace($table).'\\', '', \Str::plural($table))), $stub);
+        $stub = str_replace('__smallSingular__', strtolower(str_replace($this->getNamespace($table).'\\', '', \Str::singular($table))), $stub);
 
         return $this;
     }

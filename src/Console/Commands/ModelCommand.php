@@ -3,23 +3,22 @@
 namespace Sagartakle\Laracrud\Console\Commands;
 
 use Illuminate\Console\GeneratorCommand;
-use Sagartakle\Laracrud\Helpers\Inflect;
 
-class CrudModelCommand extends GeneratorCommand
+class ModelCommand extends GeneratorCommand
 {
     /**
      * The console command name.
      *
      * @var string
      */
-    protected $name = 'lara:model';
+    protected $name = 'stlc:model';
 
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'lara:model {name}';
+    protected $signature = 'stlc:model {name}';
 
     /**
      * The console command description.
@@ -42,7 +41,7 @@ class CrudModelCommand extends GeneratorCommand
      */
     protected function getStub()
     {
-        return __DIR__.'/../stubs/model.stub';
+        return __DIR__.'/../Stubs/model.stub';
     }
 
     /**
@@ -67,10 +66,10 @@ class CrudModelCommand extends GeneratorCommand
      */
     protected function replaceTable(&$stub, $name)
     {
-        $table = ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', str_replace($this->getNamespace($name).'\\', '', Inflect::pluralize($name)))), '_');
+        $table = ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', str_replace($this->getNamespace($name).'\\', '', \Str::plural($name)))), '_');
 
         $stub = str_replace('DummyTable', $table, $stub);
-        $stub = str_replace('DummyClassSingular', ucfirst(str_replace($this->getNamespace($name).'\\', '', Inflect::singularize($name))), $stub);
+        $stub = str_replace('DummyClassSingular', ucfirst(str_replace($this->getNamespace($name).'\\', '', \Str::singular($name))), $stub);
 
         return $this;
     }
@@ -94,7 +93,7 @@ class CrudModelCommand extends GeneratorCommand
      */
     protected function getPath($name)
     {
-        $name = Inflect::singularize(str_replace($this->laravel->getNamespace(), '', $name));
+        $name = \Str::singular(str_replace($this->laravel->getNamespace(), '', $name));
         return $this->laravel['path'].'/'.str_replace('\\', '/', $name).'.php';
     }
 
