@@ -628,7 +628,7 @@ class FormBuilder
                         } else {
                             $field['allows_null'] = true;
                         }
-                        $field['data_source'] = url(config('lara.base.route_prefix', 'admin').'/'.$module->table_name);
+                        $field['data_source'] = url(config('stlc.route_prefix', 'admin').'/'.$module->table_name);
                     } else {
                         $arr = [];
                         $collection = collect(json_decode($json_values));
@@ -771,7 +771,7 @@ class FormBuilder
             if($unique && !isset($params['unique'])) {
                 $params['data-rule-unique'] = "true";
                 $params['field_id'] = $fields[$field_name]['id'];
-                $params['adminRoute'] = config('lara.base.route_prefix');
+                $params['adminRoute'] = config('stlc.route_prefix');
                 if(!isset($params['isEdit']) && !isset($params['row_id'])) {
                     if(isset($row)) {
                         $params['isEdit'] = true;

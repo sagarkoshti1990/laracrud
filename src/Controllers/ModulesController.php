@@ -626,7 +626,7 @@ class ModulesController extends Controller
                 } else if(isset($request->src)) {
                     return redirect($request->src);
                 } else {
-                    // return redirect()->route(config('lara.base.route_prefix') . 'crud.modules.index');
+                    // return redirect()->route(config('stlc.route_prefix') . 'crud.modules.index');
                     return (string) $module;
                 }
             } else {
@@ -927,7 +927,7 @@ class ModulesController extends Controller
                     return redirect($request->src);
                 } else {
                     Alert::success(trans('crud.delete_confirmation_message'))->flash();
-                    // return redirect()->route(config('lara.base.route_prefix') . 'modules');
+                    // return redirect()->route(config('stlc.route_prefix') . 'modules');
                     return (string) $module;
                 }
             } else {

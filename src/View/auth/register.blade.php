@@ -18,7 +18,7 @@
         </div>
         <div class="register-box-body">
 
-            <form class="" role="form" method="POST" action="{{ url(config('lara.base.route_prefix', 'admin').'/register') }}">
+            <form class="" role="form" method="POST" action="{{ url(config('stlc.route_prefix', 'admin').'/register') }}">
                 {!! csrf_field() !!}
                 <div class="form-group{{ $errors->has('first_name') ? ' has-error' : '' }} has-feedback">
                     <input type="text" class="form-control" placeholder="First Name" name="first_name" value="{{ old('first_name') }}">
@@ -94,7 +94,7 @@
                 Google+</a>
             </div>  --}}
 
-            <a href="{{ url(config('lara.base.route_prefix', 'admin').'/login') }}" class="text-center">I already have a membership</a>
+            <a href="{{ url(config('stlc.route_prefix', 'admin').'/login') }}" class="text-center">I already have a membership</a>
         </div>
     </div>
     <!-- /.form-box -->
@@ -107,7 +107,7 @@
                     <div class="box-title">{{ trans('base.register') }}</div>
                 </div>
                 <div class="box-body">
-                    <form class="form-horizontal" role="form" method="POST" action="{{ url(config('lara.base.route_prefix', 'admin').'/register') }}">
+                    <form class="form-horizontal" role="form" method="POST" action="{{ url(config('stlc.route_prefix', 'admin').'/register') }}">
                         {!! csrf_field() !!}
 
                         <div class="form-group{{ $errors->has('name') ? ' has-error' : '' }}">

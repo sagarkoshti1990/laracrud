@@ -292,7 +292,7 @@ class StlcController extends Controller
                 } else if(isset($request->src)) {
                     return redirect($request->src);
                 } else {
-                    // return redirect()->route(config('lara.base.route_prefix') . 'crud.employees.index');
+                    // return redirect()->route(config('stlc.route_prefix') . 'crud.employees.index');
                     return (string) $item;
                 }
             } else {
@@ -333,7 +333,7 @@ class StlcController extends Controller
                 } else if(isset($request->src)) {
                     return redirect($request->src);
                 } else {
-                    // return redirect()->route(config('lara.base.route_prefix') . 'crud.employees.index');
+                    // return redirect()->route(config('stlc.route_prefix') . 'crud.employees.index');
                     return (string) $item;
                 }
             } else {

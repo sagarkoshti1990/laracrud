@@ -27,7 +27,7 @@
     <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 </head>
-<body class="bg-image hold-transition {{ config('lara.base.skin') }} sidebar-mini login-page" bsurl="{{ url('') }}" adminRoute="{{ config('lara.base.route_prefix') }}">
+<body class="bg-image hold-transition {{ config('stlc.skin') }} sidebar-mini login-page" bsurl="{{ url('') }}" adminRoute="{{ config('stlc.route_prefix') }}">
 
 <!-- Main content -->
     <section class="content">

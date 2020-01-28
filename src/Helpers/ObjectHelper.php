@@ -100,7 +100,7 @@ class ObjectHelper
             $this->setColumnNames($module->table_name);
         }
 
-        $this->setRoute(config('lara.base.route_prefix') . '/'.$module->table_name);
+        $this->setRoute(config('stlc.route_prefix') . '/'.$module->table_name);
         if(isset($module->fields)) {
             $this->setColumns($module->fields);
         }
@@ -119,8 +119,8 @@ class ObjectHelper
         // }
 
         // otherwise return the default value in the config file
-        if (config('lara.crud.default_page_length')) {
-            return config('lara.crud.default_page_length');
+        if (config('stlc.default_page_length')) {
+            return config('stlc.default_page_length');
         }
 
         return 25;
@@ -292,9 +292,9 @@ class ObjectHelper
      * Get the current CrudController route.
      *
      * Can be defined in the CrudController with:
-     * - $this->crud->setRoute(config('lara.base.route_prefix').'/article')
-     * - $this->crud->setRouteName(config('lara.base.route_prefix').'.article')
-     * - $this->crud->route = config('lara.base.route_prefix')."/article"
+     * - $this->crud->setRoute(config('stlc.route_prefix').'/article')
+     * - $this->crud->setRouteName(config('stlc.route_prefix').'.article')
+     * - $this->crud->route = config('stlc.route_prefix')."/article"
      *
      * @return [string]
      */

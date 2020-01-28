@@ -386,7 +386,7 @@ class ActivitiesController extends Controller
             } else if(isset($request->src)) {
                 return redirect($request->src);
             } else {
-                // return redirect()->route(config('lara.base.route_prefix') . 'crud.activities.index');
+                // return redirect()->route(config('stlc.route_prefix') . 'crud.activities.index');
                 return (string) $activity;
             }
         } else {
@@ -430,7 +430,7 @@ class ActivitiesController extends Controller
                     if($col == "user_id") {
                         $user = \App\User::find($data->data[$i][$j]);
                         if(isset($user->context()->id)) {
-                            $data->data[$i][$j] = '<a href="' . url(config('lara.base.route_prefix') .'/employees/'. $user->context()->id) . '">' . $user->context()->name() . '</a>';
+                            $data->data[$i][$j] = '<a href="' . url(config('stlc.route_prefix') .'/employees/'. $user->context()->id) . '">' . $user->context()->name() . '</a>';
                         }
                     } else if($col == "context_id") {
                         $data->data[$i][$j] = $activity->getUrl();

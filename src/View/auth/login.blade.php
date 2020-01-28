@@ -18,7 +18,7 @@
         </div>
         <div class="register-box-body pt5">
             <p class="login-box-msg">Sign in to start your session</p>
-            <form class="" role="form" method="POST" action="{{ url(config('lara.base.route_prefix').'/login') }}">
+            <form class="" role="form" method="POST" action="{{ url(config('stlc.route_prefix').'/login') }}">
                 {!! csrf_field() !!}
                 
                 <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }} has-feedback">
@@ -44,7 +44,7 @@
                                 <input type="checkbox" name="remember"> {{ trans('base.remember_me') }}
                             </label>
                         </div> --}}
-                        <a href="{{ url(config('lara.base.route_prefix', 'admin').'/password/reset') }}" >{{ trans('base.forgot_your_password') }}</a>
+                        <a href="{{ url(config('stlc.route_prefix', 'admin').'/password/reset') }}" >{{ trans('base.forgot_your_password') }}</a>
                     </div>
                     <div class="col-xs-4 pull-right">
                         <button type="submit" class="btn bg-orange btn-flat">
@@ -54,8 +54,8 @@
                 </div>
                 {{-- <div class="row">
                     <div class="col-md-12">
-                        <a href="{{ url(config('lara.base.route_prefix', 'admin').'/password/reset') }}" >{{ trans('base.forgot_your_password') }}</a>
-                        <a href="{{ url(config('lara.base.route_prefix', 'admin').'/register') }}" class="text-center pull-right">Trial Account</a>
+                        <a href="{{ url(config('stlc.route_prefix', 'admin').'/password/reset') }}" >{{ trans('base.forgot_your_password') }}</a>
+                        <a href="{{ url(config('stlc.route_prefix', 'admin').'/register') }}" class="text-center pull-right">Trial Account</a>
                     </div>
                 </div> --}}
             </form>

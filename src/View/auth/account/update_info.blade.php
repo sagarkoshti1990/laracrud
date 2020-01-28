@@ -10,7 +10,7 @@
             <a href="{{ url('/') }}">{{-- Setting::value('COMPANY_NAME','Company') --}}</a>
         </li>
         <li>
-            <a href="{{ route('lara.account.info') }}">{{ trans('base.my_account') }}</a>
+            <a href="{{ route('pecfy.account.info') }}">{{ trans('base.my_account') }}</a>
         </li>
         <li class="active">
             {{ trans('base.update_account_info') }}

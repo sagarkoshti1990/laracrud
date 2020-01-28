@@ -19,7 +19,7 @@
             <a href="{{ url('/') }}">{{ Setting::value('COMPANY_NAME','Company') }}</a>
         </li>
         <li>
-            <a href="{{ route('lara.account.info') }}">{{ trans('base.my_account') }}</a>
+            <a href="{{ route('pecfy.account.info') }}">{{ trans('base.my_account') }}</a>
         </li>
         <li class="active">
             {{ trans('base.change_password') }}
@@ -34,7 +34,7 @@
         @include('auth.account.sidemenu')
     </div>
     <div class="col-md-9">
-        <form class="form" action="{{ route('lara.account.password') }}" method="post">
+        <form class="form" action="{{ route('pecfy.account.password') }}" method="post">
             {!! csrf_field() !!}
             <div class="box">
                 <div class="box-body p15 pb5 pt10 lara-profile-form">
@@ -90,7 +90,7 @@
                       
                         {{ trans('base.change_password') }}
                     </button>
-                    <a href="{{ url(config('lara.base.route_prefix')) }}" class="btn p5 btn-default pull-left btn-flat btn-labeled">
+                    <a href="{{ url(config('stlc.route_prefix')) }}" class="btn p5 btn-default pull-left btn-flat btn-labeled">
                         {{ trans('base.cancel') }}
                     </a>
                 </div>

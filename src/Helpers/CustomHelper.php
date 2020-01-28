@@ -150,7 +150,7 @@ class CustomHelper
      */
     public static function print_menu_editor($menu)
     {
-        $editing = \Collective\Html\FormFacade::open(['route' => [config('lara.base.route_prefix') . '.menus.destroy', $menu->id], 'method' => 'delete', 'style' => 'display:inline']);
+        $editing = \Collective\Html\FormFacade::open(['route' => [config('stlc.route_prefix') . '.menus.destroy', $menu->id], 'method' => 'delete', 'style' => 'display:inline']);
         $editing .= '<button class="btn btn-xs btn-danger pull-right"><i class="fa fa-times"></i></button>';
         $editing .= \Collective\Html\FormFacade::close();
         if($menu->type != "module") {
@@ -210,7 +210,7 @@ class CustomHelper
                     if($menu->link == "#") {
                         $str = '<li' . $treeview . ' ' . $active_str . '><a href="javascript:void(0)"><i class="fa ' . $menu->icon . ' text-purple"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
                     } else {
-                        $str = '<li' . $treeview . ' ' . $active_str . '><a href="' . url(config("lara.base.route_prefix") . '/' . $menu->link) . '"><i class="fa ' . $menu->icon . ' text-purple"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
+                        $str = '<li' . $treeview . ' ' . $active_str . '><a href="' . url(config("stlc.route_prefix") . '/' . $menu->link) . '"><i class="fa ' . $menu->icon . ' text-purple"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
                     }
                 } else {
                     if($children->type == 'page') {
@@ -222,12 +222,12 @@ class CustomHelper
                         }
                     }
                     if(isset($module) && Module::hasAccess($module)) {
-                        $str = '<li' . $treeview . ' ' . $active_str . '><a href="' . url(config("lara.base.route_prefix") . '/' . $menu->link) . '"><i class="fa ' . $menu->icon . ' text-purple"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
+                        $str = '<li' . $treeview . ' ' . $active_str . '><a href="' . url(config("stlc.route_prefix") . '/' . $menu->link) . '"><i class="fa ' . $menu->icon . ' text-purple"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
                     }
                 }
             }
         } else {
-            $str = '<li' . $treeview . ' ' . $active_str . '><a href="' . url(config("lara.base.route_prefix") . '/' . $menu->link) . '"><i class="fa ' . $menu->icon . ' text-purple"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
+            $str = '<li' . $treeview . ' ' . $active_str . '><a href="' . url(config("stlc.route_prefix") . '/' . $menu->link) . '"><i class="fa ' . $menu->icon . ' text-purple"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
         }
         
         if(count($childrens)) {
