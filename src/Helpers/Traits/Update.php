@@ -4,6 +4,7 @@ namespace Sagartakle\Laracrud\Helpers\Traits;
 
 use Sagartakle\Laracrud\Models\FieldType;
 use Sagartakle\Laracrud\Models\RelationalDataTable;
+use Sagartakle\Laracrud\Models\Activity;
 
 trait Update
 {
@@ -47,7 +48,7 @@ trait Update
                     );
                 }
             }
-            \Activity::log(config('App.activity_log.UPDATED'), $this, ['new' => $item, 'old' => $old_item]);
+            Activity::log(config('App.activity_log.UPDATED'), $this, ['new' => $item, 'old' => $old_item]);
         } catch (\Exception $ex) {
             if(isset($data->src_ajax) && $data->src_ajax) {
                 return response()->json(['status' => 'exception_error', 'massage' => 'created', 'errors' => $ex->getMessage()]);

@@ -5,6 +5,7 @@ namespace Sagartakle\Laracrud\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 // use Actuallymab\LaravelComment\Commentable;
+use Sagartakle\Laracrud\Models\Module;
 
 class Upload extends Model
 {
@@ -44,7 +45,7 @@ class Upload extends Model
      */
     public Static function get_module()
     {
-        return \Module::where('name', 'Uploads')->first();
+        return Module::where('name', 'Uploads')->first();
     }
 
     public function path()

@@ -210,7 +210,11 @@ class CustomHelper
                     if($menu->link == "#") {
                         $str = '<li' . $treeview . ' ' . $active_str . '><a href="javascript:void(0)"><i class="fa ' . $menu->icon . ' text-purple"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
                     } else {
-                        $str = '<li' . $treeview . ' ' . $active_str . '><a href="' . url(config("stlc.route_prefix") . '/' . $menu->link) . '"><i class="fa ' . $menu->icon . ' text-purple"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
+                        if(isset($children->name) && in_array($children->name,['Roles'])) {
+                            $str = '<li' . $treeview . ' ' . $active_str . '><a href="' . url(config("stlc.stlc_route_prefix") . '/' . $menu->link) . '"><i class="fa ' . $menu->icon . ' text-purple"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
+                        } else {
+                            $str = '<li' . $treeview . ' ' . $active_str . '><a href="' . url(config("stlc.route_prefix") . '/' . $menu->link) . '"><i class="fa ' . $menu->icon . ' text-purple"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
+                        }
                     }
                 } else {
                     if($children->type == 'page') {
@@ -222,12 +226,20 @@ class CustomHelper
                         }
                     }
                     if(isset($module) && Module::hasAccess($module)) {
-                        $str = '<li' . $treeview . ' ' . $active_str . '><a href="' . url(config("stlc.route_prefix") . '/' . $menu->link) . '"><i class="fa ' . $menu->icon . ' text-purple"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
+                        if(isset($children->name) && in_array($children->name,['Roles'])) {
+                            $str = '<li' . $treeview . ' ' . $active_str . '><a href="' . url(config("stlc.stlc_route_prefix") . '/' . $menu->link) . '"><i class="fa ' . $menu->icon . ' text-purple"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
+                        } else {
+                            $str = '<li' . $treeview . ' ' . $active_str . '><a href="' . url(config("stlc.route_prefix") . '/' . $menu->link) . '"><i class="fa ' . $menu->icon . ' text-purple"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
+                        }
                     }
                 }
             }
         } else {
-            $str = '<li' . $treeview . ' ' . $active_str . '><a href="' . url(config("stlc.route_prefix") . '/' . $menu->link) . '"><i class="fa ' . $menu->icon . ' text-purple"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
+            if(isset($menu->name) && in_array($menu->name,['Roles'])) {
+                $str = '<li' . $treeview . ' ' . $active_str . '><a href="' . url(config("stlc.stlc_route_prefix") . '/' . $menu->link) . '"><i class="fa ' . $menu->icon . ' text-purple"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
+            } else {
+                $str = '<li' . $treeview . ' ' . $active_str . '><a href="' . url(config("stlc.route_prefix") . '/' . $menu->link) . '"><i class="fa ' . $menu->icon . ' text-purple"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
+            }
         }
         
         if(count($childrens)) {

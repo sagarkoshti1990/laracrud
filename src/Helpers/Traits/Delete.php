@@ -2,6 +2,8 @@
 
 namespace Sagartakle\Laracrud\Helpers\Traits;
 
+use Sagartakle\Laracrud\Models\Activity;
+
 trait Delete
 {
     /*
@@ -24,7 +26,7 @@ trait Delete
     {
         $old_item = $this->model->findOrFail($id);
         $item = $this->model->find($id)->delete();
-        \Activity::log(config('App.activity_log.DELETED'), $this, ['old' => $old_item]);
+        Activity::log(config('App.activity_log.DELETED'), $this, ['old' => $old_item]);
         return $item;
     }
 }

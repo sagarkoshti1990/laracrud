@@ -43,6 +43,43 @@ class LaraCrudServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+
+        // Form Input Maker
+        Blade::directive('input', function ($expression) {
+            return "<?php echo FormBuilder::input(".$expression."); ?>";    
+        });
+        
+        // Form Form Maker
+        Blade::directive('form', function ($expression) {
+            return "<?php echo FormBuilder::form(".$expression."); ?>";
+        });
+        
+        // Form Maker - Display Values
+        Blade::directive('display', function ($expression) {
+            return "<?php echo FormBuilder::display(".$expression."); ?>";
+        });
+        
+        // Form Maker - DisplayAll Values
+        Blade::directive('displayAll', function ($expression) {
+            return "<?php echo FormBuilder::displayAll(".$expression."); ?>";
+        });
+        
+        // Form Maker - Check Whether User has Module Access
+        Blade::directive('access', function ($expression) {
+            return "<?php if(FormBuilder::access(".$expression.")) { ?>";
+        });
+        Blade::directive('endaccess', function ($expression) {
+            return "<?php } ?>";
+        });
+        
+        // Form Maker - Check Whether User has Module Access
+        Blade::directive('pageAccess', function ($expression) {
+            return "<?php if(FormBuilder::pageAccess(".$expression.")) { ?>";
+        });
+        Blade::directive('endpageAccess', function ($expression) {
+            return "<?php } ?>";
+        });
+
         $this->loadRoutesFrom(base_path('routes'.DIRECTORY_SEPARATOR.'stlc.php'));
         // $this->loadMigrationsFrom(__DIR__.'/Migrations');
         $this->publishes([

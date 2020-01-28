@@ -5,6 +5,7 @@ namespace Sagartakle\Laracrud\Helpers\Traits;
 use Sagartakle\Laracrud\Models\FieldType;
 use Sagartakle\Laracrud\Models\RelationalDataTable;
 Use Exception;
+use Sagartakle\Laracrud\Models\Activity;
 
 trait Create
 {
@@ -51,7 +52,7 @@ trait Create
                 }
                 RelationalDataTable::insert($r_datas);
             }            
-            \Activity::log(config('App.activity_log.CREATED'), $this, ['new' => $item]);
+            Activity::log(config('App.activity_log.CREATED'), $this, ['new' => $item]);
         } catch (Exception $ex) {
             if(isset($data->src_ajax) && $data->src_ajax) {
                 return response()->json(['status' => 'exception_error', 'massage' => 'created', 'errors' => $ex->getMessage()]);

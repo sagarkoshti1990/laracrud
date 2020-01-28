@@ -424,6 +424,8 @@ class FormBuilder
                         $class = "form-control";
                         if($module->name == "Users") {
                             $field['model'] = "App\\".$module->model;
+                        } elseif(in_array($module->name, ["Modules","Fields","Roles","Uploads"])) {
+                            $field['model'] = "Sagartakle\\Laracrud\\Models\\".$module->model;
                         } else {
                             $field['model'] = "App\Models\\".$module->model;
                         }
@@ -459,6 +461,8 @@ class FormBuilder
                     if(isset($module)) {
                         if($module->name == "Users") {
                             $field['model'] = "App\\".$module->model;
+                        } elseif(in_array($module->name, ["Modules","Fields","Roles","Uploads"])) {
+                            $field['model'] = "Sagartakle\\Laracrud\\Models\\".$module->model;
                         } else {
                             $field['model'] = "App\Models\\".$module->model;
                         }
@@ -509,6 +513,8 @@ class FormBuilder
                         
                         if($module->name == "Users") {
                             $field['model'] = "App\\".$module->model;
+                        } elseif(in_array($module->name, ["Modules","Fields","Roles","Uploads"])) {
+                            $field['model'] = "Sagartakle\\Laracrud\\Models\\".$module->model;
                         } else {
                             $field['model'] = "App\Models\\".$module->model;
                         }
@@ -549,6 +555,8 @@ class FormBuilder
                         
                         if($module->name == "Users") {
                             $field['model'] = "App\\".$module->model;
+                        } elseif(in_array($module->name, ["Modules","Fields","Roles","Uploads"])) {
+                            $field['model'] = "Sagartakle\\Laracrud\\Models\\".$module->model;
                         } else {
                             $field['model'] = "App\Models\\".$module->model;
                         }
@@ -614,6 +622,8 @@ class FormBuilder
                         
                         if($module->name == "Users") {
                             $field['model'] = "App\\".$module->model;
+                        } elseif(in_array($module->name, ["Modules","Fields","Roles","Uploads"])) {
+                            $field['model'] = "Sagartakle\\Laracrud\\Models\\".$module->model;
                         } else {
                             $field['model'] = "App\Models\\".$module->model;
                         }

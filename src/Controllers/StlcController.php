@@ -11,6 +11,7 @@ use Yajra\DataTables\Datatables;
 use Sagartakle\Laracrud\Models\Module;
 use Sagartakle\Laracrud\Models\Field;
 use Collective\Html\FormFacade as Form;
+use Sagartakle\Laracrud\Helpers\FormBuilder;
 
 class StlcController extends Controller
 {
@@ -24,7 +25,7 @@ class StlcController extends Controller
 		if($this->crud->hasAccess('view')) {
             
             $crud = $this->crud;
-            $item = Employee::all();
+            $item = $this->crud->model->all();
 
             return view('crud.index', [
                 'crud' => $crud,
@@ -73,7 +74,7 @@ class StlcController extends Controller
                 $request = \Request::instance();
             }
             
-            $rules = Module::validateRules("Employees", $request);
+            $rules = Module::validateRules($this->crud->name, $request);
 			$validator = Validator::make($request->all(), $rules);
 			
 			if ($validator->fails()) {
@@ -136,7 +137,7 @@ class StlcController extends Controller
                 $src = Null;
             }
 
-            $item = Employee::find($id);
+            $item = $this->crud->model->find($id);
             if(isset($item->id)) {
                 
                 $crud = $this->crud;
@@ -187,7 +188,7 @@ class StlcController extends Controller
                 $src = Null;
             }
             
-            $item = Employee::find($id);
+            $item = $this->crud->model->find($id);
             if(isset($item->id)) {
                 
                 $crud = $this->crud;
@@ -220,13 +221,13 @@ class StlcController extends Controller
     {
         if($this->crud->hasAccess('edit')) {
             // old data
-            $old_item = Employee::find($id);
+            $old_item = $this->crud->model->find($id);
             if(isset($old_item->id)) {
                 if (is_null($request)) {
                     $request = \Request::instance();
                 }
 
-                $rules = Module::validateRules("Employees", $request, true);
+                $rules = Module::validateRules($this->crud->name, $request, true);
                 $validator = Validator::make($request->all(), $rules);
                 
                 if ($validator->fails()) {
@@ -280,7 +281,7 @@ class StlcController extends Controller
     {
         if($this->crud->hasAccess('delete')) {
             // old data
-            $old_item = Employee::find($id);
+            $old_item = $this->crud->model->find($id);
             if(isset($old_item->id)) {
                 $item = $this->crud->delete($id);
 
@@ -321,9 +322,9 @@ class StlcController extends Controller
     {
         if($this->crud->hasAccess('deactivate')) {
             // old data
-            $old_item = Employee::onlyTrashed()->find($id);
+            $old_item = $this->crud->model->onlyTrashed()->find($id);
             if(isset($old_item->id)) {
-                $item = Employee::onlyTrashed()->find($id)->restore();
+                $item = $this->crud->model->onlyTrashed()->find($id)->restore();
 
                 // add activity log
                 // \Activity::log(config('App.activity_log.restore'), $this->crud, ['old' => $old_item]);
@@ -361,30 +362,30 @@ class StlcController extends Controller
     public function datatable(Request $request)
     {
         $crud = $this->crud;
-        $listing_cols = Module::getListingColumns('Employees');
+        $listing_cols = Module::getListingColumns($this->crud->name);
         
         if(isset($request->filter)) {
-			$values = DB::table('employees')->select($listing_cols)->whereNull('deleted_at')->where($request->filter);
+			$values = DB::table($this->crud->table_name)->select($listing_cols)->whereNull('deleted_at')->where($request->filter);
 		} else {
-			$values = DB::table('employees')->select($listing_cols)->whereNull('deleted_at');
+			$values = DB::table($this->crud->table_name)->select($listing_cols)->whereNull('deleted_at');
 		}
         
         $out = Datatables::of($values)->make();
         $data = $out->getData();
         
-        $fields_popup = Field::getFields('Employees');
+        $fields_popup = Field::getFields($this->crud->name);
         
         // array_splice($listing_cols, 2, 0, "index_name");
         
         for($i = 0; $i < count($data->data); $i++) {
             $data->data[$i] = collect($data->data[$i])->values()->all();
-            $item = Employee::find($data->data[$i][0]);
+            $item = $this->crud->model->find($data->data[$i][0]);
             // array_splice($data->data[$i], 2, 0, true);
             for($j = 0; $j < count($listing_cols); $j++) {
                 $col = $listing_cols[$j];
                 if(isset($data->data[$i][$j]) && $data->data[$i][$j]) {
                     if(isset($fields_popup[$col])) {
-                        $data->data[$i][$j] = \FormBuilder::get_field_value($crud, $col, $item->$col);
+                        $data->data[$i][$j] = FormBuilder::get_field_value($crud, $col, $item->$col);
                     }
                     if($col == $crud->module->represent_attr && !isset($item->deleted_at)) {
                         $data->data[$i][$j] = '<a href="' . url($crud->route .'/'. $item->id) . '">' . $data->data[$i][$j] . '</a>';

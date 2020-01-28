@@ -133,6 +133,13 @@ class CreateRolesTable extends Migration
         $role_super_admin->label = "Super Admin";
         $role_super_admin->context_type = "Employees";
         $role_super_admin->parent_id = Null;
+		$role_super_admin->save();
+		
+        $role_super_admin = new Role;
+        $role_super_admin->name = "Admin";
+        $role_super_admin->label = "Admin";
+        $role_super_admin->context_type = "Employees";
+        $role_super_admin->parent_id = Null;
         $role_super_admin->save();
     }
 
