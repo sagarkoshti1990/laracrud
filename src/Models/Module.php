@@ -1840,6 +1840,13 @@ class Module extends Model
                             $col .= "max:" . $field['maxlength'] . "|";
                         }
                     }
+                    if(in_array($ftypes[$field['field_type']["id"]], ["Datetime_picker","Datetime"])) {
+                        $col .= "date_format:Y-m-d H:i:s";
+                    }
+                    if(in_array($ftypes[$field['field_type']["id"]], ["Date","Date_picker"])) {
+                        $col .= "date_format:Y-m-d";
+                    }
+
                     if(in_array($ftypes[$field['field_type']["id"]], array("Email"))) {
                         $col .= "regex:/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/|";
                     }
