@@ -82,7 +82,7 @@ class Role extends Model
      */
     public function access_modules()
     {
-        return $this->morphMany('Sagartakle\Laracrud\\AccessModule', 'assessor');
+        return $this->morphMany('Sagartakle\Laracrud\Models\AccessModule', 'assessor');
     }
 
     /*
