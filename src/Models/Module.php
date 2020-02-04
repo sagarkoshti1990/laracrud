@@ -15,7 +15,7 @@ use Sagartakle\Laracrud\Helpers\ObjectHelper;
 use Sagartakle\Laracrud\Helpers\CustomHelper;
 use Sagartakle\Laracrud\User;
 use Sagartakle\Laracrud\Models\AccessModule;
-use Sagartakle\Laracrud\Models\Page;
+// use Sagartakle\Laracrud\Models\Page;
 
 class Module extends Model
 {
@@ -75,7 +75,7 @@ class Module extends Model
     public static function access_modules($accessible)
     {
         $modules = self::whereNotIn('name', ['Users','Tests','Uploads'])->get();
-        $pages = Page::all();
+        $pages = [];//Page::all();
         $modules_access = array();
         foreach ($modules as $module_obj) {
             $module_obj->accesses = $accessible->access_modules()
