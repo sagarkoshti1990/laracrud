@@ -59,6 +59,7 @@ return [
     // (you then need to manually define the routes in your web.php)
     'setup_my_account_routes' => true,
 
+    'devloper_modules' => ['Roles'],
     /*
     |--------------------------------------------------------------------------
     | User Model
