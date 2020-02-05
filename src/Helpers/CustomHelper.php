@@ -222,7 +222,7 @@ class CustomHelper
                     } else if($children->type == 'module') {
                         $mkmodule = Module::where('name',$children->name)->first();
                         if(isset($mkmodule) && $mkmodule->name == $children->name) {
-                            $module = $mkmodule;
+                            $module = $mkmodule->name;
                         }
                     }
                     if(isset($module) && Module::hasAccess($module)) {
