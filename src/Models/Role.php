@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 // use Actuallymab\LaravelComment\Commentable;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Sagartakle\Laracrud\Helpers\Traits\ActivityTrait;
+use Sagartakle\Laracrud\Models\Module;
 
 class Role extends Model
 {
@@ -46,7 +47,7 @@ class Role extends Model
      */
     public Static function get_module()
     {
-        return \Module::where('name', 'Roles')->first();
+        return Module::where('name', 'Roles')->first();
     }
 
     /**
@@ -81,7 +82,7 @@ class Role extends Model
      */
     public function access_modules()
     {
-        return $this->morphMany('Sagartakle\Laracrud\\AccessModule', 'assessor');
+        return $this->morphMany('Sagartakle\Laracrud\Models\AccessModule', 'assessor');
     }
 
     /*

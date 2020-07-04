@@ -2,7 +2,7 @@
 
 namespace Sagartakle\Laracrud\Helpers\Traits;
 
-use App\Models\FieldType;
+use Sagartakle\Laracrud\Models\FieldType;
 use App\Models\RelationalDataTable;
 use Sagartakle\Laracrud\Models\Activity;
 use Sagartakle\Laracrud\Models\Module;

@@ -108,8 +108,8 @@ class ObjectHelper
         // }
 
         // otherwise return the default value in the config file
-        if (config('lara.crud.default_page_length')) {
-            return config('lara.crud.default_page_length');
+        if (config('stlc.default_page_length')) {
+            return config('stlc.default_page_length');
         }
 
         return 25;

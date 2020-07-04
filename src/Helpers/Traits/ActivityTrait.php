@@ -127,7 +127,7 @@ trait ActivityTrait
             $module = $model_name::get_module();
             $show_col = $module->represent_attr;
             if(isset($this->context)) {
-                $url = '<a href="' . url(config('lara.base.route_prefix') .'/'.$module->name_db.'/'. $this->context->id) . '">' . $this->context->$show_col . '</a>';
+                $url = '<a href="' . url(config('stlc.route_prefix') .'/'.$module->name_db.'/'. $this->context->id) . '">' . $this->context->$show_col . '</a>';
             } else {
                 $url = $this->context_id;
             }

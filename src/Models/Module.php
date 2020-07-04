@@ -15,7 +15,7 @@ use Sagartakle\Laracrud\Helpers\ObjectHelper;
 use Sagartakle\Laracrud\Helpers\CustomHelper;
 use Sagartakle\Laracrud\User;
 use Sagartakle\Laracrud\Models\AccessModule;
-use Sagartakle\Laracrud\Models\Page;
+// use Sagartakle\Laracrud\Models\Page;
 
 class Module extends Model
 {
@@ -113,7 +113,7 @@ class Module extends Model
     public static function access_modules($accessible)
     {
         $modules = self::whereNotIn('name', ['Users','Tests','Uploads'])->get();
-        $pages = Page::all();
+        $pages = [];//Page::all();
         $modules_access = array();
         foreach ($modules as $module_obj) {
             $module_obj->accesses = $accessible->access_modules()
@@ -1907,6 +1907,13 @@ class Module extends Model
                             $col .= "max:" . $field['maxlength'] . "|";
                         }
                     }
+                    if(in_array($ftypes[$field['field_type']["id"]], ["Datetime_picker","Datetime"])) {
+                        $col .= "date_format:Y-m-d H:i:s";
+                    }
+                    if(in_array($ftypes[$field['field_type']["id"]], ["Date","Date_picker"])) {
+                        $col .= "date_format:Y-m-d";
+                    }
+
                     if(in_array($ftypes[$field['field_type']["id"]], array("Email"))) {
                         $col .= "regex:/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/|";
                     }

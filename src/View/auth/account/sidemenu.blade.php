@@ -20,16 +20,16 @@
 	<ul class="nav nav-pills nav-stacked pb15">
 
 	  <li role="presentation"
-		@if (Request::route()->getName() == 'lara.account.info')
+		@if (Request::route()->getName() == 'stlc.account.info')
 	  	class="active"
 	  	@endif
-	  	><a href="{{ route('lara.account.info') }}">{{ trans('base.show_account_info') }}</a></li>
+	  	><a href="{{ route('stlc.account.info') }}">{{ trans('base.show_account_info') }}</a></li>
 
 	  <li role="presentation"
-		@if (Request::route()->getName() == 'lara.account.password')
+		@if (Request::route()->getName() == 'stlc.account.password')
 	  	class="active"
 	  	@endif
-	  	><a href="{{ route('lara.account.password') }}">{{ trans('base.change_password') }}</a></li>
+	  	><a href="{{ route('stlc.account.password') }}">{{ trans('base.change_password') }}</a></li>
 
 	</ul>
 </div>

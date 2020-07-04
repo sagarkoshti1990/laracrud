@@ -44,6 +44,19 @@ return [
     'stlc_route_group_middleware' => 'auth',
     'stlc_modules_folder_name' => 'stlc::',
 
+    // Set this to false if you would like to use your own AuthController and PasswordController
+    // (you then need to setup your auth routes manually in your routes.php file)
+    'setup_auth_routes' => true,
+
+    // Set this to false if you would like to skip adding the dashboard routes
+    // (you then need to overwrite the login route on your AuthController)
+    'setup_dashboard_routes' => true,
+
+    // Set this to false if you would like to skip adding "my account" routes
+    // (you then need to manually define the routes in your web.php)
+    'setup_my_account_routes' => true,
+
+    'devloper_modules' => ['Roles'],
     /*
     |--------------------------------------------------------------------------
     | User Model

@@ -2,11 +2,10 @@
 
 namespace Sagartakle\Laracrud\Helpers\Traits;
 
-use Sagartakle\Laracrud\Models\Module;
-use App\Models\FieldType;
-use App\Models\RelationalDataTable;
+use Sagartakle\Laracrud\Models\FieldType;
+use Sagartakle\Laracrud\Models\RelationalDataTable;
+Use Exception;
 use Sagartakle\Laracrud\Models\Activity;
-use Exception;
 
 trait Create
 {
