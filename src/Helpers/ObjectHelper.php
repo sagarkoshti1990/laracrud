@@ -26,39 +26,31 @@ class ObjectHelper
     public $represent_attr;
     public $icon;
     public $route;
-    
     public $access = [];
-
     public $columns = [];
     public $column_names = [];
     public $fields = [];
-
     public $entry;
     public $buttons;
-
     public $label;
     public $name;
     public $labelPlural;
-    // push css and js of filed type array.
-    public $CssJsApply = [];
+    public $view_path = [];
 
     /**
      * This function binds the CRUD to its corresponding Model (which extends Eloquent).
      * All Create-Read-Update-Delete operations are done using that Eloquent Collection.
      *
-     * @param [string] Full model namespace. Ex: Sagartakle\Laracrud\Models\Article
+     * @param [string] Full model namespace. Ex: App\Models\Article
      */
     public function setModel($model_namespace)
     {
         if (! class_exists($model_namespace)) {
-            throw new \Exception($model_namespace.' This model does not exist.', 404);
+            throw new \Exception($model_namespace.' This model does not exist. from '.$this->name, 404);
         }
 
         $this->model = new $model_namespace();
         $this->initButtons();
-        if(true || isset(\Auth::user()->id) && \Auth::user()->hasRole('super_admin')) {
-            $this->access = ['list', 'create', 'update', 'delete', 'show'/* 'revisions', reorder', 'details_row' */];
-        }
     }
 
     /**
@@ -88,19 +80,16 @@ class ObjectHelper
         if(isset($module->fields)) {
             $this->setFields($module->fields);
         }
+        $this->setViewPath([
+            'index' => config('stlc.stlc_modules_folder_name','stlc::').'index',
+            'create' => config('stlc.stlc_modules_folder_name','stlc::').'form',
+            'edit' => config('stlc.stlc_modules_folder_name','stlc::').'form',
+            'show' => config('stlc.stlc_modules_folder_name','stlc::').'show',
+        ]);
+        $this->setModel($module->model);
+        $this->setColumnNames($module->table_name);
 
-        if(isset($module->name) && in_array($module->name, ["Modules","Activities","Uploads","Fields","Roles"])) {
-            $this->setModel("Sagartakle\\Laracrud\\Models\\".$module->model);
-            $this->setColumnNames($module->table_name);
-        } else if($module->name == "Users") {
-            $this->setModel("App\\".$module->model);
-            $this->setColumnNames('users');
-        } else {
-            $this->setModel("App\\Models\\".$module->model);
-            $this->setColumnNames($module->table_name);
-        }
-
-        $this->setRoute(config('lara.base.route_prefix') . '/'.$module->table_name);
+        $this->setRoute(config('stlc.route_prefix') . '/'.$module->table_name);
         if(isset($module->fields)) {
             $this->setColumns($module->fields);
         }
@@ -131,6 +120,15 @@ class ObjectHelper
      *
      * @return [Eloquent Collection]
      */
+    public function setViewPath($view_path)
+    {
+        $this->view_path = $view_path;
+    }
+    /**
+     * set fields; 
+     *
+     * @return [Eloquent Collection]
+     */
     public function setFields($fields)
     {
         foreach ($fields as $key => $value) {
@@ -146,8 +144,9 @@ class ObjectHelper
      *
      * @return [Eloquent Collection]
      */
-    public function setColumns($fields)
+    public function setColumns($fields,$only = [])
     {
+        $this->columns = [];
         foreach ($fields as $key => $value) {
             if(!is_object($value)) {
                 $type = $value['field_type'];
@@ -155,7 +154,7 @@ class ObjectHelper
             } else {
                 $type = strtolower($value->field_type->name);
             }
-            if($value->show_index) {
+            if((isset($value->show_index) && $value->show_index && count($only) == 0) || in_array($value->name,$only)) {
                 $this->columns[$value->name] = [
                     'name'  => $value->name,
                     'label' => $value->label,
@@ -164,7 +163,7 @@ class ObjectHelper
             }
         }
     }
-
+    
     /**
      * Add a button to the CRUD table view auto.
      */    
@@ -173,14 +172,15 @@ class ObjectHelper
         $this->buttons = collect();
 
         // line stack
-        $this->addButton('line', 'preview', 'view', 'crud.buttons.preview', 'end');
-        $this->addButton('line', 'update', 'view', 'crud.buttons.update', 'end');
-        $this->addButton('line', 'delete', 'view', 'crud.buttons.delete', 'end');
-        $this->addButton('line', 'restore', 'view', 'crud.buttons.restore', 'end');
+        // $this->addButton('line', 'preview', 'view', 'stlc::buttons.preview', 'end');
+        $this->addButton('line', 'clone', 'view', 'stlc::buttons.clone', 'end');
+        $this->addButton('line', 'update', 'view', 'stlc::buttons.update', 'end');
+        $this->addButton('line', 'delete', 'view', 'stlc::buttons.delete', 'end');
+        $this->addButton('line', 'restore', 'view', 'stlc::buttons.restore', 'end');
 
         // top stack
-        $this->addButton('top', 'create', 'view', 'crud.buttons.create');
-        // $this->addButton('top', 'deleted_data', 'view', 'crud.buttons.deleted_data');
+        $this->addButton('top', 'create', 'view', 'stlc::buttons.create');
+        // $this->addButton('top', 'deleted_data', 'view', 'stlc::buttons.deleted_data');
     }
 
     /**
@@ -232,26 +232,6 @@ class ObjectHelper
         $this->buttons = collect([]);
     }
 
-    
-    /**
-     * Check if field is the first of its type in the given fields array.
-     * It's used in each field_type.blade.php to determine wether to push the css and js content or not (we only need to push the js and css for a field the first time it's loaded in the form, not any subsequent times).
-     *
-     * @param array $field        The current field being tested if it's the first of its type.
-     * @param array $fields_array All the fields in that particular form.
-     *
-     * @return bool true/false
-     */
-    public function checkIfOnce($field)
-    {
-        if(!in_array($field['type'], $this->CssJsApply)) {
-            $this->CssJsApply[] = $field['type'];
-            return true;
-        }
-
-        return false;
-    }
-
     public function isColumnNullable($column_name)
     {
         // create an instance of the model to be able to get the table name
@@ -292,9 +272,6 @@ class ObjectHelper
      * Get the current CrudController route.
      *
      * Can be defined in the CrudController with:
-     * - $this->crud->setRoute(config('lara.base.route_prefix').'/article')
-     * - $this->crud->setRouteName(config('lara.base.route_prefix').'.article')
-     * - $this->crud->route = config('lara.base.route_prefix')."/article"
      *
      * @return [string]
      */
@@ -364,13 +341,19 @@ class ObjectHelper
 
     public function setColumnNames($table, $option="")
     {
-        $arr = collect($this->fields)->keys();
+        $arr = collect($this->fields)->where('field_type.name','!=','Polymorphic_select')->where('field_type.name','!=','Polymorphic_multiple')->keys()->toArray();
         if(isset($option) && $option == "All") {
             $this->column_names = $arr;
         } else if(is_array($option) && count($option)) {
             $this->column_names = collect($arr)->intersect($option)->all();
         } else {
             $this->column_names = collect($arr)->diff(['id', 'created_at', 'updated_at', 'deleted_at'])->all();
+        }
+        // if($this->fields->where(''))
+        $fields = collect($this->fields)->where('field_type.name', 'Polymorphic_select')->keys()->toArray();
+        foreach($fields as $field) {
+            $this->column_names[] = $field.'_id';
+            $this->column_names[] = $field.'_type';
         }
     }
 

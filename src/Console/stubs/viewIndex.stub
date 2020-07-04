@@ -12,7 +12,7 @@
             </div>
             <div class="col-md-6 text-right">
                 <ol class="breadcrumb">
-                    <li><a href="{{ url(config('lara.base.route_prefix'), 'dashboard') }}">{{ trans('crud.admin') }}</a></li>
+                    <li><a href="{{ url(config('stlc.route_prefix'), 'dashboard') }}">{{ trans('crud.admin') }}</a></li>
                     <li><a href="{{ url($crud->route) }}" class="text-capitalize">{{ $crud->labelPlural }}</a></li>
                     <li class="active">{{ trans('crud.list') }}</li>
                 </ol>
@@ -69,7 +69,7 @@
                         --}}
                     </div>
                     <div class="modal-footer">
-                        @include('crud.inc.form_save_buttons',['model_close' => 'add_modal'])
+                        @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.form_save_buttons',['model_close' => 'add_modal'])
                     </div>
                 {!! Form::close() !!}
             </div>

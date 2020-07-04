@@ -42,17 +42,55 @@ class Module extends Model
 	* Get Module by module name
 	* $module = self::make($module_name);
 	**/
-	public static function make($module_name) {
+	public static function make($module_name,$data = []) {
 		$module = null;
 		if(is_int($module_name)) {
 			$module = self::find($module_name);
 		} else {
 			$module = self::where('name', $module_name)->first();
-		}
-		
+        }
+        
 		if(isset($module)) {
             $crud = new ObjectHelper;
             $crud->setModule($module);
+            if(isset($data['allowAccess']) && count($data['allowAccess']) > 0) {
+                $crud->allowAccess($data['allowAccess']);
+            }
+            if(isset($data['setColumnsOnly']) && count($data['setColumnsOnly']) > 0) {
+                $crud->setColumns($crud->fields,$data['setColumnsOnly']);
+            }
+            if(isset($data['removeFields']) && count($data['removeFields']) > 0) {
+                foreach($data['removeFields'] as $field) {
+                    unset($crud->fields[$field]);
+                }
+            }
+            if(isset($data->route_prefix) || isset($data['route_prefix'])) {
+                $crud->setRoute(($data->route_prefix ?? $data['route_prefix'] ?? "").'/'.$module->table_name);
+            }
+            if(isset($data->setRoute) || isset($data['setRoute'])) {
+                $crud->setRoute(($data->setRoute ?? $data['setRoute'] ?? ""));
+            }
+            if(isset($data->setEntityNameStrings) || isset($data['setEntityNameStrings'])) {
+                $crud->setEntityNameStrings(($data->setEntityNameStrings[0] ?? $data['setEntityNameStrings'][0] ?? ""),($data->setEntityNameStrings[0] ?? $data['setEntityNameStrings'][0] ?? ""));
+            }
+            if(isset($data->row) || isset($data['row'])) {
+                $crud->row = ($data->row ?? $data['row'] ?? "");
+            }
+            
+            if(isset($data->setViewPath) || isset($data['setViewPath'])) {
+                $path = $data->setViewPath ?? $data['setViewPath'];
+                if(is_string($path)) {
+                    $crud->setViewPath([
+                        'index'=> $path.'.index',
+                        'create'=> ($path == 'crud') ? $path.'.form' : $path.'.create',
+                        'edit'=> ($path == 'crud') ? $path.'.form' : $path.'.edit',
+                        'show'=> $path.'.show',
+                    ]);
+                } else if(is_array($path)) {
+                    $crud->setViewPath(($data->setViewPath ?? $data['setViewPath']));
+                }
+            }
+            
             return $crud;
 		} else {
 			return null;
@@ -170,7 +208,11 @@ class Module extends Model
                     $module->label = $names->label;
                     $module->table_name = $table_name;
                     $module->represent_attr = $represent_attr;
-                    $module->model = $names->model;
+                    if($names->module == "Users") {
+                        $module->model = "App\\".$names->model;
+                    } else {
+                        $module->model = "App\Models\\".$names->model;
+                    }
                     $module->controller = $names->controller;
                     $module->icon = $faIcon;
                     $module->save();
@@ -525,14 +567,16 @@ class Module extends Model
                     }
                 }
                 // $table->timestamp('created_at')->useCurrent();
-                if($field->defaultvalue == NULL || $field->defaultvalue == "" || $field->defaultvalue == "NULL") {
-                    $var->default(NULL);
-                } else if($field->defaultvalue == "now()") {
-                    $var->default(DB::raw('CURRENT_TIMESTAMP'));
-                } else if($field->required) {
-                    $var->default("1970-01-01 01:01:01");
-                } else {
-                    $var->default($field->defaultvalue);
+                if(isset($var)) {
+                    if($field->defaultvalue == NULL || $field->defaultvalue == "" || $field->defaultvalue == "NULL") {
+                        $var->default(NULL);
+                    } else if($field->defaultvalue == "now()") {
+                        $var->default(DB::raw('CURRENT_TIMESTAMP'));
+                    } else if($field->required) {
+                        $var->default("1970-01-01 01:01:01");
+                    } else {
+                        $var->default($field->defaultvalue);
+                    }
                 }
                 break;
             case 'Date_picker':
@@ -598,14 +642,16 @@ class Module extends Model
                     }
                 }
                 // $table->timestamp('created_at')->useCurrent();
-                if($field->defaultvalue == NULL || $field->defaultvalue == "" || $field->defaultvalue == "NULL") {
-                    $var->default(NULL);
-                } else if($field->defaultvalue == "now()") {
-                    $var->default(DB::raw('CURRENT_TIMESTAMP'));
-                } else if($field->required) {
-                    $var->default("1970-01-01 01:01:01");
-                } else {
-                    $var->default($field->defaultvalue);
+                if(isset($var)) {
+                    if($field->defaultvalue == NULL || $field->defaultvalue == "" || $field->defaultvalue == "NULL") {
+                        $var->default(NULL);
+                    } else if($field->defaultvalue == "now()") {
+                        $var->default(DB::raw('CURRENT_TIMESTAMP'));
+                    } else if($field->required) {
+                        $var->default("1970-01-01 01:01:01");
+                    } else {
+                        $var->default($field->defaultvalue);
+                    }
                 }
                 break;
             case 'Decimal':
@@ -676,9 +722,9 @@ class Module extends Model
                     } else {
                         if(isset($field->json_values) && is_array(json_decode($field->json_values))) {
                             if($field->required && $nullable_required) {
-                                $var = $table->string($field->name);
+                                $var = $table->string($field->name)->comment($field->json_values);
                             } else {
-                                $var = $table->string($field->name)->nullable();
+                                $var = $table->string($field->name)->nullable()->comment($field->json_values);
                             }
                         }
                     }
@@ -1012,6 +1058,7 @@ class Module extends Model
                 }
                 break;
             case 'Table': 
+                $json_values = json_decode($field->json_values, true);
                 if(isset($json_values) && is_array($json_values)) {
                     if($update) {
                         if(isset($field->json_values) && is_array(json_decode($field->json_values))) {
@@ -1046,6 +1093,7 @@ class Module extends Model
                         }
                     }
                 }
+            break;
             case 'Email':
                 $var = null;
                 if($field->maxlength == 0) {
@@ -1251,6 +1299,14 @@ class Module extends Model
                 } else if($field->required) {
                     $var->default(NULL);
                 }
+                break;
+            case 'Polymorphic_select':
+                $var = null;
+                $var = $table->nullableMorphs($field->name);
+                if($update) {
+                    $var->change();
+                }
+                
                 break;
             case 'Multiselect':
                 if($update) {
@@ -1810,15 +1866,18 @@ class Module extends Model
      * @param bool $isEdit Is this a Update or Store Request
      * @return array Returns Array to validate given Request
      */
-    public static function validateRules($module_name, $request, $isEdit = false)
+    public static function validateRules($crud, $request, $isEdit = false)
     {
-        $module = self::where('name',$module_name)->first();
+        if(!isset($crud->module->id)) {
+            $crud = self::make($crud);
+        }
         
         $rules = [];
-        if(isset($module->id)) {
+        if(isset($crud->module->id)) {
             $ftypes = FieldType::getFTypes2();
             $add_from = true;
-            foreach($module->fields as $field) {
+
+            foreach($crud->fields as $field) {
                 if($isEdit && !isset($request->{$field['name']})) {
                     $add_from = false;
                 } else {
@@ -1827,7 +1886,15 @@ class Module extends Model
                 if($add_from) {
                     $col = "";
                     if($field['required']) {
-                        $col .= "required|";
+                        if(in_array($ftypes[$field['field_type']["id"]], ["Json"]) && isset($field->json_values) && is_array(json_decode($field->json_values))) {
+                            foreach(json_decode($field->json_values) as $json_values_f) {
+                                $rules[$field['name'].'_'.$json_values_f] = 'required';
+                            }
+                        } else {
+                            $col .= "required|";
+                        }
+                    } else {
+                        $col .= "nullable|";
                     }
                     if(in_array($ftypes[$field['field_type']["id"]], array("Currency", "Decimal"))) {
                     
@@ -1845,15 +1912,20 @@ class Module extends Model
                     }
                     if($field['unique'] && !$isEdit) {
                         $filed_unique_value = isset($request->{$field['name']})? ','.$request->{$field['name']}:"";
-                        $col .= "unique:" . $module->table_name.','.$field['name'].$filed_unique_value;
+                        $col .= "unique:" . $crud->table_name.','.$field['name'].$filed_unique_value;
                     } else if($isEdit && $field['unique']) {
-                        $col .= "unique:" . $module->table_name.','.$field['name'].','.$request->segment(3);
+                        $col .= "unique:" . $crud->table_name.','.$field['name'].','.$request->segment(3);
                     }
-                    if(\Str::startsWith($field->json_values, "@") && isset($request->{$field['name']})) {
+                    if(\Str::startsWith($field->json_values, "@") && (isset($request->{$field['name']}) || (is_array($request) && isset($request[$field['name']])))) {
                         $foreign_table_name = \Str::plural(ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', str_replace("@", "", $field->json_values))), '_'));
                         $col .= "exists:" . $foreign_table_name .',id';
+                    } else if(isset($field->json_values) && is_array($json_arrya = json_decode($field->json_values)) && count($json_arrya) > 0) {
+                        $col .= "in:" . implode(',',$json_arrya);
                     }
-
+                    
+                    if(in_array($ftypes[$field['field_type']["id"]], ['Date','Date_picker','Date_range','Datetime','Datetime_picker',])) {
+                        $col .= "date";
+                    }
                     // 'name' => 'required|unique|min:5|max:256',
                     // 'author' => 'required|max:50',
                     // 'price' => 'decimal',
@@ -1862,6 +1934,41 @@ class Module extends Model
                     // 'description' => 'max:1000'
                     if($col != "") {
                         $rules[$field['name']] = trim($col, "|");
+                    }
+                    if($ftypes[$field['field_type']["id"]] == 'Polymorphic_select') {
+                        unset($rules[$field['name']]);
+                        $req = "";
+                        if($field['required']) {
+                            $req .= "required|";
+                        } else {
+                            $req .= "nullable|";
+                        }
+                        $ps_type = $field['name'].'_type';
+                        $ps_id = $field['name'].'_id';
+                        $rules[$ps_type] = trim(($req)."exists:modules,model", "|");
+                        if(isset($request[$ps_type])) {
+                            $object = (new $request[$ps_type])->getTable();
+                            $rules[$ps_id] = trim(($req)."exists:".$object.",id", "|");
+                        }
+                    }
+                    if($ftypes[$field['field_type']["id"]] == 'Polymorphic_multiple') {
+                        if($field['required']) {
+                            $req = "required|";
+                        } else {
+                            $req = "nullable|";
+                        }
+                        $json_values = $field->json_values;
+                        if(isset($json_values) && !empty($json_values) && is_string($json_values) && \Str::startsWith($json_values, "@")) {
+                            $pm_module = Module::where('name', str_replace("@", "", $json_values))->first();
+                            if(isset($pm_module->represent_attr) && isset(($pm_field = $pm_module->fields->firstWhere('name',$pm_module->represent_attr))->json_values)) {
+                                $json_values = $pm_field->json_values;
+                                if(isset($json_values) && !empty($json_values) && is_string($json_values) && \Str::startsWith($json_values, "@")) {
+                                    $pm_module = Module::where('name', str_replace("@", "", $json_values))->first();
+                                }
+                                $req .= "exists:" . $pm_module->table_name .',id';
+                            }
+                        }
+                        $rules[$field['name']] = trim($req, "|");
                     }
                 }
             }
@@ -1897,8 +2004,7 @@ class Module extends Model
         if($crud instanceof Page) {
             $module = $crud;
         } else if(is_string($crud) && !isset($crud->module->id)) {
-            $crud = self::make($crud);
-            $module = $crud->module;
+            $module = self::where('name',$crud)->first();
         } else if(isset($crud->module->id)) {
             $module = $crud->module;
         }
@@ -2012,8 +2118,7 @@ class Module extends Model
         if($crud instanceof Page) {
             $module = $crud;
         } else if(is_string($crud) && !isset($crud->module->id)) {
-            $crud = self::make($crud);
-            $module = $crud->module;
+            $module = self::where('name',$crud)->first();
         } else if(isset($crud->module->id)) {
             $module = $crud->module;
         }
@@ -2118,24 +2223,38 @@ class Module extends Model
             $module = self::where('name', $module_id_name)->first();
             $show_indexs = Field::where('module_id', $module->id)->where('show_index', 1)->get()->toArray();
         } else if(isset($module_id_name->module)){
+            $module = $module_id_name->module;
             $show_indexs = collect($module_id_name->fields)->where('show_index', 1)->toArray();
         }
         
         if($isObjects) {
-            $id_col = array('label' => 'id', 'name' => 'id');
+            $id_col = array('label' => $module->table_name.'.id', 'name' => $module->table_name.'.id');
         } else {
-            $id_col = 'id';
+            $id_col = $module->table_name.'.id';
         }
         $show_indexs_temp = array($id_col);
         foreach($show_indexs as $col) {
             // if(self::hasFieldAccess($module->id, $col['id'])) {
                 if($isObjects) {
-                    $show_indexs_temp[] = $col;
+                    if(isset($col['field_type']['name']) && $col['field_type']['name'] == 'Polymorphic_select' && $module->fields->contains('name',$col->name)) {
+                        $show_indexs_temp[] = $module->table_name.'.'.$col->name.'_id';
+                    } else if($module->fields->contains('name',$col->name)) {
+                        $show_indexs_temp[] = $module->table_name.'.'.$col->name;
+                    } else {
+                        $show_indexs_temp[] = $col;
+                    }
                 } else {
-                    $show_indexs_temp[] = $col['name'];
+                    if(isset($col['field_type']['name']) && $col['field_type']['name'] == 'Polymorphic_select' && $module->fields->contains('name',$col['name'])) {
+                        $show_indexs_temp[] = $module->table_name.'.'.$col['name'].'_id';
+                    } else if($module->fields->contains('name',$col['name'])) {
+                        $show_indexs_temp[] = $module->table_name.'.'.$col['name'];
+                    } else {
+                        $show_indexs_temp[] = $col['name'];
+                    }
                 }
             // }
         }
+        
         return $show_indexs_temp;
     }
     
@@ -2195,7 +2314,6 @@ class Module extends Model
     {
         return $this->hasMany('Sagartakle\Laracrud\Models\Field', 'module_id', 'id');
     }
-
     /**
      * Get the fields of this module.
      * Module::field_names_array($name)

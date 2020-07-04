@@ -9,7 +9,12 @@
         }
     ],
     "minimum-stability": "dev",
-    "require": {},
+    "require": {
+        "laravelcollective/html": "^6.0",
+        "pion/laravel-chunk-upload": "^1.4",
+        "prologue/alerts": "^0.4.7",
+        "yajra/laravel-datatables-oracle": "^9.10"
+    },
     "autoload": {
         "psr-4": {
             "Sagartakle\\Laracrud\\": "src/"

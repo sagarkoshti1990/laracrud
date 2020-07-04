@@ -6,7 +6,7 @@
 	    {{ trans('crud.preview') }} <span>{{ $crud->label }}</span>
 	  </h1>
 	  <ol class="breadcrumb">
-	    <li><a href="{{ url(config('lara.base.route_prefix'), 'dashboard') }}">{{ trans('crud.admin') }}</a></li>
+	    <li><a href="{{ url(config('stlc.route_prefix'), 'dashboard') }}">{{ trans('crud.admin') }}</a></li>
 	    <li><a href="{{ url($crud->route) }}" class="text-capitalize">{{ $crud->labelPlural }}</a></li>
 	    <li class="active">{{ trans('crud.preview') }}</li>
 	  </ol>

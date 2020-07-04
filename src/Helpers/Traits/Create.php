@@ -2,9 +2,11 @@
 
 namespace Sagartakle\Laracrud\Helpers\Traits;
 
-use Sagartakle\Laracrud\Models\FieldType;
-use Sagartakle\Laracrud\Models\RelationalDataTable;
-Use Exception;
+use Sagartakle\Laracrud\Models\Module;
+use App\Models\FieldType;
+use App\Models\RelationalDataTable;
+use Sagartakle\Laracrud\Models\Activity;
+use Exception;
 
 trait Create
 {
@@ -23,42 +25,62 @@ trait Create
      */
     public function create($data)
     {
-        $data = $this->decodeJsonCastedAttributes($data, 'create');
+        $data = $this->decodeJsonCastedAttributes($data);
         $column_names_ralationaldata = collect($this->fields)->where('type','relationalDataFields')->pluck('name');
+        $polymorphic_multiple_fields = collect($this->fields)->where('field_type.name','Polymorphic_multiple');
         // $data = $this->compactFakeFields($data, 'create');
-        // echo "<pre>";
-        // echo json_encode($data, JSON_PRETTY_PRINT);
+        if(\Auth::check()) {
+            $data['created_by'] = \Auth::id();
+        }
+        // \CustomHelper::ajprint($polymorphic_multiple_fields);
         // echo "<br><br><br><br>";
-        // echo json_encode(collect($data)->only($this->column_names)->toArray(), JSON_PRETTY_PRINT);
-        // echo "</pre>";
-        // return ;
+        // \CustomHelper::ajprint(collect($data)->only($this->column_names)->toArray());
         // ommit the n-n relationships when updating the eloquent item
         // $nn_relationships = array_pluck($this->getRelationFieldsWithPivot('create'), 'name');
-        try{
-            $item = $this->model->create(collect($data)->only($this->column_names)->toArray());
-            if(isset($column_names_ralationaldata) && count($column_names_ralationaldata) > 0) {
-                $update_data = collect($data)->only($column_names_ralationaldata)->toArray();
-                $i = 0;
-                $ftypes = FieldType::getFTypes();
-                foreach($update_data as $key => $r_data) {
-                    $r_datas[$i]['context_id'] = $item->id ?? null;;
-                    $r_datas[$i]['context_type'] = get_class($this->model);
-                    $r_datas[$i]['key'] = $key;
-                    $r_datas[$i]['value'] = $r_data;
-                    $r_datas[$i]['field_type_id'] = $ftypes[$this->fields['feats']->field_type];
-                    // $r_datas[] = RelationalDataTable::where([['key',$key]])->first();
-                    $i++;
+        
+        $item = \DB::transaction(function() use ($data,$column_names_ralationaldata,$polymorphic_multiple_fields) {
+            try{
+                $item = $this->model->create(collect($data)->only($this->column_names)->toArray());
+                if($polymorphic_multiple_fields->count() > 0) {
+                    foreach($polymorphic_multiple_fields as $pm_field) {
+                        $pm_value = $data->{$pm_field->name} ?? $data[$pm_field->name] ?? [];
+                        // if($pm_field->name == 'attribute_id') {
+                        //     \CustomHelper::ajprint($pm_value);
+                        // }
+                        
+                        if(isset($pm_value)) {
+                            $item->polymorphic_save($pm_field->name,$pm_value);
+                        }
+                    }
                 }
-                RelationalDataTable::insert($r_datas);
-            }            
-            \Activity::log(config('App.activity_log.CREATED'), $this, ['new' => $item]);
-        } catch (Exception $ex) {
-            if(isset($data->src_ajax) && $data->src_ajax) {
-                return response()->json(['status' => 'exception_error', 'massage' => 'created', 'errors' => $ex->getMessage()]);
-            } else {
-                return redirect()->back()->withErrors($ex->getMessage())->withInput();
+                if(isset($column_names_ralationaldata) && count($column_names_ralationaldata) > 0) {
+                    $update_data = collect($data)->only($column_names_ralationaldata)->toArray();
+                    $i = 0;
+                    $ftypes = FieldType::getFTypes();
+                    foreach($update_data as $key => $r_data) {
+                        $r_datas[$i]['context_id'] = $item->id ?? null;;
+                        $r_datas[$i]['context_type'] = get_class($this->model);
+                        $r_datas[$i]['key'] = $key;
+                        $r_datas[$i]['value'] = $r_data;
+                        $r_datas[$i]['field_type_id'] = $ftypes[$this->fields['feats']->field_type];
+                        $r_datas[$i]['created_at'] = date('Y-m-d H:i:s');
+                        $r_datas[$i]['updated_at'] = date('Y-m-d H:i:s');
+                        // $r_datas[] = RelationalDataTable::where([['key',$key]])->first();
+                        $i++;
+                    }
+                    RelationalDataTable::insert($r_datas);
+                }            
+                Activity::log(config('App.activity_log.CREATED','Created'), $this, ['new' => $item]);
+                return $item;
+            } catch (Exception $ex) {
+                \DB::rollback();
+                if(isset($data->src_ajax) && $data->src_ajax) {
+                    return response()->json(['status' => 'exception_error', 'message' => 'created', 'errors' => $ex->getMessage()]);
+                } else {
+                    return redirect()->back()->withErrors($ex->getMessage())->withInput();
+                }
             }
-        }
+        });
 
         // if there are any relationships available, also sync those
         // $this->syncPivot($item, $data);

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\StlcAuth;
+namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
@@ -66,7 +66,7 @@ class LoginController extends Controller
         $this->data['title'] = trans('base.login'); // set the page title
 
         if(User::all()->count()) {
-            return view('stlcauth.login', $this->data);
+            return view('auth.login', $this->data);
         } else {
             return redirect()->guest(config('stlc.route_prefix', 'admin').'/register');
         }

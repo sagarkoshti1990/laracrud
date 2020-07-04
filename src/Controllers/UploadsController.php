@@ -291,7 +291,7 @@ class UploadsController extends Controller
                 } else if(isset($request->src)) {
                     return redirect($request->src);
                 } else {
-                    // return redirect()->route(config('lara.base.route_prefix') . 'crud.uploads.index');
+                    // return redirect()->route(config('stlc.route_prefix') . 'crud.uploads.index');
                     return (string) $upload;
                 }
             } else {
@@ -332,7 +332,7 @@ class UploadsController extends Controller
                 } else if(isset($request->src)) {
                     return redirect($request->src);
                 } else {
-                    // return redirect()->route(config('lara.base.route_prefix') . 'crud.uploads.index');
+                    // return redirect()->route(config('stlc.route_prefix') . 'crud.uploads.index');
                     return (string) $upload;
                 }
             } else {

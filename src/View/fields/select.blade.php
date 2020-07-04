@@ -1,13 +1,13 @@
 <!-- select -->
 
-<div @include('crud.inc.field_wrapper_attributes',['field_name' => $field['name']]) >
+<div @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_wrapper_attributes',['field_name' => $field['name']]) >
     @if((isset($field['attributes']['label']) && $field['attributes']['label']) || !isset($field['attributes']['label']))
         <label for="{{ $field['name'] }}" class="control-label">{!! $field['label'] !!}</label>
-        @include('crud.inc.field_translatable_icon')
+        @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_translatable_icon')
     @endif
     <select
         name="{{ $field['name'] }}"
-        @include('crud.inc.field_attributes')
+        @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_attributes')
         >
         @if (isset($field['allows_null']) && $field['allows_null']==true)
             <option value="">{{ trans('crud.none_value') }}</option>
@@ -40,7 +40,7 @@
                     @endif
                 >{{ $option_text }}</option>
             @endforeach
-        @elseif (count($field['options']))
+        @elseif (isset($field['options']) && is_array($field['options']) && count($field['options']))
             @foreach ($field['options'] as $key => $value)
                 <option value="{{ $key }}"
                     @if (isset($field['value']) && ($key==$field['value'] || (is_array($field['value']) && in_array($key, $field['value'])))
@@ -51,14 +51,10 @@
             @endforeach
         @endif
     </select>
-
     @if ($errors->has($field['name']))
         <span class="help-block">{{ $errors->first($field['name']) }}</span>
     @endif
-    
-    {{-- HINT --}}
-    @if (isset($field['hint']))
+    @if (isset($field['hint'])){{-- HINT --}}
         <p class="help-block">{!! $field['hint'] !!}</p>
     @endif
-
 </div>

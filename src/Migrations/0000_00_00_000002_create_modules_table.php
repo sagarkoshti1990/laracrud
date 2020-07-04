@@ -53,6 +53,8 @@ class CreateModulesTable extends Migration
         FieldType::create(["name" => "Number"]);
         FieldType::create(["name" => "Password"]);
         FieldType::create(["name" => "Phone"]);
+        FieldType::create(["name" => "Polymorphic_select"]);
+        FieldType::create(["name" => "Polymorphic_multiple"]);
         FieldType::create(["name" => "Currency"]);
         FieldType::create(["name" => "Radio"]);
         FieldType::create(["name" => "Select"]);

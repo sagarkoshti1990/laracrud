@@ -2,7 +2,7 @@
 @foreach($revisions as $revisionDate => $dateRevisions)
   <li class="time-label" data-date="{{ date('Y-m-d', strtotime($revisionDate)) }}">
       <span class="bg-red">
-        {{ Date::parse($revisionDate)->format(config('lara.base.default_date_format')) }}
+        {{ Date::parse($revisionDate)->format(config('stlc.default_date_format')) }}
       </span>
   </li>
 

@@ -34,13 +34,6 @@ Route::group([
     'namespace'  => '\Sagartakle\Laracrud\Controllers',
 ], function () {
     
-    // if not otherwise configured, setup the "my account" routes
-    if (config('lara.base.setup_my_account_routes')) {
-        Route::get('edit-account-info', 'Auth\MyAccountController@getAccountInfoForm')->name('lara.account.info');
-        Route::post('edit-account-info', 'Auth\MyAccountController@postAccountInfoForm');
-        Route::get('change-password', 'Auth\MyAccountController@getChangePasswordForm')->name('lara.account.password');
-        Route::post('change-password', 'Auth\MyAccountController@postChangePasswordForm');
-    }
     // modules
     Crud::resource("modules", "ModulesController");
     Crud::resource('roles', 'RolesController');
@@ -80,41 +73,54 @@ Route::group([
 });
 
 Route::group([
-    'namespace'  => '\App\Http\Controllers\StlcAuth',
+    'namespace'  => '\App\Http\Controllers\Auth',
+    'middleware' => config('stlc.stlc_route_group_middleware', 'auth'),
+    'prefix'     => config('stlc.route_prefix', 'admin'),
+],function () {
+
+    // if not otherwise configured, setup the "my account" routes
+    Route::get('edit-account-info', 'MyAccountController@getAccountInfoForm')->name('stlc.account.info');
+    Route::post('edit-account-info', 'MyAccountController@postAccountInfoForm');
+    Route::get('change-password', 'MyAccountController@getChangePasswordForm')->name('stlc.account.password');
+    Route::post('change-password', 'MyAccountController@postChangePasswordForm');
+});
+
+Route::group([
+    'namespace'  => '\App\Http\Controllers\Auth',
     'middleware' => 'web',
     'prefix'     => config('stlc.route_prefix', 'admin'),
 ],function () {
     // if not otherwise configured, setup the auth routes
     // Authentication Routes...
     Route::get('login', [
-    'as' => 'login',
-    'uses' => 'LoginController@showLoginForm'
+        'as' => 'login',
+        'uses' => 'LoginController@showLoginForm'
     ]);
     Route::post('login', [
-    'as' => '',
-    'uses' => 'LoginController@login'
+        'as' => '',
+        'uses' => 'LoginController@login'
     ]);
     Route::post('logout', [
-    'as' => 'logout',
-    'uses' => 'LoginController@logout'
+        'as' => 'logout',
+        'uses' => 'LoginController@logout'
     ]);
 
     // Password Reset Routes...
     Route::post('password/email', [
-    'as' => 'password.email',
-    'uses' => 'ForgotPasswordController@sendResetLinkEmail'
+        'as' => 'password.email',
+        'uses' => 'ForgotPasswordController@sendResetLinkEmail'
     ]);
     Route::get('password/reset', [
-    'as' => 'password.request',
-    'uses' => 'ForgotPasswordController@showLinkRequestForm'
+        'as' => 'password.request',
+        'uses' => 'ForgotPasswordController@showLinkRequestForm'
     ]);
     Route::post('password/reset', [
-    'as' => 'password.update',
-    'uses' => 'ResetPasswordController@reset'
+        'as' => 'password.update',
+        'uses' => 'ResetPasswordController@reset'
     ]);
     Route::get('password/reset/{token}', [
-    'as' => 'password.reset',
-    'uses' => 'ResetPasswordController@showResetForm'
+        'as' => 'password.reset',
+        'uses' => 'ResetPasswordController@showResetForm'
     ]);
 
     // Registration Routes...
@@ -123,7 +129,7 @@ Route::group([
     'uses' => 'RegisterController@showRegistrationForm'
     ]);
     Route::post('register', [
-    'as' => '',
+    'as' => 'register.store',
     'uses' => 'RegisterController@register'
     ]);
     Route::get('logout', 'LoginController@logout');

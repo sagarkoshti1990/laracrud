@@ -5,7 +5,7 @@
     $old_value = old($field['name']) ? old($field['name']) : (isset($field['value']) ? $field['value'] : (isset($field['default']) ? $field['default'] : false ));
 @endphp
 
-<div @include('crud.inc.field_wrapper_attributes',['field_name' => $field['name']]) >
+<div @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_wrapper_attributes',['field_name' => $field['name']]) >
     @if((isset($field['attributes']['label']) && $field['attributes']['label']) || !isset($field['attributes']['label']))
         <label for="{{ $field['name'] }}" class="control-label">{!! $field['label'] !!}</label>
     @endif
@@ -14,8 +14,8 @@
     <select
         name="{{ $field['name'] }}"
         style="width: 100%"
-        id="select2_ajax_{{ $field['name'] }}"
-        @include('crud.inc.field_attributes', ['default_class' =>  'form-control'])
+        {{-- id="select2_ajax_{{ $field['name'] }}" --}}
+        @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_attributes', ['default_class' =>  'form-control'])
         >
 
         @if ($old_value)
@@ -29,37 +29,25 @@
             @endif
         @endif
     </select>
-
     @if ($errors->has($field['name']))
         <span class="help-block">{{ $errors->first($field['name']) }}</span>
     @endif
-    
-    {{-- HINT --}}
-    @if (isset($field['hint']))
+    @if (isset($field['hint'])){{-- HINT --}}
         <p class="help-block">{!! $field['hint'] !!}</p>
     @endif
 </div>
-
-{{-- ########################################## --}}
-{{-- Extra CSS and JS for this particular field --}}
- @if ($crud->checkIfOnce($field))
-    {{-- FIELD CSS - will be loaded in the after_styles section --}}
-    @push('crud_fields_styles')
-    <!-- include select2 css-->
-    <link href="{{ asset('node_modules/admin-lte/bower_components/select2/dist/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
-    {{--  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css" rel="stylesheet" type="text/css" />  --}}
-    {{-- <link href="{{ asset('public/vendor/select2/select2-bootstrap.css') }}" rel="stylesheet" type="text/css" /> --}}
-    @endpush
-
-    {{-- FIELD JS - will be loaded in the after_scripts section --}}
-    @push('crud_fields_scripts')
-    <!-- include select2 js-->
-    <script src="{{ asset('node_modules/admin-lte/bower_components/select2/dist/js/select2.min.js') }}"></script>
-    @endpush
-
-@endif
-
-<!-- include field specific select2 js-->
+{{-- FIELD CSS - will be loaded in the after_styles section --}}
+@pushonce('crud_fields_styles')
+<!-- include select2 css-->
+<link href="{{ asset('node_modules/admin-lte/bower_components/select2/dist/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
+{{--  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2-bootstrap-theme/0.1.0-beta.10/select2-bootstrap.min.css" rel="stylesheet" type="text/css" />  --}}
+{{-- <link href="{{ asset('public/vendor/select2/select2-bootstrap.css') }}" rel="stylesheet" type="text/css" /> --}}
+@endpushonce
+{{-- FIELD JS - will be loaded in the after_scripts section --}}
+@pushonce('crud_fields_scripts')
+<!-- include select2 js-->
+<script src="{{ asset('node_modules/admin-lte/bower_components/select2/dist/js/select2.min.js') }}"></script>
+@endpushonce
 @push('crud_fields_scripts')
 <script>
     jQuery(document).ready(function($) {
@@ -90,7 +78,7 @@
                                     textField = "{{ $field['attribute'] }}";
                                     return {
                                         text: item[textField],
-                                        id: item["id"]
+                                        id: item["{{ $connected_entity_key_name }}"]
                                     }
                                 }),
                                 more: data.current_page < data.last_page
@@ -105,5 +93,3 @@
     });
 </script>
 @endpush
-{{-- End of Extra CSS and JS --}}
-{{-- ########################################## --}}

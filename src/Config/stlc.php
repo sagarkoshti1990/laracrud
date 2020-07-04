@@ -2,7 +2,6 @@
 
 return [
 
-
     /*
     |--------------------------------------------------------------------------
     | Look & feel customizations
@@ -14,10 +13,6 @@ return [
     // The AdminLTE skin. Affects menu color and primary/secondary colors used throughout the application.
     'skin' => 'skin-purple',
     // Options: skin-black, skin-blue, skin-purple, skin-red, skin-yellow, skin-green, skin-blue-light, skin-black-light, skin-purple-light, skin-green-light, skin-red-light, skin-yellow-light
-
-    // Date & Datetime Format Carbon
-    'default_date_format'     => 'j F Y',
-    'default_datetime_format' => 'j F Y H:i',
 
     /*
     |--------------------------------------------------------------------------
@@ -31,7 +26,8 @@ return [
     */
 
     'registration_open' => (env('APP_ENV') == 'local') ? true : false,
-
+    'app_debug' => env('APP_DEBUG',false),
+    
     /*
     |--------------------------------------------------------------------------
     | Routing
@@ -41,24 +37,24 @@ return [
     // The prefix used in all base routes (the 'admin' in admin/dashboard)
     'route_prefix' => 'admin',
     'route_group_middleware_all' => 'auth',
-    'route_group_namespace' => 'Admin',
+    'route_group_namespace' => '\App\Http\Controllers\Admin',
 
     //stlc
     'stlc_route_prefix' => 'developer',
     'stlc_route_group_middleware' => 'auth',
+    'stlc_modules_folder_name' => 'stlc::',
 
     /*
     |--------------------------------------------------------------------------
     | User Model
     |--------------------------------------------------------------------------
     */
-
     // Fully qualified namespace of the User model
     'user_model_fqn' => '\App\User',
 
     /*
     |--------------------------------------------------------------------------
-    | propadmin\CRUD preferences
+    | stlc\CRUD preferences
     |--------------------------------------------------------------------------
     */
 
@@ -69,34 +65,5 @@ return [
     */
     // LIST VIEW (table view)
         // How many items should be shown by default by the Datatable?
-        // This value can be overwritten on a specific CRUD by calling
-        // $this->crud->setDefaultPageLength(50);
         'default_page_length' => 10,
-
-    // PREVIEW
-
-    /*
-    |------------
-    | DELETE
-    |------------
-    */
-
-    /*
-    |------------
-    | REORDER
-    |------------
-    */
-
-    /*
-    |------------
-    | DETAILS ROW
-    |------------
-    */
-
-    /*
-    |-------------------
-    | TRANSLATABLE CRUDS
-    |-------------------
-    */
-
 ];

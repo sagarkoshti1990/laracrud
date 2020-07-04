@@ -1,4 +1,4 @@
-<div @include('crud.inc.field_wrapper_attributes',['field_name' => $field['name']]) >
+<div @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_wrapper_attributes',['field_name' => $field['name']]) >
     @if((isset($field['attributes']['label']) && $field['attributes']['label']) || !isset($field['attributes']['label']))
         <div>
             <label for="{{ $field['name'] }}" class="control-label">{!! $field['label'] !!} @if(isset($field['file_type'])) <span style="color:red"> (Only {{ $field['file_type'] }})</span> @endif</label>
@@ -7,7 +7,7 @@
     @php
         $img = "";
         if((isset($field['value']) && is_numeric($field['value']) && $field['value']) || (isset($field['default']) && is_numeric($field['default']) && $field['default'])) {
-            $upload = Sagartakle\Laracrud\Models\Upload::find($field['value']);
+            $upload = App\Models\Upload::find($field['value']);
             $url_file = url("files/" . $upload->hash . DIRECTORY_SEPARATOR . $upload->name);
             $img = "<a class='uploaded_file' target='_blank' href='".$url_file."'>";
 
@@ -20,6 +20,12 @@
                     <source src="'.$url_file.'" type="audio/'.$upload->extension.'">
                     Your browser does not support the audio element.
                 </audio>';
+            } else if(in_array($upload->extension, ["mp4","WEBM","MPEG","AVI","WMV","MOV","FLV","SWF"])) {
+                $image = '<video width="250" controls>
+                            <source src="'.$url_file.'" type="video/'.$upload->extension.'">
+                            <source src="'.$url_file.'" type="video/'.$upload->extension.'">
+                            Your browser does not support HTML5 video.
+                        </video>';
             } else {
                 switch ($upload->extension) {
                     case "pdf":
@@ -63,7 +69,7 @@
             type="hidden"
             name="{{ $field['name'] }}"
             value="{{ old($field['name']) ? old($field['name']) : (isset($field['value']) ? $field['value'] : (isset($field['default']) ? $field['default'] : '' )) }}"
-            @include('crud.inc.field_attributes')
+            @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_attributes')
         >
         <a class="btn btn-default btn_upload_file btn-labeled {{ $hide }}" file_type='file'
             @if(isset($field['file_type']))
@@ -75,20 +81,3 @@
         ?>
     </div>
 </div>
-{{-- FIELD EXTRA CSS  --}}
-{{-- push things in the after_styles section --}}
-@if ($crud->checkIfOnce($field))
-    @push('crud_fields_styles')
-    @endpush
-    @push('crud_fields_scripts')
-        <script>
-            jQuery(document).ready(function($){
-                $.validator.setDefaults({ 
-                    ignore: ['.ignore'],
-                    // any other default options and/or rules
-                });
-            });
-        </script>
-    @endpush
-@endif
-{{-- Note: you can use  @if ($crud->checkIfOnce($field))  to only load some CSS/JS once, even though there are multiple instances of it --}}

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\StlcAuth;
+namespace App\Http\Controllers\Auth;
 
 use Alert;
 use Auth;
@@ -11,7 +11,7 @@ use App\Http\Requests\AccountInfoRequest;
 use App\Http\Requests\ChangePasswordRequest;
 use Illuminate\Support\Facades\Hash;
 
-use App\Models\Module;
+use Sagartakle\Laracrud\Models\Module;
 use App\User;
 
 class MyAccountController extends Controller

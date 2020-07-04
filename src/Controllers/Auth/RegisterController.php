@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\StlcAuth;
+namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -56,6 +56,7 @@ class RegisterController extends Controller
             'first_name'     => 'required|max:255',
             'last_name'     => 'required|max:255',
             'email'    => 'required|email|max:255|unique:'.$users_table,
+            'phone_no'    => 'required|unique:'.$users_table,
             'password' => 'required|min:6|confirmed',
         ]);
     }
@@ -74,18 +75,21 @@ class RegisterController extends Controller
             try{
                 $user_model_fqn = config('stlc.user_model_fqn');
                 $user = new $user_model_fqn();
-                $user->name = $data['first_name']." ".$data['last_name'];
+                $user->first_name = $data['first_name'];
+                $user->last_name = $data['last_name'];
                 $user->email = $data['email'];
+                $user->phone_no = $data['phone_no'];
                 $user->password = bcrypt($data['password']);
                 $user->save();
                 $user->roles()->attach(Role::where('name', 'Super_admin')->first()->id);
                 return $user;
             } catch (\Exception $e) {
                 \DB::rollback();
+                $errors = (config('stlc.app_debug')) ? $e->getMessage() : "500 error";
                 if(isset($data->src_ajax)) {
-                    return response()->json(['status' => 'validation_error', 'massage' => 'Validation Error', 'errors' => $e->getMessage()]);
+                    return response()->json(['status' => 'validation_error', 'massage' => 'Validation Error', 'errors' => $errors]);
                 } else {
-                    return redirect()->back()->withErrors($e->getMessage())->withInput();
+                    return redirect()->back()->withErrors($errors)->withInput();
                 }
             }
         });
@@ -102,14 +106,14 @@ class RegisterController extends Controller
     {
         // if registration is closed, deny access
         if (!config('stlc.registration_open')) {
-            abort(403, trans('base.registration_closed'));
+            abort(403, 'Registration Closed');
         // } elseif(User::all()->count() > "0") {
         //     return redirect()->guest(config('stlc.route_prefix', 'admin').'/login');
         }
 
         // $this->data['title'] = trans('base.register'); // set the page title
 
-        return view('stlcauth.register', $this->data);
+        return view('auth.register', $this->data);
     }
 
     /**
@@ -123,13 +127,16 @@ class RegisterController extends Controller
     {
         // if registration is closed, deny access
         if (!config('stlc.registration_open')) {
-            abort(403, trans('base.registration_closed'));
+            abort(403, 'Registration Closed');
         }
-
         $this->validator($request->all())->validate();
-
-        $this->guard()->login($this->create($request->all()));
-
-        return redirect($this->redirectPath());
+        $item = $this->create($request->all());
+        
+        if (($item instanceof \App\User)) {
+            $this->guard()->login($item);
+            return redirect($this->redirectPath());
+        } else {
+            return $item;
+        }
     }
 }

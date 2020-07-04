@@ -90,7 +90,7 @@
                       
                         {{ trans('base.change_password') }}
                     </button>
-                    <a href="{{ url(config('lara.base.route_prefix')) }}" class="btn p5 btn-default pull-left btn-flat btn-labeled">
+                    <a href="{{ url(config('stlc.route_prefix')) }}" class="btn p5 btn-default pull-left btn-flat btn-labeled">
                         {{ trans('base.cancel') }}
                     </a>
                 </div>

@@ -1,8 +1,9 @@
 <?php
 
 namespace Sagartakle\Laracrud\Helpers\Traits;
+
 use Sagartakle\Laracrud\Models\Module;
-use Sagartakle\Laracrud\Models\Page;
+use App\Models\Page;
 
 trait Access
 {
@@ -33,15 +34,26 @@ trait Access
      */
     public function hasAccess($permission = 'view')
     {
-        if(isset($this->module->name)) {
-            return Module::hasAccess($this, $permission);
-        } else if (in_array($permission, $this->access) || \Auth::user()->isSuperAdmin()) {
+        if (in_array($permission, $this->access)) {
             return true;
+        } else if(isset($this->module->name)) {
+            return Module::hasAccess($this, $permission);
         } else {
             return false;
         }
     }
 
+    /**
+     * Check if a permission is enabled for a Crud Panel. Return false if not.
+     *
+     * @param  [string] Permission.
+     *
+     * @return bool
+     */
+    public function hasRoles($roles)
+    {
+        return \Auth::user()->hasRoles($roles);
+    }
     /**
      * Check if a permission is enabled for a Crud Panel. Return false if not.
      *
