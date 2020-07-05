@@ -52,7 +52,10 @@ class Module extends Model
         
 		if(isset($module)) {
             $crud = new ObjectHelper;
-            $crud->setModule($module);
+            
+            if(isset($data->setModel) || isset($data['setModel'])) {
+                $crud->setModel(($data->setModel ?? $data['setModel']));
+            }
             if(isset($data['allowAccess']) && count($data['allowAccess']) > 0) {
                 $crud->allowAccess($data['allowAccess']);
             }
@@ -90,6 +93,7 @@ class Module extends Model
                     $crud->setViewPath(($data->setViewPath ?? $data['setViewPath']));
                 }
             }
+            $crud->setModule($module);
             
             return $crud;
 		} else {

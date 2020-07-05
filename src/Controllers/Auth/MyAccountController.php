@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace Sagartakle\Laracrud\Controllers\Auth;
 
 use Alert;
 use Auth;
@@ -8,7 +8,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use App\Http\Requests\AccountInfoRequest;
-use App\Http\Requests\ChangePasswordRequest;
 use Illuminate\Support\Facades\Hash;
 
 use Sagartakle\Laracrud\Models\Module;
@@ -25,13 +24,13 @@ class MyAccountController extends Controller
     {
         $this->data['title'] = trans('base.my_account');
         $this->data['user'] = $this->guard()->user();
-        $this->data['crud'] = Module::make('Employees');
+        $this->data['crud'] = Module::make('Users');
         $this->data['crud']->datatable = true;
         if(isset(Auth::user()->id) && isset(Auth::user()->context()->id)) {
             $this->data['crud']->row = Auth::user()->context();
         }
         
-        return view('auth.account.update_info', $this->data);
+        return view(config('stlc.stlc_modules_folder_name','stlc::').'auth.account.update_info', $this->data);
     }
 
     /**
@@ -61,21 +60,38 @@ class MyAccountController extends Controller
         $this->data['title'] = trans('base.my_account');
         $this->data['user'] = $this->guard()->user();
 
-        return view('auth.account.change_password', $this->data);
+        return view(config('stlc.stlc_modules_folder_name','stlc::').'auth.account.change_password', $this->data);
     }
 
     /**
      * Save the new password for a user.
      */
-    public function postChangePasswordForm(ChangePasswordRequest $request)
+    public function postChangePasswordForm(Request $request)
     {
+        $validator = \Validator::make($request->all(), [
+            'old_password'     => 'required',
+            'new_password'     => 'required|min:4',
+            'confirm_password' => 'required|same:new_password|min:4',
+        ])->after(function ($validator) use($request) {
+            if (! Hash::check($request->old_password, auth()->user()->password)) {
+                $validator->errors()->add('old_password', 'Old password incorrect');
+            }
+        });
+        if ($validator->fails()) {
+            if(isset($data->src_ajax)) {
+                return response()->json(['status' => 'validation_error', 'massage' => 'Validation Error', 'errors' => $validator->getMessage()]);
+            } else {
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
+        }
+
         $user = $this->guard()->user();
         $user->password = Hash::make($request->new_password);
 
         if ($user->save()) {
-            Alert::success(trans('base.account_updated'))->flash();
+            Alert::success('Password Updated')->flash();
         } else {
-            Alert::error(trans('base.error_saving'))->flash();
+            Alert::error('Error Saving')->flash();
         }
 
         return redirect()->back();

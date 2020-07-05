@@ -2,26 +2,23 @@
 
 namespace Sagartakle\Laracrud\Controllers;
 
-use Sagartakle\Laracrud\Models\Field;
-use Sagartakle\Laracrud\Models\FieldType;
-use Illuminate\Routing\Controller;
+use Sagartakle\Laracrud\Controllers\StlcController;
 use Illuminate\Http\Request;
 
 use Auth;
 use DB;
 use Validator;
 use Yajra\DataTables\Datatables;
-use Collective\Html\FormFacade as Form;
 use Sagartakle\Laracrud\Models\Module;
 use Sagartakle\Laracrud\Helpers\ObjectHelper;
 use Prologue\Alerts\Facades\Alert;
+use Sagartakle\Laracrud\Models\Field;
+use Sagartakle\Laracrud\Models\FieldType;
 use Sagartakle\Laracrud\Models\AccessModule;
-use Sagartakle\Laracrud\Models\Employee;
 use Sagartakle\Laracrud\Models\Role;
-use App\User;
+use Sagartakle\Laracrud\Helpers\CustomHelper;
 
-
-class ModulesController extends Controller
+class ModulesController extends StlcController
 {
     public $crud;
 
@@ -42,70 +39,41 @@ class ModulesController extends Controller
 				'name' => 'name',
 				'label' => 'Name',
 				'field_type' => 'Text',
-				'unique' => false,
-				'defaultvalue' => Null,
-				'minlength' => '0',
-				'maxlength' => '0',
 				'required' => true,
-				'show_index' => false
 			],[
 				'name' => 'label',
 				'label' => 'label',
 				'field_type' => 'Text',
-				'unique' => false,
-				'defaultvalue' => Null,
-				'minlength' => '0',
-				'maxlength' => '0',
 				'required' => true,
 				'show_index' => true
 			],[
 				'name' => 'table_name',
 				'label' => 'Table Name',
 				'field_type' => 'Text',
-				'unique' => false,
-				'defaultvalue' => Null,
-				'minlength' => '0',
-				'maxlength' => '0',
 				'required' => true,
 				'show_index' => true
 			],[
 				'name' => 'model',
 				'label' => 'Model',
 				'field_type' => 'Text',
-				'unique' => false,
-				'defaultvalue' => Null,
-				'minlength' => '0',
-				'maxlength' => '0',
 				'required' => true,
 				'show_index' => true
 			],[
 				'name' => 'controller',
 				'label' => 'Controller',
 				'field_type' => 'Text',
-				'unique' => false,
-				'defaultvalue' => Null,
-				'minlength' => '0',
-				'maxlength' => '0',
 				'required' => true,
 				'show_index' => true
 			],[
 				'name' => 'represent_attr',
 				'label' => 'Represent Attribute',
 				'field_type' => 'Text',
-				'unique' => false,
-				'defaultvalue' => Null,
-				'minlength' => '0',
-				'maxlength' => '0',
 				'required' => true,
 				'show_index' => true
 			],[
 				'name' => 'icon',
 				'label' => 'Icon',
 				'field_type' => 'Text',
-				'unique' => false,
-				'defaultvalue' => Null,
-				'minlength' => '0',
-				'maxlength' => '0',
 				'required' => true,
                 'show_index' => true
 			]
@@ -128,30 +96,18 @@ class ModulesController extends Controller
 				'name' => 'name',
 				'label' => 'Name',
 				'field_type' => 'Text',
-				'unique' => false,
-				'defaultvalue' => Null,
-				'minlength' => '0',
-				'maxlength' => '0',
 				'required' => true,
 				'show_index' => false
 			],[
 				'name' => 'label',
 				'label' => 'label',
 				'field_type' => 'Text',
-				'unique' => false,
-				'defaultvalue' => Null,
-				'minlength' => '0',
-				'maxlength' => '0',
 				'required' => true,
 				'show_index' => true
 			],[
 				'name' => 'module_id',
 				'label' => 'Module',
 				'field_type' => 'Select2',
-				'unique' => false,
-				'defaultvalue' => Null,
-				'minlength' => '0',
-				'maxlength' => '0',
 				'required' => true,
                 'show_index' => true,
                 'json_values' => '@Module|name'
@@ -159,10 +115,6 @@ class ModulesController extends Controller
 				'name' => 'field_type_id',
 				'label' => 'Field Type',
 				'field_type' => 'Select2',
-				'unique' => false,
-				'defaultvalue' => Null,
-				'minlength' => '0',
-				'maxlength' => '0',
 				'required' => true,
                 'show_index' => true,
                 'json_values' => '@FieldType|name'
@@ -170,70 +122,40 @@ class ModulesController extends Controller
 				'name' => 'unique',
 				'label' => 'Unique',
 				'field_type' => 'Radio',
-				'unique' => false,
-				'defaultvalue' => Null,
-				'minlength' => '0',
-				'maxlength' => '0',
 				'required' => true,
 				'show_index' => true
 			],[
 				'name' => 'defaultvalue',
 				'label' => 'Default Value',
 				'field_type' => 'Text',
-				'unique' => false,
-				'defaultvalue' => Null,
-				'minlength' => '0',
-				'maxlength' => '0',
-				'required' => false,
 				'show_index' => true
 			],[
 				'name' => 'minlength',
 				'label' => 'Min Length',
 				'field_type' => 'Number',
-				'unique' => false,
-				'defaultvalue' => Null,
-				'minlength' => '0',
-				'maxlength' => '0',
-				'required' => false,
 				'show_index' => true
 			],[
 				'name' => 'maxlength',
 				'label' => 'Max Length',
 				'field_type' => 'Number',
-				'unique' => false,
-				'defaultvalue' => Null,
-				'minlength' => '0',
-				'maxlength' => '0',
-				'required' => false,
                 'show_index' => true
 			],[
 				'name' => 'required',
 				'label' => 'Required',
 				'field_type' => 'Radio',
-				'unique' => false,
-				'defaultvalue' => Null,
-				'minlength' => '0',
-				'maxlength' => '0',
 				'required' => true,
 				'show_index' => true
 			],[
 				'name' => 'show_index',
 				'label' => 'Show Index',
 				'field_type' => 'Radio',
-				'unique' => false,
-				'defaultvalue' => Null,
-				'minlength' => '0',
-				'maxlength' => '0',
 				'required' => true,
 				'show_index' => true
 			],[
 				'name' => 'json_type',
 				'label' => 'Json Type',
 				'field_type' => 'Radio',
-				'unique' => false,
 				'defaultvalue' => 'Module',
-				'minlength' => '0',
-				'maxlength' => '0',
 				'required' => true,
                 'show_index' => true,
                 'json_values' => ['Module','Json']
@@ -241,15 +163,18 @@ class ModulesController extends Controller
 				'name' => 'json_values',
 				'label' => 'Json Values',
 				'field_type' => 'Text',
-				'unique' => false,
-				'defaultvalue' => Null,
-				'minlength' => '0',
-				'maxlength' => '0',
-				'required' => false,
 				'show_index' => true
 			]
         ];
         $this->crud_filed->setModule($module);
+    }
+
+    public function dashboard(Request $request)
+    {
+        if($request->menu) {
+            CustomHelper::generateMenu();
+        }
+        return view(config('stlc.stlc_modules_folder_name','stlc::').'layouts.app');
     }
 
     /**
@@ -260,7 +185,6 @@ class ModulesController extends Controller
     public function index(Request $request)
     {
 		if(Auth::user()->isSuperAdmin()) {
-            
             $crud = $this->crud;
             $crud->removeButton('deleted_data');
             if(isset($request->src_ajax) && $request->src_ajax) {
@@ -1095,7 +1019,7 @@ class ModulesController extends Controller
             return redirect($request->back_url);
         } else {
             if(!isset($employee->user()->id)) {
-                Alert::error("Employee user not exit. please edit employee, give password & generate user")->flash();
+                \Alert::error("Employee user not exit. please edit employee, give password & generate user")->flash();
                 return redirect()->back();
             } else {
                 abort(403, trans('crud.unauthorized_access'));

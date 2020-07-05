@@ -413,7 +413,7 @@ class CustomHelper
     public static function print_menu(Menu $menu, $prefix = null,$checkAccess = false)
     {
         if(!isset($prefix)) {
-            $prefix_url = config("stlc.route_prefix",'admin').'/';
+            $prefix_url = config("lara.base.route_prefix",'admin').'/';
         } else if(isset($prefix) && ($prefix == "no_prefix" || $prefix == "")) {
             $prefix_url = "";
         } else {
@@ -435,11 +435,7 @@ class CustomHelper
                     if($menu->link == "#") {
                         $str = '<li' . $treeview . '><a href="javascript:void(0)"><i class="fa ' . $menu->icon . ' text-purple"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
                     } else {
-                        if(isset($children->name) && in_array($children->name,config("stlc.devloper_modules"))) {
-                            $str = '<li' . $treeview . ' ' . $active_str . '><a href="' . url(config("stlc.stlc_route_prefix") . '/' . $menu->link) . '"><i class="fa ' . $menu->icon . ' text-purple"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
-                        } else {
-                            $str = '<li' . $treeview . ' ' . $active_str . '><a href="' . url(config("stlc.route_prefix") . '/' . $menu->link) . '"><i class="fa ' . $menu->icon . ' text-purple"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
-                        }
+                        $str = '<li' . $treeview . '><a href="' . url($prefix_url . $menu->link) . '"><i class="fa ' . $menu->icon . ' text-purple"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
                     }
                 } else {
                     if($children->type == 'page') {
@@ -447,24 +443,16 @@ class CustomHelper
                     } else if($children->type == 'module') {
                         $mkmodule = Module::where('name',$children->name)->first();
                         if(isset($mkmodule) && $mkmodule->name == $children->name) {
-                            $module = $mkmodule->name;
+                            $module = $mkmodule;
                         }
                     }
-                    if(isset($module) && Module::hasAccess($module)) {
-                        if(isset($children->name) && in_array($children->name,config("stlc.devloper_modules"))) {
-                            $str = '<li' . $treeview . ' ' . $active_str . '><a href="' . url(config("stlc.stlc_route_prefix") . '/' . $menu->link) . '"><i class="fa ' . $menu->icon . ' text-purple"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
-                        } else {
-                            $str = '<li' . $treeview . ' ' . $active_str . '><a href="' . url(config("stlc.route_prefix") . '/' . $menu->link) . '"><i class="fa ' . $menu->icon . ' text-purple"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
-                        }
+                    if(isset($module) && (Module::hasAccess($module) || $checkAccess)) {
+                        $str = '<li' . $treeview . '><a href="' . url($prefix_url . $menu->link) . '"><i class="fa ' . $menu->icon . ' text-purple"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
                     }
                 }
             }
         } else {
-            if(isset($menu->name) && in_array($menu->name,config("stlc.devloper_modules"))) {
-                $str = '<li' . $treeview . ' ' . $active_str . '><a href="' . url(config("stlc.stlc_route_prefix") . '/' . $menu->link) . '"><i class="fa ' . $menu->icon . ' text-purple"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
-            } else {
-                $str = '<li' . $treeview . ' ' . $active_str . '><a href="' . url(config("stlc.route_prefix") . '/' . $menu->link) . '"><i class="fa ' . $menu->icon . ' text-purple"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
-            }
+            $str = '<li' . $treeview . '><a href="' . url($prefix_url . $menu->link) . '"><i class="fa ' . $menu->icon . ' text-purple"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
         }
         
         if(count($childrens)) {
@@ -557,40 +545,13 @@ class CustomHelper
 				"name" => "Profile","label" => 'Profile',"link" => "#",
 				"icon" => "fa-group","type" => 'custom',"hierarchy" => 1
 			]);
-			$usersMenu = Menu::create([
-				"name" => "user","label" => 'Users',"link" => "#",
-				"icon" => "fa-users","type" => 'custom',"hierarchy" => 1
-			]);
-			$ProgramsMenu = Menu::create([
-				"name" => "Programs","label" => 'Programs',"link" => "#",
-				"icon" => "fa-tasks","type" => 'custom',"hierarchy" => 1
-            ]);
-			// $AssessmentMenu = Menu::create([
-			// 	"name" => "Assessments","label" => 'Assessments',"link" => "#",
-			// 	"icon" => "fa-check-square-o","type" => 'custom',"hierarchy" => 1
-            // ]);
-			$SettingsMenu = Menu::create([
-				"name" => "Setting","label" => 'Settings',"link" => "#",
-				"icon" => "fa-cogs","type" => 'custom',"hierarchy" => 1
-            ]);
 		}
 		foreach ($modules as $module) {
 			$parent = Null;
-			if(!in_array($module->name, config('lara.crud.restrictedModules.menu',[]))) {
+			if(!in_array($module->name, config('stlc.restrictedModules.menu',['Users','Uploads']))) {
                 $label = $module->label;
-                if($module->name == 'MasterUsers') {
-                    $label = "Users";
-                }  
-				if(in_array($module->name, ["Roles","Employees"])) {
+				if(in_array($module->name, ["Roles"])) {
                     $parent = $profileMenu->id;
-				} else if(in_array($module->name, ['MasterUsers','UserRewards','UserScores','UserSettings'])) {
-					$parent = $usersMenu->id;
-				} else if(in_array($module->name, ['WorkAreas','WorkAreasTopics','NewsAndMedias','Testimonials','Blogs','MediaAndNews'])) {
-					$parent = $ProgramsMenu->id;
-				// } else if(in_array($module->name, ['Questions','Answers'])) {
-				// 	$parent = $AssessmentMenu->id;
-				} else if(in_array($module->name, ['Faqs','Enquiries','PageContents','Messages','Taxes','Coupons','Rewards','Categories'])) {
-					$parent = $SettingsMenu->id;
 				}
 				if(Schema::hasTable('menus')) {
 					Menu::create([
@@ -605,7 +566,7 @@ class CustomHelper
 		}
 
 		if(Schema::hasTable('menus')) {
-			$ranking = ['Dashboard','Profile','Settings'];
+			$ranking = ['Dashboard','Profile'];
 			$menus = Menu::all();
 			$count = count($ranking);
 			foreach($menus as $menu) {

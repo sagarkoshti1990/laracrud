@@ -57,6 +57,15 @@ return [
     'setup_my_account_routes' => true,
 
     'devloper_modules' => ['Roles'],
+    
+    'restrictedModules' => [
+        'menu' => [
+            'Users','Uploads',
+        ],
+        'routeAdmin' => [
+            'Users','Uploads','Roles',
+        ]
+    ],
     /*
     |--------------------------------------------------------------------------
     | User Model

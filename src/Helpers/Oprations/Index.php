@@ -2,10 +2,10 @@
 
 namespace Sagartakle\Laracrud\Helpers\Oprations;
 
-use App\Models\Field;
+use Sagartakle\Laracrud\Models\Field;
 use Sagartakle\Laracrud\Models\Module;
 use Illuminate\Http\Request;
-use App\Helpers\crud\FormBuilder;
+use Sagartakle\Laracrud\Helpers\FormBuilder;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Datatables;
 
@@ -70,7 +70,7 @@ trait Index
                 $crud->datatable = true;
                 $output = '';
                 
-                $output .= \View::make('crud.inc.button_stack', ['stack' => 'line'])
+                $output .= \View::make(config('stlc.stlc_modules_folder_name','stlc::').'inc.button_stack', ['stack' => 'line'])
                 ->with('crud', $crud)
                 ->with('entry', $item)
                 ->render();

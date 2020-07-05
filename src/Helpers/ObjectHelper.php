@@ -80,16 +80,23 @@ class ObjectHelper
         if(isset($module->fields)) {
             $this->setFields($module->fields);
         }
-        $this->setViewPath([
-            'index' => config('stlc.stlc_modules_folder_name','stlc::').'index',
-            'create' => config('stlc.stlc_modules_folder_name','stlc::').'form',
-            'edit' => config('stlc.stlc_modules_folder_name','stlc::').'form',
-            'show' => config('stlc.stlc_modules_folder_name','stlc::').'show',
-        ]);
-        $this->setModel($module->model);
-        $this->setColumnNames($module->table_name);
-
-        $this->setRoute(config('stlc.route_prefix') . '/'.$module->table_name);
+        if(!isset($this->view_path) || (is_array($this->view_path) && count($this->view_path) == 0)) {
+            $this->setViewPath([
+                'index' => config('stlc.stlc_modules_folder_name','stlc::').'index',
+                'create' => config('stlc.stlc_modules_folder_name','stlc::').'form',
+                'edit' => config('stlc.stlc_modules_folder_name','stlc::').'form',
+                'show' => config('stlc.stlc_modules_folder_name','stlc::').'show',
+            ]);
+        }
+        if(!isset($this->model)) {
+            $this->setModel($module->model);
+        }
+        if(!isset($this->column_names) || (is_array($this->column_names) && count($this->column_names) == 0)) {
+            $this->setColumnNames($module->table_name);
+        }
+        if(!isset($this->route)) {
+            $this->setRoute(config('stlc.route_prefix') . '/'.$module->table_name);
+        }
         if(isset($module->fields)) {
             $this->setColumns($module->fields);
         }
@@ -172,8 +179,8 @@ class ObjectHelper
         $this->buttons = collect();
 
         // line stack
-        // $this->addButton('line', 'preview', 'view', 'stlc::buttons.preview', 'end');
-        $this->addButton('line', 'clone', 'view', 'stlc::buttons.clone', 'end');
+        $this->addButton('line', 'preview', 'view', 'stlc::buttons.preview', 'end');
+        // $this->addButton('line', 'clone', 'view', 'stlc::buttons.clone', 'end');
         $this->addButton('line', 'update', 'view', 'stlc::buttons.update', 'end');
         $this->addButton('line', 'delete', 'view', 'stlc::buttons.delete', 'end');
         $this->addButton('line', 'restore', 'view', 'stlc::buttons.restore', 'end');

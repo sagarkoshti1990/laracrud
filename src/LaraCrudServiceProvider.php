@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Blade;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
 use Sagartakle\Laracrud\Helpers\FormBuilder;
+use Sagartakle\Laracrud\Helpers\CustomHelper;
 
 class LaraCrudServiceProvider extends ServiceProvider
 {
@@ -39,6 +40,7 @@ class LaraCrudServiceProvider extends ServiceProvider
         $this->app->booting(function() {
             $loader = AliasLoader::getInstance();
             $loader->alias('FormBuilder', FormBuilder::class);
+            $loader->alias('CustomHelper', CustomHelper::class);
         });
     }
 
@@ -62,14 +64,14 @@ class LaraCrudServiceProvider extends ServiceProvider
             // Routes
             __DIR__.DIRECTORY_SEPARATOR.'Routes'.DIRECTORY_SEPARATOR.'admin.php' => base_path('routes'.DIRECTORY_SEPARATOR.'stlc.php'),
 
-            // stlc auth
-            __DIR__.DIRECTORY_SEPARATOR.'Controllers'.DIRECTORY_SEPARATOR.'Auth' => base_path('app'.DIRECTORY_SEPARATOR.'Http'.DIRECTORY_SEPARATOR.'Controllers'.DIRECTORY_SEPARATOR.'Auth'),
+            // // stlc auth
+            // __DIR__.DIRECTORY_SEPARATOR.'Controllers'.DIRECTORY_SEPARATOR.'Auth' => base_path('app'.DIRECTORY_SEPARATOR.'Http'.DIRECTORY_SEPARATOR.'Controllers'.DIRECTORY_SEPARATOR.'Auth'),
             
-            // stlc auth view
-            __DIR__.DIRECTORY_SEPARATOR.'View'.DIRECTORY_SEPARATOR.'auth' => base_path('resources'.DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.'auth'),
+            // // stlc auth view
+            // __DIR__.DIRECTORY_SEPARATOR.'View'.DIRECTORY_SEPARATOR.'auth' => base_path('resources'.DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.'auth'),
             
-            // stlc layouts
-            __DIR__.DIRECTORY_SEPARATOR.'View'.DIRECTORY_SEPARATOR.'layouts' => base_path('resources'.DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.'layouts'),
+            // // stlc layouts
+            // __DIR__.DIRECTORY_SEPARATOR.'View'.DIRECTORY_SEPARATOR.'layouts' => base_path('resources'.DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.'layouts'),
 
             // migration
             __DIR__.DIRECTORY_SEPARATOR.'Migrations' => base_path('database'.DIRECTORY_SEPARATOR.'migrations'),

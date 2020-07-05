@@ -1,4 +1,4 @@
-@extends('layouts.parentapp')
+@extends(config('stlc.stlc_modules_folder_name','stlc::').'layouts.parentapp')
 
 @section('p_content')
     <div class="wrapper">

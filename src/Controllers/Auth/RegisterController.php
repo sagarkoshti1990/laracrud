@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace Sagartakle\Laracrud\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -113,7 +113,7 @@ class RegisterController extends Controller
 
         // $this->data['title'] = trans('base.register'); // set the page title
 
-        return view('auth.register', $this->data);
+        return view(config('stlc.stlc_modules_folder_name','stlc::').'auth.register', $this->data);
     }
 
     /**

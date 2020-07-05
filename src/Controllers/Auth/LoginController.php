@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace Sagartakle\Laracrud\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
@@ -34,21 +34,13 @@ class LoginController extends Controller
     public function __construct()
     {
         $this->middleware('guest', ['except' => 'logout']);
-
         // ----------------------------------
-        // Use the admin prefix in all routes
-
         // If not logged in redirect here.
-        $this->loginPath = property_exists($this, 'loginPath') ? $this->loginPath
-            : config('stlc.route_prefix', 'admin').'/login';
-
+        $this->loginPath = config('stlc.route_prefix', 'admin').'/login';
         // Redirect here after successful login.
-        $this->redirectTo = property_exists($this, 'redirectTo') ? $this->redirectTo
-            : config('stlc.route_prefix', 'admin').'/dashboard';
-
+        $this->redirectTo = config('stlc.route_prefix', 'admin').'/dashboard';
         // Redirect here after logout.
-        $this->redirectAfterLogout = property_exists($this, 'redirectAfterLogout') ? $this->redirectAfterLogout
-            : config('stlc.route_prefix', 'admin');
+        $this->redirectAfterLogout = config('stlc.route_prefix', 'admin');
         // ----------------------------------
     }
 
@@ -63,10 +55,10 @@ class LoginController extends Controller
      */
     public function showLoginForm()
     {
-        $this->data['title'] = trans('base.login'); // set the page title
+        $this->data['title'] = 'Login'; // set the page title
 
         if(User::all()->count()) {
-            return view('auth.login', $this->data);
+            return view(config('stlc.stlc_modules_folder_name','stlc::').'auth.login', $this->data);
         } else {
             return redirect()->guest(config('stlc.route_prefix', 'admin').'/register');
         }

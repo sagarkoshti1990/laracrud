@@ -1,9 +1,9 @@
-@extends('layouts.app')
+@extends(config('stlc.stlc_modules_folder_name','stlc::').'layouts.app')
 
 @section('content')
     <div class="row">
         <div class="col-md-12">
-            <div class="box box-widget widget-user mb-0">
+            <div class="box box-widget widget-user mb-0 bg-info">
                 <div class="bg-dark-purple p-3">
                     <div class="row">
                         <div class="col-md-6">

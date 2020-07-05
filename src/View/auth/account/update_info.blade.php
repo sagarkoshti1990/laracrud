@@ -1,20 +1,16 @@
-@extends('layouts.app')
+@extends(config('stlc.stlc_modules_folder_name','stlc::').'layouts.app')
 
 @section('header')
 <section class="content-header">
-    <h1>
-        {{ trans('base.my_account') }}
-    </h1>
+    <h1>My Account</h1>
     <ol class="breadcrumb">
         <li>
-            <a href="{{ url('/') }}">{{-- Setting::value('COMPANY_NAME','Company') --}}</a>
+            <a href="{{ url('/') }}"></a>
         </li>
         <li>
-            <a href="{{ route('stlc.account.info') }}">{{ trans('base.my_account') }}</a>
+            <a href="{{ route('stlc.account.info') }}">My Account</a>
         </li>
-        <li class="active">
-            {{ trans('base.update_account_info') }}
-        </li>
+        <li class="active">Update Account Info</li>
     </ol>
 </section>
 @endsection
@@ -22,7 +18,7 @@
 @section('content')
 <div class="row">
     <div class="col-md-3">
-        @include('auth.account.sidemenu')
+        @include(config('stlc.stlc_modules_folder_name','stlc::').'auth.account.sidemenu')
     </div>
     <div class="col-md-9">
         <div id="tab-information">
@@ -31,7 +27,7 @@
                     @if(isset(auth()->user()->context()->id))
                         @displayAll($crud)
                     @else
-                        <h1 class="text-center"><span class="label large bg-red text-center">No Context Found</span></h1>
+                        <h3 class="text-center"><span class="badge bg-red text-center">No Context Found</span></h3>
                     @endif
                 </div>
             </div>

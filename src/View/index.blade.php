@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends(config('stlc.stlc_modules_folder_name','stlc::').'layouts.app')
 @section('header')
     <section class="content-header">
         <h1>
@@ -86,7 +86,7 @@
                 "aaSorting": [],
                 "processing": true,
                 "serverSide": true,
-                "responsive": true,
+                // "responsive": true,
                 "language": {"paginate": {"next":">","previous":"<"}},
                 "ajax": {
                     "url": "{!! url($crud->route.'/datatable') !!}",

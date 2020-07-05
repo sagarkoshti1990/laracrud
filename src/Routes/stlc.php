@@ -1,5 +1,4 @@
 <?php
-
 /*
 |--------------------------------------------------------------------------
 | Admin Routes
@@ -13,31 +12,38 @@
 
 Route::group([
     'prefix'     => config('stlc.route_prefix', 'admin'),
-    'middleware' => config('stlc.route_group_middleware_all', 'auth'),
+    'middleware' => ['web',config('stlc.route_group_middleware_all', 'auth')],
     'namespace'  => config('stlc.route_group_namespace', '\App\Http\Controllers\Admin'),
 ], function () {
-    
     if(Schema::hasTable('modules')) {
-        $modules = \Sagartakle\Laracrud\Models\Module::whereNotIn('name',['Users','Roles','Uploads'])->get();
+        $modules = \Sagartakle\Laracrud\Models\Module::whereNotIn('name',config('stlc.restrictedModules.routeAdmin',['Users','Uploads','Roles']))->get();
         if(isset($modules) && count($modules)) {
             foreach ($modules as $key => $module) {
                 Crud::resource($module->table_name, $module->controller);
             }
         }
     }
-    
+});
+
+Route::group([
+    'prefix'     => config('stlc.route_prefix', 'admin'),
+    'middleware' => ['web',config('stlc.route_group_middleware_all', 'auth')],
+    'namespace'  => '\Sagartakle\Laracrud\Controllers',
+], function () {
+    Route::get('dashboard','ModulesController@dashboard');
+    Route::get('/','ModulesController@dashboard');
 });
 
 Route::group([
     'prefix'     => config('stlc.stlc_route_prefix', 'developer'),
-    'middleware' => config('stlc.stlc_route_group_middleware', 'auth'),
+    'middleware' => ['web',config('stlc.stlc_route_group_middleware', 'auth')],
     'namespace'  => '\Sagartakle\Laracrud\Controllers',
 ], function () {
     
     // modules
     Crud::resource("modules", "ModulesController");
     Crud::resource('roles', 'RolesController');
-    Crud::resource('upload', 'UploadsController');
+    Crud::resource('uploads', 'UploadsController');
     Route::get('data_select', 'ModulesController@select2');
     Route::get('fields', 'ModulesController@index');
     Route::post('fields', 'ModulesController@add_field');
@@ -70,23 +76,16 @@ Route::group([
     Route::post('/uploads_update_filename', 'UploadsController@update_filename');
     Route::post('/uploads_update_public', 'UploadsController@update_public');
     Route::post('/uploads_delete_file', 'UploadsController@delete_file');
-});
-
-Route::group([
-    'namespace'  => '\App\Http\Controllers\Auth',
-    'middleware' => config('stlc.stlc_route_group_middleware', 'auth'),
-    'prefix'     => config('stlc.route_prefix', 'admin'),
-],function () {
 
     // if not otherwise configured, setup the "my account" routes
-    Route::get('edit-account-info', 'MyAccountController@getAccountInfoForm')->name('stlc.account.info');
-    Route::post('edit-account-info', 'MyAccountController@postAccountInfoForm');
-    Route::get('change-password', 'MyAccountController@getChangePasswordForm')->name('stlc.account.password');
-    Route::post('change-password', 'MyAccountController@postChangePasswordForm');
+    Route::get('edit-account-info', 'Auth\MyAccountController@getAccountInfoForm')->name('stlc.account.info');
+    Route::post('edit-account-info', 'Auth\MyAccountController@postAccountInfoForm');
+    Route::get('change-password', 'Auth\MyAccountController@getChangePasswordForm')->name('stlc.account.password');
+    Route::post('change-password', 'Auth\MyAccountController@postChangePasswordForm');
 });
 
 Route::group([
-    'namespace'  => '\App\Http\Controllers\Auth',
+    'namespace'  => '\Sagartakle\Laracrud\Controllers\Auth',
     'middleware' => 'web',
     'prefix'     => config('stlc.route_prefix', 'admin'),
 ],function () {

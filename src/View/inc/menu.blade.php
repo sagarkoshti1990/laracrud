@@ -13,87 +13,79 @@
         @endif
     @else
     <li class="nav-item dropdown notifications-menu">
-        <a class="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="bd-versions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <a class="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="bd-versions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
             <i class="fa fa-bell-o"></i>
             <span class="badge badge-warning">9</span>
         </a>
-        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="bd-versions">
-            <ul class="menu">
-                <li>
-                    <a href="#"><i class="fa fa-users text-aqua"></i> 5 new members joined today</a>
-                </li>
-                <li>
-                    <a href="#">
-                        <i class="fa fa-warning text-yellow"></i> Very long description here that may not fit into the
-                        page and may cause design problems
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <i class="fa fa-users text-red"></i> 5 new members joined
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <i class="fa fa-shopping-cart text-green"></i> 25 sales made
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <i class="fa fa-user text-red"></i> You changed your username
-                    </a>
-                </li>
-            </ul>
-        </div>
+        <ul class="dropdown-menu dropdown-menu-right">
+            <li class="header">You have 10 notifications</li>
+            <li>
+                <ul class="menu">
+                    <li><a href="#"><i class="fa fa-users text-aqua"></i> 5 new members joined today</a></li>
+                    <li>
+                        <a href="#">
+                            <i class="fa fa-warning text-yellow"></i>
+                            Very long description here that may not fit into the
+                            page and may cause design problems
+                        </a>
+                    </li>
+                    <li><a href="#"><i class="fa fa-users text-red"></i> 5 new members joined</a></li>
+                    <li><a href="#"><i class="fa fa-shopping-cart text-green"></i> 25 sales made</a></li>
+                    <li><a href="#"><i class="fa fa-user text-red"></i> You changed your username</a></li>
+                </ul>
+            </li>
+            <li class="footer"><a href="#">View all</a></li>
+        </ul>
     </li>
     <li class="nav-item dropdown user-menu" data-toggle="tooltip" title="Profile">
         <a href="#" class="nav-item nav-link dropdown-toggle mr-md-2" data-toggle="dropdown" id="bd-versions-user">
             <img src="{{ Auth::user()->profile_pic() }}" class="user-image" alt="">
             <span class="hidden-xs">{{ Auth::user()->name }}</span>
         </a>
-        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="bd-versions-user">
+        <ul class="dropdown-menu dropdown-menu-right">
             <!-- User image -->
-            <div class="user-header"  style="height:auto">
-                <img src="{{ Auth::user()->profile_pic() }}" class="img-circle" alt="">
+            <li class="user-header">
+                <img src="{{ Auth::user()->profile_pic() }}" class="rounded-circle" alt="">
                 <p></p>
                 @forelse(\Auth::user()->roles as $role)
                     <span class="badge bg-green text-center">{{ $role->label }}</span>
                 @empty
                     <span class="badge bg-red bg-red text-center">Not Assigned</span>
                 @endforelse
-                {{--  @endforeach  --}}
-            </div>
+            </li>
             <!-- Menu Body -->
             @if(\Auth::user()->isSuperAdmin())
-                <div class="user-body p-0">
+                <li class="user-body p-0">
                     <ul class="nav nav-pills nav-justified">
                         <li class="nav-item" role="presentation">
-                            <a class="nav-link" href="{{ url(config('lara.base.route_prefix').'/modules') }}">
+                            <a class="nav-link" href="{{ url(config('stlc.route_prefix').'/modules') }}">
                                 <i class="fa fa-briefcase"></i> Modules
                             </a>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <a class="nav-link" href="{{ url(config('lara.base.route_prefix').'/settings') }}">
-                                <i class="fa fa-cog"></i> 
-                                {{ trans('base.setting') }}
+                            <a class="nav-link" href="{{ url(config('stlc.route_prefix').'/settings') }}">
+                                <i class="fa fa-cog"></i> Setting
                             </a>
                         </li>
                     </ul>
-                </div> 
+                </li>
             @endif
             <!-- Menu Footer-->
-            <div class="user-footer">
-                <div class="text-center"><!-- pull-left -->
-                    {{-- <a href="{{ route('lara.account.info') }}" class="btn bg-green btn-flat btn-sm mb5">
-                        <span><i class="fa fa-user-circle-o"></i> {{ trans('base.my_account') }}</span>
-                    </a> --}}
-                    <a href="{{ url($prefix.'/logout') }}" class="btn bg-orange btn-flat btn-sm mb5">
-                        <i class="fa fa-sign-out"></i>
-                        {{ trans('base.logout') }}
-                    </a>
+            <li class="user-footer">
+                {{-- <div class="pull-left">
+                    <a href="#" class="btn btn-default btn-flat">Profile</a>
                 </div>
-            </div>
-        </div>
+                <div class="pull-right">
+                    <a href="#" class="btn btn-default btn-flat">Sign out</a>
+                </div> --}}
+                <a href="{{ route('stlc.account.info') }}" class="btn bg-green btn-flat btn-sm mb5">
+                    <span><i class="fa fa-user-circle-o"></i> My Account</span>
+                </a>
+                <a href="{{ url($prefix.'/logout') }}" class="btn bg-orange btn-flat btn-sm mb5">
+                    <span><i class="fa fa-sign-out"></i>logout</span>
+                </a>
+            </li>
+        </ul>
     </li>
     @endif
 </ul>
