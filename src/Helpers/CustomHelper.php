@@ -413,7 +413,7 @@ class CustomHelper
     public static function print_menu(Menu $menu, $prefix = null,$checkAccess = false)
     {
         if(!isset($prefix)) {
-            $prefix_url = config("lara.base.route_prefix",'admin').'/';
+            $prefix_url = config("stlc.route_prefix",'admin').'/';
         } else if(isset($prefix) && ($prefix == "no_prefix" || $prefix == "")) {
             $prefix_url = "";
         } else {

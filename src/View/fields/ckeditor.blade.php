@@ -1,6 +1,6 @@
 <!-- CKeditor -->
 @php
-    $ck_count= \App\Helpers\crud\FormBuilder::$count['CKEditor'];
+    $ck_count= \FormBuilder::$count['CKEditor'];
     $field['attributes']['id'] = $field['attributes']['id'].++$ck_count;
 @endphp
 <div @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_wrapper_attributes',['field_name' => $field['name']])>

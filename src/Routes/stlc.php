@@ -51,6 +51,8 @@ Route::group([
     Route::get('fields/{id}/edit', 'ModulesController@edit_field');
     Route::put('fields/{id}', 'ModulesController@update_field');
     Route::delete('fields/{id}', 'ModulesController@destroy_field');
+    Route::get('table', 'ModulesController@crudTable');
+    Route::post('getModuleData', 'ModulesController@getModuleData');
 
     Route::post('context/{id}/comment', 'ModulesController@comment');
     Route::post('context/{id}/comment_history', 'ModulesController@comment_history');

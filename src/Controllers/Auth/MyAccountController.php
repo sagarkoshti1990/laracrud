@@ -79,7 +79,7 @@ class MyAccountController extends Controller
         });
         if ($validator->fails()) {
             if(isset($data->src_ajax)) {
-                return response()->json(['status' => 'validation_error', 'massage' => 'Validation Error', 'errors' => $validator->getMessage()]);
+                return response()->json(['status' => 'validation_error', 'message' => 'Validation Error', 'errors' => $validator->getMessage()]);
             } else {
                 return redirect()->back()->withErrors($validator)->withInput();
             }

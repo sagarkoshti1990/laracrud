@@ -83,7 +83,7 @@ class __Class__Controller extends Controller
 			
 			if ($validator->fails()) {
                 if(isset($request->src_ajax) && $request->src_ajax) {
-                    return response()->json(['status' => 'validation_error', 'massage' => 'Validation Error', 'errors' => $validator->errors()]);
+                    return response()->json(['status' => 'validation_error', 'message' => 'Validation Error', 'errors' => $validator->errors()]);
                 } else {
                     return redirect()->back()->withErrors($validator)->withInput();
                 }
@@ -115,7 +115,7 @@ class __Class__Controller extends Controller
             if(isset($request->go_view) && $request->go_view) {
                 return redirect($this->crud->route.'/'.$item->id);
             } else if(isset($request->src_ajax) && $request->src_ajax) {
-                return response()->json(['status' => 'success', 'massage' => $this->crud->label." ".trans('crud.insert_success'), 'item' => $item]);
+                return response()->json(['status' => 'success', 'message' => $this->crud->label." ".trans('crud.insert_success'), 'item' => $item]);
             } else if(isset($request->src)) {
                 return redirect($request->src);
             } else {
@@ -149,7 +149,7 @@ class __Class__Controller extends Controller
                 $crud->row = $item;
             
                 if(isset($request->get_data_ajax) && $request->get_data_ajax) {
-                    return response()->json(['status' => 'success', 'massage' => 'updated', 'item' => $item]);
+                    return response()->json(['status' => 'success', 'message' => 'updated', 'item' => $item]);
                 } else {
                     return view('__ViewFilePathShow__', [
                         'crud' => $crud,
@@ -160,7 +160,7 @@ class __Class__Controller extends Controller
                 }
             } else {
                 if(isset($request->get_data_ajax) && $request->get_data_ajax) {
-                    return response()->json(['status' => 'failed', 'massage' => trans('crud.data_not_found')]);
+                    return response()->json(['status' => 'failed', 'message' => trans('crud.data_not_found')]);
                 } else {
                     return view('errors.404', [
                         'record_id' => $id,
@@ -170,7 +170,7 @@ class __Class__Controller extends Controller
             }
         } else {
             if(isset($request->get_data_ajax) && $request->get_data_ajax) {
-                return response()->json(['status' => 'failed', 'massage' => trans('crud.unauthorized_access')]);
+                return response()->json(['status' => 'failed', 'message' => trans('crud.unauthorized_access')]);
             } else {
                 abort(403, trans('crud.unauthorized_access'));
             }
@@ -261,7 +261,7 @@ class __Class__Controller extends Controller
                 }
 
                 if(isset($request->src_ajax) && $request->src_ajax) {
-                    return response()->json(['status' => 'success', 'massage' => $this->crud->label." ".trans('crud.update_success'), 'item' => $item]);
+                    return response()->json(['status' => 'success', 'message' => $this->crud->label." ".trans('crud.update_success'), 'item' => $item]);
                 } else if(isset($request->src)) {
                     return redirect($request->src);
                 } else {
@@ -293,7 +293,7 @@ class __Class__Controller extends Controller
                 // \Activity::log(config('App.activity_log.DELETED'), $this->crud, ['old' => $old_item]);
                 
                 if(isset($request->src_ajax) && $request->src_ajax) {
-                    return response()->json(['status' => 'success', 'massage' => 'deleted']);
+                    return response()->json(['status' => 'success', 'message' => 'deleted']);
                 } else if(isset($request->src)) {
                     return redirect($request->src);
                 } else {
@@ -302,14 +302,14 @@ class __Class__Controller extends Controller
                 }
             } else {
                 if(isset($request->src_ajax) && $request->src_ajax) {
-                    return response()->json(['status' => 'failed', 'massage' => trans('crud.data_not_found')]);
+                    return response()->json(['status' => 'failed', 'message' => trans('crud.data_not_found')]);
                 } else {
                     abort(403, trans('crud.data_not_found'));
                 }
             }
         } else {
             if(isset($request->src_ajax) && $request->src_ajax) {
-                return response()->json(['status' => 'failed', 'massage' => trans('crud.unauthorized_access')]);
+                return response()->json(['status' => 'failed', 'message' => trans('crud.unauthorized_access')]);
             } else {
                 abort(403, trans('crud.unauthorized_access'));
             }
@@ -334,7 +334,7 @@ class __Class__Controller extends Controller
                 // \Activity::log(config('App.activity_log.restore'), $this->crud, ['old' => $old_item]);
                 
                 if(isset($request->src_ajax) && $request->src_ajax) {
-                    return response()->json(['status' => 'success', 'massage' => 'restore']);
+                    return response()->json(['status' => 'success', 'message' => 'restore']);
                 } else if(isset($request->src)) {
                     return redirect($request->src);
                 } else {
@@ -343,14 +343,14 @@ class __Class__Controller extends Controller
                 }
             } else {
                 if(isset($request->src_ajax) && $request->src_ajax) {
-                    return response()->json(['status' => 'failed', 'massage' => trans('crud.data_not_found')]);
+                    return response()->json(['status' => 'failed', 'message' => trans('crud.data_not_found')]);
                 } else {
                     abort(403, trans('crud.data_not_found'));
                 }
             }
         } else {
             if(isset($request->src_ajax) && $request->src_ajax) {
-                return response()->json(['status' => 'failed', 'massage' => trans('crud.unauthorized_access')]);
+                return response()->json(['status' => 'failed', 'message' => trans('crud.unauthorized_access')]);
             } else {
                 abort(403, trans('crud.unauthorized_access'));
             }

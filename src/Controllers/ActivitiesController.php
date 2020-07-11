@@ -115,14 +115,14 @@ class ActivitiesController extends Controller
         ]);
         
         if ($validator->fails()) {
-            return response()->json(['status' => 'validation_error', 'massage' => 'created', 'errors' => $validator->errors()]);
+            return response()->json(['status' => 'validation_error', 'message' => 'created', 'errors' => $validator->errors()]);
         } else {
             $modal = $request->context_type;
             $item = $modal::find($request->context_id);
             $activities = $item->activities()->orderBy('created_at', 'desc')->paginate(10);
             $data = view(config('stlc.stlc_modules_folder_name','stlc::').'inc.activities.logs_data',['activities' => $activities])->render();
 
-            return response()->json(['status' => 'success', 'massage' => 'success', 'data' => $activities,'html' => $data]);
+            return response()->json(['status' => 'success', 'message' => 'success', 'data' => $activities,'html' => $data]);
         }
     }
     /**
@@ -146,7 +146,7 @@ class ActivitiesController extends Controller
                 return response()->json([
                     'activity' => $activity,
                     'status' => 'success',
-                    'massage' => 'updated'
+                    'message' => 'updated'
                 ]);
             } else {
                 return view('errors.404', [

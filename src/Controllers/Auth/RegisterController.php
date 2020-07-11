@@ -87,7 +87,7 @@ class RegisterController extends Controller
                 \DB::rollback();
                 $errors = (config('stlc.app_debug')) ? $e->getMessage() : "500 error";
                 if(isset($data->src_ajax)) {
-                    return response()->json(['status' => 'validation_error', 'massage' => 'Validation Error', 'errors' => $errors]);
+                    return response()->json(['status' => 'validation_error', 'message' => 'Validation Error', 'errors' => $errors]);
                 } else {
                     return redirect()->back()->withErrors($errors)->withInput();
                 }

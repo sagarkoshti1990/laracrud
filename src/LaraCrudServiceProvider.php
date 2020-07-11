@@ -8,6 +8,7 @@ use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
 use Sagartakle\Laracrud\Helpers\FormBuilder;
 use Sagartakle\Laracrud\Helpers\CustomHelper;
+use Sagartakle\Laracrud\Models\Module;
 
 class LaraCrudServiceProvider extends ServiceProvider
 {
@@ -41,6 +42,7 @@ class LaraCrudServiceProvider extends ServiceProvider
             $loader = AliasLoader::getInstance();
             $loader->alias('FormBuilder', FormBuilder::class);
             $loader->alias('CustomHelper', CustomHelper::class);
+            $loader->alias('Module', Module::class);
         });
     }
 

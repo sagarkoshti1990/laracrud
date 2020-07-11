@@ -7,7 +7,7 @@
     <textarea
         name="{{ $field['name'] }}"
         @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_attributes')
-        rows="{{ $field['attributes']['rows'] ?? '10' }}"
+        rows="{{ $field['attributes']['rows'] ?? '2' }}"
     >{{ old($field['name']) ? old($field['name']) : (isset($field['value']) ? $field['value'] : (isset($field['default']) ? $field['default'] : '' )) }}</textarea>
     @if ($errors->has($field['name']))
         <span class="help-block">{{ $errors->first($field['name']) }}</span>

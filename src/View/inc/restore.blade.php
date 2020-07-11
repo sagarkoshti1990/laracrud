@@ -57,7 +57,7 @@
                             } else {
                                 new PNotify({
                                     title: result.status,
-                                    text: result.massage,
+                                    text: result.message,
                                     type: "warning"
                                 });
                             }

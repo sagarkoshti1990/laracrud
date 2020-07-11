@@ -15,7 +15,7 @@
 				<div class="row">
 					<div class="col-xs-2 col-sm-2 col-md-2 pr0">
 						<div class="fm_folder_selector">
-							<form action="{{ url(config('lara.base.route_prefix') . '/upload_files')}}" id="fm_dropzone" enctype="multipart/form-data" method="POST">
+							<form action="{{ url(config('stlc.route_prefix') . '/upload_files')}}" id="fm_dropzone" enctype="multipart/form-data" method="POST">
 								{{ csrf_field() }}
 								<div class="row">
 									<div class="col-xs-12 col-sm-12 col-md-12">
@@ -254,9 +254,9 @@
 		// function loadFMFiles(type = "") {
 		// 	var url1 = "";
 		// 	if(isset(type) && type != "") {
-		// 		url1 = "{{ url(config('lara.base.route_prefix')) }}/uploaded_files?file_type="+type;
+		// 		url1 = "{{ url(config('stlc.route_prefix')) }}/uploaded_files?file_type="+type;
 		// 	} else {
-		// 		url1 = "{{ url(config('lara.base.route_prefix')) }}/uploaded_files";
+		// 		url1 = "{{ url(config('stlc.route_prefix')) }}/uploaded_files";
 		// 	}
 		// 	// load uploaded files
 		// 	$.ajax({
@@ -295,7 +295,7 @@
 		// });
 		--}}
 		var aspectRatio = '1';
-		var file_size_limit = "{{ config('lara.base.file_upload_size') }}";
+		var file_size_limit = "{{ config('stlc.file_upload_size') }}";
 		var fm_dropzone = new Dropzone("#fm_dropzone", {
 			maxFilesize: file_size_limit,
 			acceptedFiles : acceptedFiles,

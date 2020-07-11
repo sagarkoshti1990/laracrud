@@ -62,7 +62,7 @@
                 var html = `<option value="">{{ 'Select '.str_replace('*','',strip_tags($field['label'])) }} id</option>`;
                 $.ajax({
                     type: "Post",
-                    url: "{{ url(config('lara.base.route_prefix', 'admin').'/getModuleData') }}",
+                    url: "{{ url(config('stlc.stlc_route_prefix', 'developer').'/getModuleData') }}",
                     data: {model:model},
                     success: function (data) {
                         // console.log(data);

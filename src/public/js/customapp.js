@@ -195,7 +195,7 @@ function datatable_details(table,table_data) {
                         table_data['datatable']['filter'][0][1] = item_id;
                         datatable_assined(table,table_data['datatable']);
                     } else {
-                        row.child("<p class='error'>"+data.massage+"</p>").show();
+                        row.child("<p class='error'>"+data.message+"</p>").show();
                     }
                     tr.addClass('shown');
                 }

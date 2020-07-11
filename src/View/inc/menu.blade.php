@@ -1,12 +1,12 @@
 @php
-    $prefix = $prefix ?? config('lara.base.route_prefix', 'admin');
+    $prefix = $prefix ?? config('stlc.route_prefix', 'admin');
 @endphp
 <ul class="navbar-nav flex-row ml-md-auto d-none d-md-flex">
     @if (Auth::guest())
         <li class="nav-item">
             <a class="nav-item nav-link" href="{{ url($prefix.'/login') }}">{{ trans('base.login') }}</a>
         </li>
-        @if (config('lara.base.registration_open'))
+        @if (config('stlc.registration_open'))
             <li class="nav-item">
                 <a class="nav-item nav-link" href="{{ url($prefix.'/register') }}">{{ trans('base.register') }}</a>
             </li>

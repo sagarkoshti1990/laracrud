@@ -51,7 +51,7 @@
                                 } else {
                                     Swal.fire({
                                         title: result.status,
-                                        text: result.massage,
+                                        text: result.message,
                                         type: "warning"
                                     });
                                 }
