@@ -43,6 +43,7 @@ class LaraCrudServiceProvider extends ServiceProvider
             $loader->alias('FormBuilder', FormBuilder::class);
             $loader->alias('CustomHelper', CustomHelper::class);
             $loader->alias('Module', Module::class);
+            $loader->alias('Carbon', \Carbon\Carbon::class);
         });
     }
 

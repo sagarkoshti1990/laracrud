@@ -61,6 +61,10 @@ class Field extends Model
     |--------------------------------------------------------------------------
     */
     
+    public function getJsonModule()
+    {
+        return Module::where('name', str_replace("@", "", $this->json_values))->first();
+    }
     /**
      * Get Array of Fields for given Module
      *

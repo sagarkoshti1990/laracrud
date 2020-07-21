@@ -214,7 +214,7 @@ trait Fields
         foreach ($fields as $field) {
             if(isset($field->field_type->name) && in_array($field->field_type->name, ['Month'])) {
                 if($field->field_type->name == 'Month' && isset($data[$field->name]) && $data[$field->name]) {
-                    $data[$field->name] = \Carbon::parse('01-'.$data[$field->name])->format('Y-m-d');
+                    $data[$field->name] = \Carbon::parse($data[$field->name])->format('Y-m-d');
                 // } else if(in_array($field->field_type->name ,['Datetime']) && isset($data[$field->name])) {
                 //     $data[$field->name] = \CustomHelper::date_format($data[$field->name], 'data_save_simpel_with_time');
                 // } else if(in_array($field->field_type->name ,['Datetime_picker']) && isset($data[$field->name])) {

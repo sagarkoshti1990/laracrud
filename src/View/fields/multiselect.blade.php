@@ -11,7 +11,7 @@
     	multiple>
 
 		@if (!isset($field['allows_null']) || $field['allows_null'])
-            <option value="">{{ trans('crud.none_value') }}</option>
+            <option value="">None</option>
 		@endif
 
         @if (isset($field['model']))

@@ -88,4 +88,8 @@ return [
     // LIST VIEW (table view)
         // How many items should be shown by default by the Datatable?
         'default_page_length' => 10,
+        
+    // File manager
+    // size in mb
+    'file_upload_size' => '512',
 ];

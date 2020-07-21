@@ -1911,11 +1911,11 @@ class Module extends Model
                             $col .= "max:" . $field['maxlength'] . "|";
                         }
                     }
-                    if(in_array($ftypes[$field['field_type']["id"]], ["Datetime_picker","Datetime"])) {
-                        $col .= "date_format:Y-m-d H:i:s";
+                    if(in_array($ftypes[$field['field_type']["id"]], ["Datetime_picker"])) {
+                        $col .= 'date_format:"Y-m-d H:i:s"';
                     }
-                    if(in_array($ftypes[$field['field_type']["id"]], ["Date","Date_picker"])) {
-                        $col .= "date_format:Y-m-d";
+                    if(in_array($ftypes[$field['field_type']["id"]], ["Date_picker"])) {
+                        $col .= 'date_format:"Y-m-d"';
                     }
 
                     if(in_array($ftypes[$field['field_type']["id"]], array("Email"))) {
@@ -1934,9 +1934,7 @@ class Module extends Model
                         $col .= "in:" . implode(',',$json_arrya);
                     }
                     
-                    if(in_array($ftypes[$field['field_type']["id"]], ['Date','Date_picker','Date_range','Datetime','Datetime_picker',])) {
-                        $col .= "date";
-                    }
+                    
                     // 'name' => 'required|unique|min:5|max:256',
                     // 'author' => 'required|max:50',
                     // 'price' => 'decimal',
@@ -1957,7 +1955,7 @@ class Module extends Model
                         $ps_type = $field['name'].'_type';
                         $ps_id = $field['name'].'_id';
                         $rules[$ps_type] = trim(($req)."exists:modules,model", "|");
-                        if(isset($request[$ps_type])) {
+                        if(isset($request[$ps_type]) && $request[$ps_type] != "") {
                             $object = (new $request[$ps_type])->getTable();
                             $rules[$ps_id] = trim(($req)."exists:".$object.",id", "|");
                         }

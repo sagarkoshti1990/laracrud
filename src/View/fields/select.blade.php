@@ -10,7 +10,7 @@
         @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_attributes')
         >
         @if (isset($field['allows_null']) && $field['allows_null']==true)
-            <option value="">{{ trans('crud.none_value') }}</option>
+            <option value="">None</option>
         @endif
 
         @if (isset($field['model']))

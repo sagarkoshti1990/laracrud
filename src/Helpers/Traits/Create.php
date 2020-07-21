@@ -47,7 +47,7 @@ trait Create
                         //     \CustomHelper::ajprint($pm_value);
                         // }
                         
-                        if(isset($pm_value)) {
+                        if(isset($pm_value) && method_exists($item,'polymorphic_save')) {
                             $item->polymorphic_save($pm_field->name,$pm_value);
                         }
                     }

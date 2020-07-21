@@ -10,6 +10,8 @@
 |
 */
 
+Route::get('files/{hash}/{name}', '\Sagartakle\Laracrud\Controllers\UploadsController@get_file');
+
 Route::group([
     'prefix'     => config('stlc.route_prefix', 'admin'),
     'middleware' => ['web',config('stlc.route_group_middleware_all', 'auth')],

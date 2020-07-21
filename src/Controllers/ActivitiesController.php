@@ -2,7 +2,7 @@
 
 namespace Sagartakle\Laracrud\Controllers;
 
-use Illuminate\Routing\Controller;
+use Sagartakle\Laracrud\Controllers\StlcController;
 use Illuminate\Http\Request;
 
 use DB;
@@ -10,11 +10,10 @@ use Validator;
 use Yajra\DataTables\Datatables;
 use Sagartakle\Laracrud\Models\Module;
 use Sagartakle\Laracrud\Models\Field;
-use Collective\Html\FormFacade as Form;
 use Sagartakle\Laracrud\Models\Activity;
 use Sagartakle\Laracrud\Helpers\ObjectHelper;
 
-class ActivitiesController extends Controller
+class ActivitiesController extends StlcController
 {
     function __construct() {
         
@@ -32,47 +31,33 @@ class ActivitiesController extends Controller
             [
 				'name' => 'user_id',
 				'label' => 'Name',
-				'field_type' => 'Text',
-				'unique' => false,
-				'defaultvalue' => Null,
-				'minlength' => '0',
-				'maxlength' => '0',
+				'field_type' => 'Select2',
 				'required' => true,
-				'show_index' => true
+                'show_index' => true,
+                'json_values' => '@Users'
 			],[
-				'name' => 'context_id',
-				'label' => 'label',
-				'field_type' => 'Text',
-				'unique' => false,
-				'defaultvalue' => Null,
-				'minlength' => '0',
-				'maxlength' => '0',
+				'name' => 'context',
+				'label' => 'Module',
+				'field_type' => 'Polymorphic_select',
 				'required' => true,
 				'show_index' => true
 			],[
 				'name' => 'action',
-				'label' => 'Table Name',
+				'label' => 'Action',
 				'field_type' => 'Text',
-				'unique' => false,
-				'defaultvalue' => Null,
-				'minlength' => '0',
-				'maxlength' => '0',
 				'required' => true,
 				'show_index' => true
             ],[
 				'name' => 'description',
-				'label' => 'Table Name',
-				'field_type' => 'Text',
-				'unique' => false,
-				'defaultvalue' => Null,
-				'minlength' => '0',
-				'maxlength' => '0',
+				'label' => 'Description',
+				'field_type' => 'Textarea',
 				'required' => true,
 				'show_index' => true
             ]
         ];
 
         $this->crud->setModule($module);
+        $this->crud->setRoute(config('stlc.stlc_route_prefix', 'developer').'/'.$module->table_name);
     }
 
     /**
@@ -80,23 +65,14 @@ class ActivitiesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         $crud = $this->crud;
-		
 		if(\Auth::user()->isSuperAdmin()) {
-            
             $activities = Activity::all();
-            // echo "<pre>".json_encode($crud,JSON_PRETTY_PRINT);exit;
             $this->data['crud'] = $crud;
             $this->data['title'] = ucfirst($crud->labelPlural);
-
-            // get all entries if AJAX is not enabled
-            // if (! $this->data['crud']->ajaxTable()) {
-            //     $this->data['entries'] = $activities;
-            // }
-
-            return view('admin.Activities.index', $this->data);
+            return view('stlc::Activities.index', $this->data);
         } else {
             abort(403, trans('crud.unauthorized_access'));
         }
@@ -157,5 +133,47 @@ class ActivitiesController extends Controller
         } else {
             abort(403, trans('crud.unauthorized_access'));
         }
+    }
+    
+    /**
+     * Server side Datatable fetch via Ajax
+     *
+     * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function datatable(Request $request)
+    {
+        $crud = $this->crud;
+        $listing_cols = ['id','user_id','context_id','action','description'];
+        $values = DB::table($crud->table_name)->select($listing_cols)->latest();
+        if(isset($request->filter)) {
+			$values->where($request->filter);
+		}
+        
+        $out = Datatables::of($values)->make();
+        $data = $out->getData();
+        // array_splice($listing_cols, 2, 0, "index_name");
+        
+        for($i = 0; $i < count($data->data); $i++) {
+            $collectuser = collect($data->data[$i]);
+            $listing_cols = $collectuser->keys()->all();
+            $data->data[$i] = $collectuser->values()->all();
+            // \CustomHelper::ajprint($collectuser);
+            $crud->row = $item = $crud->model->find($data->data[$i][0]);
+            // array_splice($data->data[$i], 2, 0, true);
+            for($j = 0; $j < count($listing_cols); $j++) {
+                $col = $listing_cols[$j];
+                $data->data[$i][$j] = \FormBuilder::get_field_value($crud, $col);
+                if(isset($data->data[$i][$j]) && $col == $crud->module->represent_attr && !isset($item->deleted_at)) {
+                    $data->data[$i][$j] = '<a href="' . url($crud->route .'/'. $item->id) . '">' . $data->data[$i][$j] . '</a>';
+                }
+            }
+
+            // button
+            $output = '<i id="'.$item->id.'" class="fa fa-plus-circle details-control"></i>';
+            $data->data[$i][] = (string)$output;
+        }
+        $out->setData($data);
+        return $out;
     }
 }

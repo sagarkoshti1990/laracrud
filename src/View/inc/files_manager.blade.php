@@ -15,7 +15,7 @@
 				<div class="row">
 					<div class="col-xs-2 col-sm-2 col-md-2 pr0">
 						<div class="fm_folder_selector">
-							<form action="{{ url(config('stlc.route_prefix') . '/upload_files')}}" id="fm_dropzone" enctype="multipart/form-data" method="POST">
+							<form action="{{ url(config('stlc.stlc_route_prefix') . '/upload_files')}}" id="fm_dropzone" enctype="multipart/form-data" method="POST">
 								{{ csrf_field() }}
 								<div class="row">
 									<div class="col-xs-12 col-sm-12 col-md-12">
@@ -44,6 +44,16 @@
 	{{-- <script src="{{ asset('node_modules/dropzone/dist/min/dropzone.min.js') }}"></script> --}}
 	<script src="{{ asset('node_modules/dropzone/dist/dropzone-amd-module.js') }}"></script>
 	<script src="{{ asset('node_modules/cropperjs/dist/cropper.js') }}"></script>
+	<style>
+		.crop-editor{position:fixed;left:0;right:0;top:0;bottom:0;z-index:9999;background-color: #000;}
+		.upload-confirm-btn,.upload-close-btn{position:absolute;left:15px;top:15px;z-index:9999;}
+		.upload-close-btn{right: 15px;left: auto;}
+		div.uploaded_image i.fa-times,a.uploaded_file i.fa.fa-times,a.uploaded_file2 i.fa.fa-times {
+			background: #f10000;display: block;position: absolute;top: -6px;right: -6px;color: #FFF;
+			padding: 2px 2px;border-radius: 50%;text-align: center;width: 15px;height: 15px;font-size: 11px;cursor: pointer;z-index: 999;
+		}
+		.fileObject i.fa{font-size: 1500%;}
+	</style>
 <!-- ================= File Manager ================= -->
 <script>
 	Dropzone.autoDiscover = false;
@@ -342,7 +352,6 @@
 					var image = new Image();
 					image.src = URL.createObjectURL(file);
 					editor.appendChild(image);
-					// Append the editor to the page
 					document.body.appendChild(editor);
 					// Create Cropper.js and pass image
 					var cropper = new Cropper(image, {

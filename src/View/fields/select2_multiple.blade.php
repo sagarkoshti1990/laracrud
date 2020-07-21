@@ -26,8 +26,6 @@
                     }
                     $field['attribute'] = ['title','first_name','last_name'];
                 @endphp
-            @elseif(method_exists($field['model'],'get_module') && in_array($field['model']::get_module()->name, ["Departments"]))
-                @php $selec_list = $field['model']::where('status', '!=', 'Deactive')->get(); @endphp
             @else
                 @php $selec_list = $field['model']::get(); @endphp
             @endif

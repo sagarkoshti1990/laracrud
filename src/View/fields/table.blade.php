@@ -24,7 +24,7 @@
     @endif
     <input class="array-json" type="hidden" name="{{ $field['name'] }}">
     <div class="array-container form-group">
-        <table class="table table-bordered table-striped m-b-0" ng-init="field = '#{{ $field['name'] }}'; items = {{ $items }}; max = {{$max}}; min = {{$min}}; maxErrorTitle = '{{trans('crud.table_cant_add', ['entity' => $item_name])}}'; maxErrorMessage = '{{trans('crud.table_max_reached', ['max' => $max])}}'">
+        <table class="table table-bordered table-striped m-b-0" ng-init="field = '#{{ $field['name'] }}'; items = {{ $items }}; max = {{$max}}; min = {{$min}}; maxErrorTitle = '{{trans(config('stlc.stlc_modules_folder_name','stlc::').'table_cant_add', ['entity' => $item_name])}}'; maxErrorMessage = '{{trans(config('stlc.stlc_modules_folder_name','stlc::').'table_max_reached', ['max' => $max])}}'">
             <thead>
                 <tr>
                     @foreach( $field['columns'] as $prop )
@@ -53,7 +53,7 @@
             </tbody>
         </table>
         <div class="array-controls btn-group m-t-10">
-            <button ng-if="max == -1 || items.length < max" class="btn btn-sm btn-default" type="button" ng-click="addItem()"><i class="fa fa-plus"></i> {{trans('crud.add')}} {{ $item_name }}</button>
+            <button ng-if="max == -1 || items.length < max" class="btn btn-sm btn-default" type="button" ng-click="addItem()"><i class="fa fa-plus"></i> Add {{ $item_name }}</button>
         </div>
     </div>
     @if ($errors->has($field['name']))

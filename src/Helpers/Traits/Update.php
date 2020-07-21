@@ -42,7 +42,7 @@ trait Update
                 $updated = $item->update(collect($data)->only($this->column_names)->toArray());
                 if($polymorphic_multiple_fields->count() > 0) {
                     foreach($polymorphic_multiple_fields as $pm_field) {
-                        if(!isset($data->xeditable) || (isset($data->xeditable) && $data->xeditable != "Yes")) {
+                        if(!isset($data->xeditable) || (isset($data->xeditable) && $data->xeditable != "Yes") && method_exists($item,'polymorphic_save')) {
                             $item->polymorphic_save($pm_field->name,$data->{$pm_field->name});
                         }
                     }

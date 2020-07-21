@@ -10,7 +10,6 @@ use Sagartakle\Laracrud\Helpers\ObjectHelper;
 
 class Activity extends Model
 {
-
 	/**
 	 * The database table used by the model.
 	 *
@@ -120,7 +119,7 @@ class Activity extends Model
         } else if(!($crud instanceof ObjectHelper) && isset($crud['context_type'])) {
             $arr['activity_context_type'] = $crud['context_type'];
         } else {
-            $arr['activity_context_type'] = "Sagartakle\Laracrud\Models\Test";
+            $arr['activity_context_type'] = "App\Models\Test";
         }
 
         if(isset($crud->action)) {
@@ -128,7 +127,7 @@ class Activity extends Model
         } else if(!($crud instanceof ObjectHelper) && isset($crud['action'])) {
             $arr['activity_action'] = $crud['action'];
         } else {
-            $arr['activity_action'] = config('App.activity_log.'.$arr['activity_name'].'.'.strtoupper($action).'.action');
+            $arr['activity_action'] = config('App.activity_log.'.$arr['activity_name'].'.'.strtoupper($action).'.action',$action);
         }
 
         if(isset($crud->description)) {
@@ -136,14 +135,14 @@ class Activity extends Model
         } else if(!($crud instanceof ObjectHelper) && isset($crud['description'])) {
             $arr['activity_description'] = $crud['description'];
         } else {
-            $arr['activity_description'] = config('App.activity_log.'.$arr['activity_name'].'.'.strtoupper($action).'.description');
+            $arr['activity_description'] = config('App.activity_log.'.$arr['activity_name'].'.'.strtoupper($action).'.description',$arr['activity_name'].' '.$action);
         }
-        // dd($arr);
+        // dd($action);
         if(count($data)) {
             if($action == "Created") {
                 $data_new = self::array_remove_null($data['new']);
                 if(is_array($data_new) && count($data_new)) {
-                    self::make([
+                    $activity = self::make([
                         'action' => $arr['activity_action'],
                         'context_type' => $arr['activity_context_type'],
                         'context_id' => $data['new']->id,
@@ -160,7 +159,7 @@ class Activity extends Model
                 $collection = collect($data['old']);
                 $data_old = $collection->diffAssoc($data['new']);
                 if($data_old->isNotEmpty() && $data_new->isNotEmpty()) {
-                    self::make([
+                    $activity = self::make([
                         'action' => $arr['activity_action'],
                         'context_type' => $arr['activity_context_type'],
                         'context_id' => $data['new']->id,
@@ -172,7 +171,7 @@ class Activity extends Model
             } else if($action == "Deleted") {
                 $data_new = self::array_remove_null($data['old']);
                 if(is_array($data_new) && count($data_new)) {
-                    self::make([
+                    $activity = self::make([
                         'action' => $arr['activity_action'],
                         'context_type' => $arr['activity_context_type'],
                         'context_id' => $data['old']->id,
@@ -216,11 +215,10 @@ class Activity extends Model
             if (is_object($data))
                 $data = (array) $data;
         }
-
+        
         // set the user ID
-        if (config('App.log.auto_set_user_id') && !isset($data['userId'])) {
-            $user = call_user_func(config('App.log.auth_method'));
-            $data['userId'] = isset($user->id) ? $user->id : null;
+        if (!isset($data['user_id'])) {
+            $data['user_id'] = Auth::check() ? Auth::id() : null;
         }
 
         // allow "updated" boolean to set action and replace activity text verbs with "Updated"
@@ -275,9 +273,7 @@ class Activity extends Model
         }
 
         // create the record
-        static::create($data);
-
-        return true;
+        return static::create($data);
     }
 
     /**
@@ -423,7 +419,7 @@ class Activity extends Model
     public function getHtmlDescription()
     {
         if($this->action == 'Created') {
-            if($this->context_type == "Sagartakle\Laracrud\Models\Recording") {
+            if($this->context_type == "App\Models\Recording") {
                 return $this->description." By name <a href='".$this->context->filedata->path()."' target='_blank' class='btn btn-link'>".$this->context->filedata->name."</a>";
             } else if($this->context_type == "Actuallymab\LaravelComment\Models\Comment") {
                 return $this->description." By name ".$this->context->{'comment'};
@@ -433,7 +429,7 @@ class Activity extends Model
         } else if($this->action == 'Updated') {
             return view('admin.Activities.update_render',['item' => $this])->render();
         } else if($this->action == 'Deleted') {
-            if($this->context_type == "Sagartakle\Laracrud\Models\Recording") {
+            if($this->context_type == "App\Models\Recording") {
                 return $this->description." By name ".$this->context->filedata->{'path()'};
             } else if($this->context_type == "Actuallymab\LaravelComment\Models\Comment") {
                 return $this->description." By name ".$this->context->{'comment'};
@@ -511,7 +507,7 @@ class Activity extends Model
 
         $descriptionsKeyPrefix = config('App.log.language_key.prefixes.descriptions');
 
-        $makeFirstPerson = $firstPersonIfUser && Auth::check() && Auth::user()->id == $this->user_id;
+        $makeFirstPerson = $firstPersonIfUser && Auth::check() && Auth::id() == $this->user_id;
 
         $you = trans($descriptionsKeyPrefix.'.partials.you');
 

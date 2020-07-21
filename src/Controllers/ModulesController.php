@@ -1255,7 +1255,7 @@ class ModulesController extends StlcController
         }
     }
     
-    public function validate(Request $request)
+    public function customValidator(Request $request)
     {
         $responce = [];
         if(isset($request->rules) && is_array($request->rules)) {
