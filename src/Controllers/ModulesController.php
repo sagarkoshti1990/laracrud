@@ -20,7 +20,7 @@ use Sagartakle\Laracrud\Helpers\CustomHelper;
 
 class ModulesController extends StlcController
 {
-    public $crud;
+    public $crud,$setting_crud;
 
     function __construct() {
 
@@ -168,36 +168,40 @@ class ModulesController extends StlcController
         ];
         $this->crud_filed->setModule($module);
         
-        // $this->setting_crud = new ObjectHelper;
-        // $crud = (object)[];
-        // $crud->name = "Settings";
-        // $crud->label = "Settings";
-        // $crud->table_name = "settings";
-        // $crud->controller = "ModulesController";
-        // $crud->represent_attr = "key";
-        // $crud->icon = "fa-cog";
-        // $crud->model = (Setting::class);
-        // $setting_keys = Setting::select('key')->get()->pluck('key');
-        // $setting_keys = collect(config('stlc.setting_keys'))->whereNotIn('key',$setting_keys)->pluck('key');
-        
-        // $crud->fields = [
-        //     [
-        //         'name' => 'key',
-        //         'label' => 'Key',
-        //         'field_type' => 'Select2',
-        //         'required' => true,
-        //         'show_index' => true,
-        //         'json_values' => $setting_keys
-        //     ],[
-        //         'name' => 'value',
-        //         'label' => 'Vlaue',
-        //         'field_type' => 'Text',
-        //         'required' => true,
-        //         'show_index' => true
-        //     ]
-        // ];
+        if(class_exists(\App\Models\Setting::class)) {
+            $this->setting_crud = new ObjectHelper;
+            $crud = (object)[];
+            $crud->name = "Settings";
+            $crud->label = "Settings";
+            $crud->table_name = "settings";
+            $crud->controller = "ModulesController";
+            $crud->represent_attr = "key";
+            $crud->icon = "fa-cog";
+            $crud->model = (\App\Models\Setting::class);
+            $setting_keys = \App\Models\Setting::select('key')->get()->pluck('key');
+            $setting_keys = collect(config('stlc.setting_keys'))->whereNotIn('key',$setting_keys)->pluck('key');
+            
+            $crud->fields = [
+                [
+                    'name' => 'key',
+                    'label' => 'Key',
+                    'field_type' => 'Select2',
+                    'required' => true,
+                    'show_index' => true,
+                    'json_values' => $setting_keys
+                ],[
+                    'name' => 'value',
+                    'label' => 'Vlaue',
+                    'field_type' => 'Text',
+                    'required' => true,
+                    'show_index' => true
+                ]
+            ];
 
-        // $this->setting_crud->setModule($crud);
+            $this->setting_crud->setModule($crud);
+        } else {
+            $this->setting_crud = ["\App\Models\Setting not found"];
+        }
     }
 
     public function dashboard(Request $request)

@@ -1,4 +1,4 @@
-@extends(config('stlc.stlc_modules_folder_name','stlc::').'layouts.app')
+@extends(config('stlc.stlc_layout_path','stlc::layouts.app'))
 
 @section('header')
     <section class="content-header">

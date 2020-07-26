@@ -9,6 +9,9 @@ use Illuminate\Support\ServiceProvider;
 use Sagartakle\Laracrud\Helpers\FormBuilder;
 use Sagartakle\Laracrud\Helpers\CustomHelper;
 use Sagartakle\Laracrud\Models\Module;
+use Sagartakle\Laracrud\Models\Field;
+use Sagartakle\Laracrud\Models\FieldType;
+use Sagartakle\Laracrud\Helpers\ObjectHelper;
 
 class LaraCrudServiceProvider extends ServiceProvider
 {
@@ -43,6 +46,9 @@ class LaraCrudServiceProvider extends ServiceProvider
             $loader->alias('FormBuilder', FormBuilder::class);
             $loader->alias('CustomHelper', CustomHelper::class);
             $loader->alias('Module', Module::class);
+            $loader->alias('Field', Field::class);
+            $loader->alias('FieldType', FieldType::class);
+            $loader->alias('ObjectHelper', ObjectHelper::class);
             $loader->alias('Carbon', \Carbon\Carbon::class);
         });
     }

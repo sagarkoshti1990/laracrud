@@ -31,41 +31,43 @@ class CreateModulesTable extends Migration
             $table->string('name');
         });
         
-        FieldType::create(["name" => "Address"]);
-        FieldType::create(["name" => "Checkbox"]);
-        FieldType::create(["name" => "CKEditor"]);
-        FieldType::create(["name" => "Color_picker"]);
-        FieldType::create(["name" => "Color"]);
-        FieldType::create(["name" => "Date_picker"]);
-        FieldType::create(["name" => "Date_range"]);
-        FieldType::create(["name" => "Date"]);
-        FieldType::create(["name" => "Datetime_picker"]);
-        FieldType::create(["name" => "Datetime"]);
-        FieldType::create(["name" => "Email"]);
-        FieldType::create(["name" => "File"]);
-        FieldType::create(["name" => "Files"]);
-        FieldType::create(["name" => "Hidden"]);
-        FieldType::create(["name" => "Icon_picker"]);
-        FieldType::create(["name" => "Image"]);
-        FieldType::create(["name" => "Json"]);
-        FieldType::create(["name" => "Month"]);
-        FieldType::create(["name" => "Multiselect"]);
-        FieldType::create(["name" => "Number"]);
-        FieldType::create(["name" => "Password"]);
-        FieldType::create(["name" => "Phone"]);
-        FieldType::create(["name" => "Polymorphic_select"]);
-        FieldType::create(["name" => "Polymorphic_multiple"]);
-        FieldType::create(["name" => "Currency"]);
-        FieldType::create(["name" => "Radio"]);
-        FieldType::create(["name" => "Select"]);
-        FieldType::create(["name" => "Select2_from_ajax"]);
-        FieldType::create(["name" => "Select2_multiple"]);
-        FieldType::create(["name" => "Select2_tags"]);
-        FieldType::create(["name" => "Select2_multiple_tags"]);
-        FieldType::create(["name" => "Select2"]);
-        FieldType::create(["name" => "Table"]);
-        FieldType::create(["name" => "Text"]);
-        FieldType::create(["name" => "Textarea"]);
+        FieldType::insert([
+            ["name" => "Address"],
+            ["name" => "Checkbox"],
+            ["name" => "CKEditor"],
+            ["name" => "Color_picker"],
+            ["name" => "Color"],
+            ["name" => "Date_picker"],
+            ["name" => "Date_range"],
+            ["name" => "Date"],
+            ["name" => "Datetime_picker"],
+            ["name" => "Datetime"],
+            ["name" => "Email"],
+            ["name" => "File"],
+            ["name" => "Files"],
+            ["name" => "Hidden"],
+            ["name" => "Icon_picker"],
+            ["name" => "Image"],
+            ["name" => "Json"],
+            ["name" => "Month"],
+            ["name" => "Multiselect"],
+            ["name" => "Number"],
+            ["name" => "Password"],
+            ["name" => "Phone"],
+            ["name" => "Polymorphic_select"],
+            ["name" => "Polymorphic_multiple"],
+            ["name" => "Currency"],
+            ["name" => "Radio"],
+            ["name" => "Select"],
+            ["name" => "Select2_from_ajax"],
+            ["name" => "Select2_multiple"],
+            ["name" => "Select2_tags"],
+            ["name" => "Select2_multiple_tags"],
+            ["name" => "Select2"],
+            ["name" => "Table"],
+            ["name" => "Text"],
+            ["name" => "Textarea"]
+        ]);
 
         // fields
         Schema::create('fields', function (Blueprint $table) {

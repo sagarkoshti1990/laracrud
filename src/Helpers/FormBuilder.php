@@ -626,7 +626,11 @@ class FormBuilder
             $value = $item[$field_name];
         } else if(isset($crud) && is_object($crud) && isset($crud->row)) {
             $item = $crud->row;
-            $value = $item->{$field_name};
+            if(is_array($item)) {
+                $value = $item[$field_name];
+            } else {
+                $value = $item->{$field_name};
+            }
         }
         
         if(isset($field_type)) {
@@ -1134,8 +1138,12 @@ class FormBuilder
     public static function pageAccess($page_name, $access_type = "view", $user_id = 0)
     {
         // Check Module access by hasAccess method
-        $page = Page::where('name',$page_name)->first();
-        return Module::hasAccess($page, $access_type, $user_id);
+        if(!class_exists(\App\Models\Page::class)) {
+            $page = Page::where('name',$page_name)->first();
+            return Module::hasAccess($page, $access_type, $user_id);
+        } else {
+            return true;
+        }
     }
     /**
      * Check Whether User has Module Field Access

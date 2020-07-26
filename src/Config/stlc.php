@@ -43,7 +43,7 @@ return [
     'stlc_route_prefix' => 'developer',
     'stlc_route_group_middleware' => 'auth',
     'stlc_modules_folder_name' => 'stlc::',
-
+    'stlc_layout_path' => 'stlc::layouts.app',
     // Set this to false if you would like to use your own AuthController and PasswordController
     // (you then need to setup your auth routes manually in your routes.php file)
     'setup_auth_routes' => true,
