@@ -527,56 +527,72 @@ class CustomHelper
      * CustomHelper::generateMenu();
      *
      */
-    public static function generateMenu()
+    public static function generateMenu($menus = [],$parent = null,$generateModule = true,$withTruncate = true)
     {
-		// Generating Module Menus
-		if(Schema::hasTable('modules')) {
-			$modules = Module::all();
-		} else {
-			$modules = [];
-		}
+        // Generating Module Menus
 		if(Schema::hasTable('menus')) {
-            Menu::truncate();
-			$dashboardMenu = Menu::create([
-				"name" => "Dashboard","label" => 'My Dashboard',
-				"link" => "dashboard","icon" => "fa-dashboard","type" => 'custom'
-			]);
-			$profileMenu = Menu::create([
-				"name" => "Profile","label" => 'Profile',"link" => "#",
-				"icon" => "fa-group","type" => 'custom',"hierarchy" => 1
-			]);
-		}
-		foreach ($modules as $module) {
-			$parent = Null;
-			if(!in_array($module->name, config('stlc.restrictedModules.menu',['Users','Uploads']))) {
-                $label = $module->label;
-				if(in_array($module->name, ["Roles"])) {
-                    $parent = $profileMenu->id;
-				}
-				if(Schema::hasTable('menus')) {
-					Menu::create([
-						"name" => $module->name,
-						"label" => $label,
-						"link" => $module->table_name,
-						"icon" => $module->icon,
-						"parent" => $parent
-					]);
-				}
-			}
-		}
+            if($withTruncate == true) {
+                Menu::truncate();
+            }
+            if(!isset($menus) || (is_array($menus) && count($menus) == 0)) {
+                $menus = config('stlc.generateMenu',[]);
+            }
+            foreach($menus as $key => $menu) {
+                $menuData = [];
+                if(is_string($menu)) {
+                    $module = Module::where('name',$menu)->first();
+                    if(isset($module->id)) {
+                        $menuData['name'] = $module->name;
+                        $menuData['label'] = $module->label;
+                        $menuData['link'] = $module->table_name;
+                        $menuData['icon'] = $module->icon;
+                    }
+                } else if(isset($menu) && is_array($menu) && isset($menu['name'])){
+                    if(isset($menu['name'])) {
+                        $module = Module::where('name',$menu['name'])->first();
+                    }
+                    if(isset($module->id)) {
+                        $menuData['name'] = $module->name;
+                        $menuData['label'] = $menu['label'] ?? $module->label;
+                        $menuData['link'] = $menu['link'] ?? $module->table_name;
+                        $menuData['icon'] = $menu['icon'] ?? $module->icon;
+                    } else {
+                        $menuData = $menu;
+                    }
+                }
+                if(isset($menuData['name'])) {
+                    $storeMenu = Menu::create([
+                        'name' => $menuData['name'],
+                        'label' => $menuData['label'] ?? ucfirst(\Str::plural(preg_replace('/[A-Z]/', ' $0', $menuData['name']))),
+                        'link' => $menuData['link'] ?? "#",
+                        'icon' => $menuData['icon'] ?? "fa-smile-o",
+                        'type' => $menuData['type'] ?? 'module',
+                        'rank' => $menuData['rank'] ?? $key,
+                        'parent' => $parent,
+                        'hierarchy' => $menuData['hierarchy'] ?? 0,
+                    ]);
 
-		if(Schema::hasTable('menus')) {
-			$ranking = ['Dashboard','Profile'];
-			$menus = Menu::all();
-			$count = count($ranking);
-			foreach($menus as $menu) {
-				if(in_array($menu->name,$ranking)) {
-					$menu->rank = array_search($menu->name, $ranking);
-				} else {
-					$menu->rank = ++$count;
-				}
-				$menu->save();
-			}
+                    if(isset($menu['childMenu']) && is_array($menu['childMenu']) > 0) {
+                        self::generateMenu($menu['childMenu'],$storeMenu->id,false,false);
+                    }
+                } else {
+                    dd($menu,'not found');
+                }
+            }
+            if(Schema::hasTable('modules') && $generateModule == true) {
+                $modules = Module::whereNotIn('name',config('stlc.restrictedModules.menu',['Users','Uploads']))
+                            ->whereNotIn('name',Menu::select('name')->pluck('name'))->get();
+                foreach ($modules as $module) {
+                    if(Schema::hasTable('menus')) {
+                        Menu::create([
+                            "name" => $module->name,
+                            "label" => $module->label,
+                            "link" => $module->table_name,
+                            "icon" => $module->icon
+                        ]);
+                    }
+                }
+            }
 		}
     }
 
