@@ -71,7 +71,7 @@ class LaraCrudServiceProvider extends ServiceProvider
             __DIR__.DIRECTORY_SEPARATOR.'Config'.DIRECTORY_SEPARATOR.'stlc.php' => base_path('config'.DIRECTORY_SEPARATOR.'stlc.php'),
 
             // Routes
-            __DIR__.DIRECTORY_SEPARATOR.'Routes'.DIRECTORY_SEPARATOR.'admin.php' => base_path('routes'.DIRECTORY_SEPARATOR.'stlc.php'),
+            __DIR__.DIRECTORY_SEPARATOR.'Routes'.DIRECTORY_SEPARATOR.'stlc.php' => base_path('routes'.DIRECTORY_SEPARATOR.'stlc.php'),
 
             // // stlc auth
             // __DIR__.DIRECTORY_SEPARATOR.'Controllers'.DIRECTORY_SEPARATOR.'Auth' => base_path('app'.DIRECTORY_SEPARATOR.'Http'.DIRECTORY_SEPARATOR.'Controllers'.DIRECTORY_SEPARATOR.'Auth'),
@@ -84,6 +84,9 @@ class LaraCrudServiceProvider extends ServiceProvider
 
             // migration
             __DIR__.DIRECTORY_SEPARATOR.'Migrations' => base_path('database'.DIRECTORY_SEPARATOR.'migrations'),
+
+            // Model
+            __DIR__.DIRECTORY_SEPARATOR.'Console'.DIRECTORY_SEPARATOR.'stubs'.DIRECTORY_SEPARATOR.'user.stub' => base_path('app'.DIRECTORY_SEPARATOR.'User.php'),
 
             // 
             __DIR__.DIRECTORY_SEPARATOR.'package.json' => base_path('package.json'),
