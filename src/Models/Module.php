@@ -1312,6 +1312,9 @@ class Module extends Model
                 }
                 
                 break;
+            case 'Polymorphic_multiple':
+                
+                break;
             case 'Multiselect':
                 if($update) {
                     $var = $table->string($field->name, 256)->change();
@@ -2245,7 +2248,9 @@ class Module extends Model
         foreach($show_indexs as $col) {
             // if(self::hasFieldAccess($module->id, $col['id'])) {
                 if($isObjects) {
-                    if(isset($col['field_type']['name']) && $col['field_type']['name'] == 'Polymorphic_select' && $module->fields->contains('name',$col->name)) {
+                    if(isset($col['field_type']['name']) && $col['field_type']['name'] == 'Polymorphic_multiple') {
+                        continue;
+                    } else if(isset($col['field_type']['name']) && $col['field_type']['name'] == 'Polymorphic_select' && $module->fields->contains('name',$col->name)) {
                         $show_indexs_temp[] = $module->table_name.'.'.$col->name.'_id';
                     } else if($module->fields->contains('name',$col->name)) {
                         $show_indexs_temp[] = $module->table_name.'.'.$col->name;
@@ -2253,7 +2258,9 @@ class Module extends Model
                         $show_indexs_temp[] = $col;
                     }
                 } else {
-                    if(isset($col['field_type']['name']) && $col['field_type']['name'] == 'Polymorphic_select' && $module->fields->contains('name',$col['name'])) {
+                    if(isset($col['field_type']['name']) && $col['field_type']['name'] == 'Polymorphic_multiple') {
+                        continue;
+                    } else if(isset($col['field_type']['name']) && $col['field_type']['name'] == 'Polymorphic_select' && $module->fields->contains('name',$col['name'])) {
                         $show_indexs_temp[] = $module->table_name.'.'.$col['name'].'_id';
                     } else if($module->fields->contains('name',$col['name'])) {
                         $show_indexs_temp[] = $module->table_name.'.'.$col['name'];

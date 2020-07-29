@@ -12,6 +12,7 @@ use Sagartakle\Laracrud\Models\Module;
 use Sagartakle\Laracrud\Models\Field;
 use Sagartakle\Laracrud\Models\FieldType;
 use Sagartakle\Laracrud\Helpers\ObjectHelper;
+use Sagartakle\Laracrud\Models\Activity;
 
 class LaraCrudServiceProvider extends ServiceProvider
 {
@@ -50,6 +51,7 @@ class LaraCrudServiceProvider extends ServiceProvider
             $loader->alias('FieldType', FieldType::class);
             $loader->alias('ObjectHelper', ObjectHelper::class);
             $loader->alias('Carbon', \Carbon\Carbon::class);
+            $loader->alias('Activity', Activity::class);
         });
     }
 

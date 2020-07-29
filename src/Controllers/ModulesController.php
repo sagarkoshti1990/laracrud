@@ -1121,8 +1121,8 @@ class ModulesController extends StlcController
             $old_item = $request['commentable_type']::find($request->commentable_id);
             
             if(isset($old_item->id)) {
-                $old_item->comment($request->comment);
-                $crud_comment = (object)['model'=>(new App\Models\Comment),'action' => 'Created','description' => 'Comment Created'];
+                $comment = $old_item->comment($request->comment);
+                $crud_comment = (object)['model'=>(new \App\Models\Comment),'action' => 'Created','description' => 'Comment Created'];
                 // add activity log
                 \Activity::log('Created', $crud_comment, ['new' => $comment]);
                 return response()->json(['status' => 'success', 'message' => 'updated', 'item' => $comment]);

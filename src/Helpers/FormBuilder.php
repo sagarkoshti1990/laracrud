@@ -180,7 +180,7 @@ class FormBuilder
                             if(isset($polymorphic_module->id)) {
                                 $field['model'] = $polymorphic_module->model ?? null;
                                 if(isset($row) && $row instanceof \Illuminate\Database\Eloquent\Model) {
-                                    $field['value'] = $row->morphToMany($polymorphic_module->model, $polymorphic_field->name,$module->table_name)->get()->pluck('id')->toJson();
+                                    $field['value'] = $row->morphToMany($polymorphic_module->model, $polymorphic_field->name,$module->table_name,null,$module->represent_attr)->get()->pluck('id')->toJson();
                                     // \CustomHelper::ajprint($field['value']);
                                 }
                             }
@@ -910,11 +910,12 @@ class FormBuilder
                 $module = $fields[$field_name]->getJsonModule();
                 if(isset($module->id)) {
                     $ralasion_field = $module->fields->firstWhere('name',($module->represent_attr ?? ""));
+                    echo json_encode($module->represent_attr);
                     $polymorphic_module = $ralasion_field->getJsonModule();
                     $polymorphic_field = $module->fields->firstWhere('field_type.name','Polymorphic_select');
                     if(isset($polymorphic_module->id)) {
                         if(isset($item) && $item instanceof \Illuminate\Database\Eloquent\Model) {
-                            $values = $item->morphToMany($polymorphic_module->model, $polymorphic_field->name,$module->table_name)->get();
+                            $values = $item->morphToMany($polymorphic_module->model, $polymorphic_field->name,$module->table_name,null,$module->represent_attr)->get();
                             // \CustomHelper::ajprint($values);
                             foreach($values as $val) {
                                 $data .= '<span class="badge large bg-purple mr-1">'.$val->{$polymorphic_module->represent_attr}.'</span>';

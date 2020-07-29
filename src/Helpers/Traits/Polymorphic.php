@@ -32,7 +32,8 @@ trait Polymorphic
             $ralasion_module = $ralasion_field->getJsonModule();
             if(isset($ralasion_module->id)) {
                 $polymorphic_field = $polymorphic_module->fields->firstWhere('field_type.name','Polymorphic_select');
-                $ralasion = $this->morphToMany($ralasion_module->model, $polymorphic_field->name,$polymorphic_module->table_name)->withTimestamps();
+                // echo json_encode([$ralasion_module->model, $polymorphic_field->name,$polymorphic_module->table_name,null,$polymorphic_module->represent_attr]);exit;
+                $ralasion = $this->morphToMany($ralasion_module->model, $polymorphic_field->name,$polymorphic_module->table_name,null,$polymorphic_module->represent_attr)->withTimestamps();
                 // if($attr == 'sport_category_id') {
                 //     \CustomHelper::ajprint($ralasion_module->model,false);
                 //     \CustomHelper::ajprint($polymorphic_field->name);
