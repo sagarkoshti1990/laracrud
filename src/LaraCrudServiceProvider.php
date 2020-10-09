@@ -31,15 +31,16 @@ class LaraCrudServiceProvider extends ServiceProvider
         */
         
         $this->commands([
-            \Sagartakle\Laracrud\Console\Commands\ConfigActivityLogsCommand::class,
-            \Sagartakle\Laracrud\Console\Commands\StlcCommand::class,
-            \Sagartakle\Laracrud\Console\Commands\ControllerCommand::class,
-            \Sagartakle\Laracrud\Console\Commands\MigrateCommand::class,
-            \Sagartakle\Laracrud\Console\Commands\ViewCreateCommand::class,
-            \Sagartakle\Laracrud\Console\Commands\ViewEditCommand::class,
-            \Sagartakle\Laracrud\Console\Commands\ViewIndexCommand::class,
-            \Sagartakle\Laracrud\Console\Commands\ViewShowCommand::class,
-            \Sagartakle\Laracrud\Console\Commands\ModelCommand::class
+            \Sagartakle\Laracrud\Console\Commands\ConfigActivityLogs::class,
+            \Sagartakle\Laracrud\Console\Commands\Stlc::class,
+            \Sagartakle\Laracrud\Console\Commands\Controller::class,
+            \Sagartakle\Laracrud\Console\Commands\Migrate::class,
+            \Sagartakle\Laracrud\Console\Commands\ViewCreate::class,
+            \Sagartakle\Laracrud\Console\Commands\ViewEdit::class,
+            \Sagartakle\Laracrud\Console\Commands\ViewIndex::class,
+            \Sagartakle\Laracrud\Console\Commands\ViewShow::class,
+            \Sagartakle\Laracrud\Console\Commands\Model::class,
+            \Sagartakle\Laracrud\Console\Commands\Menu::class
         ]);
 
         $this->app->booting(function() {
