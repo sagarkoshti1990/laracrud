@@ -5,35 +5,35 @@ namespace Sagartakle\Laracrud\Console\Commands;
 use Illuminate\Console\GeneratorCommand;
 use Sagartakle\Laracrud\Models\Module;
 
-class ViewEditCommand extends GeneratorCommand
+class ViewCreate extends GeneratorCommand
 {
     /**
      * The console command name.
      *
      * @var string
      */
-    protected $name = 'stlc:viewEdit';
+    protected $name = 'stlc:viewCreate';
 
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'stlc:viewEdit {name}';
+    protected $signature = 'stlc:viewCreate {name}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Generate a Edit templated view';
+    protected $description = 'Generate a Create templated view';
 
     /**
      * The type of class being generated.
      *
      * @var string
      */
-    protected $type = 'ViewEdit';
+    protected $type = 'ViewCreate';
 
     /**
      * Get the stub file for the generator.
@@ -46,7 +46,7 @@ class ViewEditCommand extends GeneratorCommand
         //     return __DIR__.'/../Stubs/view-plain.stub';
         // }
 
-        return __DIR__.'/../Stubs/viewEdit.stub';
+        return __DIR__.'/../Stubs/viewCreate.stub';
     }
 
     /**
@@ -60,7 +60,6 @@ class ViewEditCommand extends GeneratorCommand
     protected function replaceNameStrings(&$stub)
     {
         $name = $this->getNameInput();
-        $table = \Str::plural(ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', str_replace($this->getNamespace($name).'\\', '', \Str::plural($name)))), '_'));
         $modul = Module::where('name', $name)->first();
         $out = "";
         if(isset($modul) && $modul->id) {
@@ -82,10 +81,6 @@ class ViewEditCommand extends GeneratorCommand
         $out = trim($out);
         // $this->info($out);
         $stub = str_replace('__single_input__', $out, $stub);
-        
-        $stub = str_replace('__tablename__', $table, $stub);
-        $stub = str_replace('__smallPlural__', strtolower(str_replace($this->getNamespace($table).'\\', '', \Str::plural($table))), $stub);
-        $stub = str_replace('__smallSingular__', strtolower(str_replace($this->getNamespace($table).'\\', '', \Str::singular($table))), $stub);
         
         return $stub;
     }
@@ -112,7 +107,7 @@ class ViewEditCommand extends GeneratorCommand
     protected function getPath($name)
     {
         $name = str_replace($this->laravel->getNamespace(), '', $name);
-        return $this->laravel['path'].'/../resources/views/admin/'.$name.'/'.str_replace('\\', '/', 'edit').'.blade.php';
+        return $this->laravel['path'].'/../resources/views/admin/'.$name.'/'.str_replace('\\', '/', 'create').'.blade.php';
     }
 
     /**
@@ -123,7 +118,7 @@ class ViewEditCommand extends GeneratorCommand
      * @return string
      */
     protected function buildClass($name)
-    {
+    {   
         $stub = $this->files->get($this->getStub());
         // return $stub;
         return $this->replaceNameStrings($stub);

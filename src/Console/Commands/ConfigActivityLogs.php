@@ -5,7 +5,7 @@ namespace Sagartakle\Laracrud\Console\Commands;
 use Illuminate\Console\GeneratorCommand;
 use Sagartakle\Laracrud\Models\Module;
 
-class ConfigActivityLogsCommand extends GeneratorCommand
+class ConfigActivityLogs extends GeneratorCommand
 {
     /**
      * The console command name.

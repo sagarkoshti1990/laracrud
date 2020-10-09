@@ -6,7 +6,7 @@ use Artisan;
 use Illuminate\Console\Command;
 use Sagartakle\Laracrud\Models\Module;
 
-class StlcCommand extends Command
+class Stlc extends Command
 {
     /**
      * The name and signature of the console command.

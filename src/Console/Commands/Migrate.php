@@ -6,7 +6,7 @@ use Illuminate\Console\GeneratorCommand;
 use Sagartakle\Laracrud\Models\Module;
 use Sagartakle\Laracrud\Models\FieldType;
 
-class MigrateCommand extends GeneratorCommand
+class Migrate extends GeneratorCommand
 {
     /**
      * The console command name.

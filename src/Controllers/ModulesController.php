@@ -206,9 +206,6 @@ class ModulesController extends StlcController
 
     public function dashboard(Request $request)
     {
-        if($request->menu) {
-            CustomHelper::generateMenu();
-        }
         return view(config('stlc.stlc_modules_folder_name','stlc::').'layouts.app');
     }
 

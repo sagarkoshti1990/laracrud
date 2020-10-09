@@ -5,35 +5,35 @@ namespace Sagartakle\Laracrud\Console\Commands;
 use Illuminate\Console\GeneratorCommand;
 use Sagartakle\Laracrud\Models\Module;
 
-class ViewShowCommand extends GeneratorCommand
+class ViewIndex extends GeneratorCommand
 {
     /**
      * The console command name.
      *
      * @var string
      */
-    protected $name = 'stlc:viewShow';
+    protected $name = 'stlc:viewIndex';
 
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'stlc:viewShow {name}';
+    protected $signature = 'stlc:viewIndex {name}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Generate a Show templated view';
+    protected $description = 'Generate a index list templated view';
 
     /**
      * The type of class being generated.
      *
      * @var string
      */
-    protected $type = 'ViewShow';
+    protected $type = 'ViewIndex';
 
     /**
      * Get the stub file for the generator.
@@ -46,7 +46,7 @@ class ViewShowCommand extends GeneratorCommand
         //     return __DIR__.'/../Stubs/view-plain.stub';
         // }
 
-        return __DIR__.'/../Stubs/viewShow.stub';
+        return __DIR__.'/../Stubs/viewIndex.stub';
     }
 
     /**
@@ -57,35 +57,27 @@ class ViewShowCommand extends GeneratorCommand
      *
      * @return string
      */
-    protected function replaceNameStrings(&$stub, $name)
+    protected function replaceNameStrings(&$stub)
     {
-        $table = \Str::plural(ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', str_replace($this->getNamespace($name).'\\', '', \Str::plural($name)))), '_'));
-
         $name = $this->getNameInput();
         $modul = Module::where('name', $name)->first();
         $out = "";
         if(isset($modul) && $modul->id) {
+            $out .= "\t\t\t\t\t\t\t<div class='row'>\n";
             foreach ($modul->fields as $key => $field) {
-                if($key % 2 == 0){
-                    $out .= "\t\t\t\t\t\t\t\t\t<div class='row'>\n";
-                }
-
-                $out .= "\t\t\t\t\t\t\t\t\t\t<div class='col-md-6'>@display($" . "crud, '" . $field['name'] . "')</div>\n";
-                
-                if(($key % 2 != 0) || ($key == count($modul->fields)-1)){
-                    $out .= "\t\t\t\t\t\t\t\t\t</div>\n";
+                if($field->required) {
+                    $out .= "\t\t\t\t\t\t\t\t<div class='col-md-6'>@input($" . "crud, '" . $field['name'] . "')</div>\n";
                 }
             }
+            $out .= "\t\t\t\t\t\t\t</div>\n";
+        } else {
+            $out .= '__single_input__';
         }
-        
+
         $out = trim($out);
         // $this->info($out);
-        $stub = str_replace("__single_display__", $out, $stub);
+        $stub = str_replace('__single_input__', $out, $stub);
         
-        $stub = str_replace('__tablename__', $table, $stub);
-        $stub = str_replace('__smallPlural__', strtolower(str_replace($this->getNamespace($table).'\\', '', \Str::plural($table))), $stub);
-        $stub = str_replace('__smallSingular__', strtolower(str_replace($this->getNamespace($table).'\\', '', \Str::singular($table))), $stub);
-
         return $stub;
     }
 
@@ -111,7 +103,7 @@ class ViewShowCommand extends GeneratorCommand
     protected function getPath($name)
     {
         $name = str_replace($this->laravel->getNamespace(), '', $name);
-        return $this->laravel['path'].'/../resources/views/admin/'.$name.'/'.str_replace('\\', '/', 'show').'.blade.php';
+        return $this->laravel['path'].'/../resources/views/admin/'.$name.'/'.str_replace('\\', '/', 'index').'.blade.php';
     }
 
     /**
@@ -125,7 +117,7 @@ class ViewShowCommand extends GeneratorCommand
     {
         $stub = $this->files->get($this->getStub());
         // return $stub;
-        return $this->replaceNameStrings($stub, $name);
+        return $this->replaceNameStrings($stub);
     }
 
     /**

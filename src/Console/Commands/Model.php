@@ -4,7 +4,7 @@ namespace Sagartakle\Laracrud\Console\Commands;
 
 use Illuminate\Console\GeneratorCommand;
 
-class ModelCommand extends GeneratorCommand
+class Model extends GeneratorCommand
 {
     /**
      * The console command name.
