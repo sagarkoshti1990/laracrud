@@ -13,19 +13,6 @@
         @if (isset($field['model']))
             @if(isset($field['model']) && is_object($field['model']))
                 @php $selec_list = $field['model']->get(); @endphp
-            @elseif(method_exists($field['model'],'get_module') && $field['model']::get_module()->name == "Roles")
-                @php $selec_list = $field['model']::get_all_admin_role(); @endphp
-            @elseif(method_exists($field['model'],'get_module') && in_array( $field['model']::get_module()->name , ["Users","Employees",'MasterUsers']))
-                @php
-                    if($field['model']::get_module()->name == 'Users') {
-                        $selec_list = $field['model']::whereHas('roles', function ($query) {
-                            return $query->whereNotIn('roles.name', ['Super_admin']);
-                        })->get();
-                    } else {
-                        $selec_list = $field['model']::get();
-                    }
-                    $field['attribute'] = ['title','first_name','last_name'];
-                @endphp
             @else
                 @php $selec_list = $field['model']::get(); @endphp
             @endif

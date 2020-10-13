@@ -65,13 +65,13 @@
                 $field = $fake.parents('.form-group').find('input[type="hidden"]'),
                 $customConfig = $.extend({
                     icons: {
-                        time: "fa fa-clock-o",
+                        time: "fa fa-clock",
                         date: "fa fa-calendar",
                         up: "fa fa-chevron-up",
                         down: "fa fa-chevron-down",
                         previous: 'fa fa-chevron-left',
                         next: 'fa fa-chevron-right',
-                        today: 'fa fa-sun-o',
+                        today: 'fa fa-sun',
                         clear: 'fa fa-trash',
                         close: 'fa fa-times'
                     },

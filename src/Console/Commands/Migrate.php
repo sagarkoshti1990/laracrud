@@ -163,7 +163,7 @@ class Migrate extends GeneratorCommand
 
             // default set represent_attr and icon.
             $stub = str_replace('__represent_attr__', 'name', $stub);
-            $stub = str_replace('__icon__', 'fa-smile-o', $stub);
+            $stub = str_replace('__icon__', 'fa-smile', $stub);
         }
         
         $out = trim($out);

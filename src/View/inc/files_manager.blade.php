@@ -7,7 +7,7 @@
 			<div class="modal-header">
 				<div class="row">
 					<div class="col-md-6" style="border:none"><h4 class="modal-title" id="fileManagerLabel">Select File</h4></div>
-					<div class="col-md-5" style="border:none"><input type="search" class="form-control pull-right" placeholder="Search file name"></div>
+					<div class="col-md-5" style="border:none"><input type="search" class="form-control float-right" placeholder="Search file name"></div>
 					<div class="col-md-1" style="border:none"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
 				</div>
 			</div>
@@ -19,9 +19,9 @@
 								{{ csrf_field() }}
 								<div class="row">
 									<div class="col-xs-12 col-sm-12 col-md-12">
-										<div class="dz-message"><i class="fa fa-cloud-upload"></i><br>Drop files here</div>
+										<div class="dz-message"><i class="fa fa-cloud-upload-alt"></i><br>Drop files here</div>
 									</div>
-									<div class="col-xs-12 col-sm-12 col-md-12 pull-right">
+									<div class="col-xs-12 col-sm-12 col-md-12 float-right">
 										<label class="fm_folder_title mr0 ml0 mt30">Is {{ trans('base.public') }}
 											<input type="checkbox" name="public" checked class="minimal-blue">
 										</label>
@@ -84,94 +84,17 @@
 			} else if(type == "file") {
 				$hinput = $("input[name="+$("#image_selecter_origin").val()+"]");
 				$hinput.val(upload.id);
-				
 				$hinput.parents(".btn-group").find("#"+$("#image_selecter_origin").val()+"-error").remove();
 				$hinput.parents(".btn-group").find("a").addClass("hide");
 				$hinput.parents(".btn-group").find(".uploaded_file").removeClass("hide");
 				$hinput.parents(".btn-group").find(".uploaded_file").attr("href", bsurl+'/files/'+upload.hash+'/'+upload.name);
-				var image = '';
-				if($.inArray(upload.extension, ["jpg", "jpeg", "png", "gif", "bmp"]) > -1) {
-					image = '<img src="'+bsurl+'/files/'+upload.hash+'/'+upload.name+'?s=100" width=100>';
-				
-				} else if($.inArray(upload.extension, ["ogg",'wav','mp3']) > -1) {
-					image = `<audio controls>
-						<source src="`+bsurl+'/files/'+upload.hash+'/'+upload.name+`" type="audio/${upload.extension}">
-						Your browser does not support the audio element.
-					</audio>`;
-				} else if($.inArray(upload.extension, ["mp4","WEBM","MPEG","AVI","WMV","MOV","FLV","SWF"]) > -1) {
-					image = `<video width="250" controls>
-								<source src="`+bsurl+'/files/'+upload.hash+'/'+upload.name+`" type="video/${upload.extension}">
-								<source src="`+bsurl+'/files/'+upload.hash+'/'+upload.name+`" type="video/${upload.extension}">
-								Your browser does not support HTML5 video.
-							</video>`;
-				} else {
-					switch (upload.extension) {
-						case "pdf":
-						image = '<i class="fa fa-file-pdf-o"></i>';
-						break;
-					case "xls":
-						image = '<i class="fa fa-file-excel-o"></i>';
-						break;
-					case "docx":
-						image = '<i class="fa fa-file-word-o"></i>';
-						break;
-					case "xlsx":
-						image = '<i class="fa fa-file-excel-o"></i>';
-						break;
-					case "csv":
-						image = '<span class="fa-stack" style="color: #31A867 !important;">';
-						image += '<i class="fa fa-file-o fa-stack-2x"></i>';
-						image += '<strong class="fa-stack-1x">CSV</strong>';
-						image += '</span>';
-						break;
-					default:
-						image = '<i class="fa fa-file-text-o"></i>';
-						break;
-					}
-				}
-				$hinput.parents(".btn-group").find(".uploaded_file").find('#img_icon').html(image);
+				$hinput.parents(".btn-group").find(".uploaded_file").find('#img_icon').html(htmlFile(upload));
 			} else if(type == "files") {
+				var hiddenFIDs = [];
 				$hinput = $("input[name="+$("#image_selecter_origin").val()+"]");
-				
 				if(isset($hinput.val()) && $hinput.val() != "") {
 					var hiddenFIDs = JSON.parse($hinput.val());
-				} else {
-					var hiddenFIDs = [];
 				}
-				var image = "";
-				if(upload.extension == "jpg" || upload.extension == "png" || upload.extension == "gif" || upload.extension == "jpeg") {
-					image = "<img src='"+bsurl+"/files/"+upload.hash+"/"+upload.name+"?s=90' width=90>";
-				} else if($.inArray(upload.extension, ["ogg",'wav','mp3']) > -1) {
-					image = `<audio controls>
-						<source src="`+bsurl+'/files/'+upload.hash+'/'+upload.name+`" type="audio/${upload.extension}">
-						Your browser does not support the audio element.
-					</audio>`;
-				} else {
-					switch (upload.extension) {
-						case "pdf":
-						image = '<i class="fa fa-file-pdf-o"></i>';
-						break;
-					case "xls":
-						image = '<i class="fa fa-file-excel-o"></i>';
-						break;
-					case "docx":
-						image = '<i class="fa fa-file-word-o"></i>';
-						break;
-					case "xlsx":
-						image = '<i class="fa fa-file-excel-o"></i>';
-						break;
-					case "csv":
-						image = '<span class="fa-stack" style="color: #31A867 !important;">';
-						image += '<i class="fa fa-file-o fa-stack-2x"></i>';
-						image += '<strong class="fa-stack-1x">CSV</strong>';
-						image += '</span>';
-						break;
-					default:
-						image = '<i class="fa fa-file-text-o"></i>';
-						break;
-					}
-				}
-				
 				// check if upload_id exists in array
 				var upload_id_exists = false;
 				for (var key in hiddenFIDs) {
@@ -184,11 +107,11 @@
 				}
 				if(!upload_id_exists) {
 					hiddenFIDs.push(upload.id);
-					$hinput.parents(".btn-group").find("div.uploaded_files").append("<a class='uploaded_file2' upload_id='"+upload.id+"' target='_blank' href='"+bsurl+"/files/"+upload.hash+"/"+upload.name+"'><span id='img_icon'>"+image+"</span><i title='Remove File' class='fa fa-times'></i></a>");
+					$hinput.parents(".btn-group").find("div.uploaded_files").append("<a class='uploaded_file2' upload_id='"+upload.id+"' target='_blank' href='"+bsurl+"/files/"+upload.hash+"/"+upload.name+"'><span id='img_icon'>"+htmlFile(upload)+"</span><i title='Remove File' class='fa fa-times'></i></a>");
 				}
 				$hinput.val(JSON.stringify(hiddenFIDs));
 			}
-			$hinput.parents(".btn-group").find("a.btn.btn-default.btn-labeled").attr('disabled', false).find('.btn-label').html('<i class="fa fa-cloud-upload"></i>');
+			$hinput.parents(".btn-group").find("a.btn.btn-default.btn-labeled").attr('disabled', false).find('.btn-label').html('<i class="fa fa-cloud-upload-alt"></i>');
 		}
 		function showLAFM(type, btn, extension = "") {
 			$("#image_selecter_origin_type").val(type);
@@ -224,41 +147,7 @@
 			// Dropzone.Options.clickable = "#fm_dropzone .dz-message";
 		}
 		function getLI(upload) {
-			var image = '';
-			if($.inArray(upload.extension, ["jpg", "jpeg", "png", "gif", "bmp"]) > -1) {
-				image = '<img src="'+bsurl+'/files/'+upload.hash+'/'+upload.name+'">';
-			
-			} else if($.inArray(upload.extension, ["ogg",'wav','mp3']) > -1) {
-				image = `<audio controls>
-					<source src="`+bsurl+'/files/'+upload.hash+'/'+upload.name+`" type="audio/${upload.extension}">
-					Your browser does not support the audio element.
-				</audio>`;
-			} else {
-				switch (upload.extension) {
-					case "pdf":
-					image = '<i class="fa fa-file-pdf-o"></i>';
-					break;
-				case "xls":
-					image = '<i class="fa fa-file-excel-o"></i>';
-					break;
-				case "docx":
-					image = '<i class="fa fa-file-word-o"></i>';
-					break;
-				case "xlsx":
-					image = '<i class="fa fa-file-excel-o"></i>';
-					break;
-				case "csv":
-					image = '<span class="fa-stack" style="color: #31A867 !important;">';
-					image += '<i class="fa fa-file-o fa-stack-2x"></i>';
-					image += '<strong class="fa-stack-1x">CSV</strong>';
-					image += '</span>';
-					break;
-				default:
-					image = '<i class="fa fa-file-text-o"></i>';
-					break;
-				}
-			}
-			return '<li><a class="fm_file_sel" data-toggle="tooltip" data-placement="top" title="'+upload.name+'" upload=\''+JSON.stringify(upload)+'\'>'+image+'</a></li>';
+			return '<li><a class="fm_file_sel" data-toggle="tooltip" data-placement="top" title="'+upload.name+'" upload=\''+JSON.stringify(upload)+'\'>'+htmlFile(upload)+'</a></li>';
 		}
 		{{--
 		// function loadFMFiles(type = "") {
@@ -441,6 +330,49 @@
 			}
 		}
 
+		function htmlFile(upload) {
+			var image = "";
+			if($.inArray(upload.extension, ["jpg", "jpeg", "png", "gif", "bmp"]) > -1) {
+				image = '<img src="'+bsurl+'/files/'+upload.hash+'/'+upload.name+'?s=100" width=100>';
+			} else if($.inArray(upload.extension, ["ogg",'wav','mp3']) > -1) {
+				image = `<audio controls>
+					<source src="`+bsurl+'/files/'+upload.hash+'/'+upload.name+`" type="audio/${upload.extension}">
+					Your browser does not support the audio element.
+				</audio>`;
+			} else if($.inArray(upload.extension, ["mp4","WEBM","MPEG","AVI","WMV","MOV","FLV","SWF"]) > -1) {
+				image = `<video width="250" controls>
+							<source src="`+bsurl+'/files/'+upload.hash+'/'+upload.name+`" type="video/${upload.extension}">
+							<source src="`+bsurl+'/files/'+upload.hash+'/'+upload.name+`" type="video/${upload.extension}">
+							Your browser does not support HTML5 video.
+						</video>`;
+			} else {
+				switch (upload.extension) {
+					case "pdf":
+					image = '<i class="fa fa-file-pdf fa-3x text-danger"></i>';
+					break;
+				case "xls":
+					image = '<i class="fa fa-file-excel fa-3x text-success"></i>';
+					break;
+				case "docx":
+					image = '<i class="fa fa-file-word fa-3x"></i>';
+					break;
+				case "xlsx":
+					image = '<i class="fa fa-file-excel fa-3x text-success"></i>';
+					break;
+				case "csv":
+					image = '<span class="fa-stack" style="color: #31A867 !important;">';
+					image += '<i class="fa fa-file-alt fa-stack-2x"></i>';
+					image += '<strong class="fa-stack-1x">CSV</strong>';
+					image += '</span>';
+					break;
+				default:
+					image = '<i class="fa fa-file-alt fa-3x"></i>';
+					break;
+				}
+			}
+			return image;
+		}
+
 		$("#fm input[type=search]").keyup(function () {
 			var sstring = $(this).val().trim();
 			// console.log(sstring);
@@ -466,7 +398,7 @@
 			
 			showLAFM(extension, this, extension);
 			
-			$(this).attr('disabled', true).find('.btn-label').html('<i class="fa fa-circle-o-notch fa-spin"></i>');
+			$(this).attr('disabled', true).find('.btn-label').html('<i class="fa fa-circle-notch fa-spin"></i>');
 		});
 
 		$(".btn_upload_file").on("click", function() {
@@ -479,7 +411,7 @@
 			var type = $(this).attr("file_type");
 			
 			showLAFM(type, this, extension);
-			$(this).attr('disabled', true).find('.btn-label').html('<i class="fa fa-circle-o-notch fa-spin"></i>');
+			$(this).attr('disabled', true).find('.btn-label').html('<i class="fa fa-circle-notch fa-spin"></i>');
 		});
 
 		$(".btn_upload_files").on("click", function() {
@@ -492,7 +424,7 @@
 			var type = $(this).attr("file_type");
 
 			showLAFM(type, this, extension);
-			$(this).attr('disabled', true).find('.btn-label').html('<i class="fa fa-circle-o-notch fa-spin"></i>');
+			$(this).attr('disabled', true).find('.btn-label').html('<i class="fa fa-circle-notch fa-spin"></i>');
 		});
 
 		$("a.profile-pic[file_type='image']").on("click", function() {

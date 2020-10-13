@@ -52,13 +52,13 @@
             var $fake = $(this);
             $fake.daterangepicker({
                 icons: {
-                    time: "fa fa-clock-o",
+                    time: "fa fa-clock",
                     date: "fa fa-calendar",
                     up: "fa fa-chevron-up",
                     down: "fa fa-chevron-down",
                     previous: 'fa fa-chevron-left',
                     next: 'fa fa-chevron-right',
-                    today: 'fa fa-sun-o',
+                    today: 'fa fa-sun',
                     clear: 'fa fa-trash',
                     close: 'fa fa-times'
                 },

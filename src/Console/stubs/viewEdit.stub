@@ -3,7 +3,7 @@
     <section class="content-header">
         <h1 class="floating-box md-pr-5">
             <a href="{{ url($crud->route) }}">
-            <span class="fa {{ $crud->icon }}"></span><span>{{ $crud->label }}</span></a>
+            <span class="{{ $crud->icon }}"></span><span>{{ $crud->label }}</span></a>
             <small><i class="fa fa-angle-double-right"></i> {{ trans('crud.edit') }}</small>
         </h1>
         <ol class="breadcrumb">

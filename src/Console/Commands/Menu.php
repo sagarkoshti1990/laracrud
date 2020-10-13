@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace Sagartakle\Laracrud\Console\Commands;
 
 use Illuminate\Console\Command;
 use Sagartakle\Laracrud\Helpers\CustomHelper;

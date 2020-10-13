@@ -2,7 +2,7 @@
 @section('header')
     <section class="content-header">
         <h1>
-            <span class="fa {{ $crud->icon }}"></span>
+            <span class="{{ $crud->icon }}"></span>
             <span class="text-capitalize">{{ $crud->labelPlural }}</span>
             <small>List.</small>
         </h1>
@@ -72,7 +72,7 @@
                         method:$(form).attr('method'),
                         data:$(form).serialize()+'&src_ajax=1',
                         beforeSend: function(){
-                            $(form).find('[type=submit]').attr('disabled', true).find('i').remove().append('<i class="fa fa-circle-o-notch fa-spin"></i>');
+                            $(form).find('[type=submit]').attr('disabled', true).find('i').remove().append('<i class="fa fa-circle-notch fa-spin"></i>');
                         },
                         success: function(data) {
                             ajax_form_notification(form,data);

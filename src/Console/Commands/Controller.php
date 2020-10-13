@@ -54,11 +54,7 @@ class Controller extends GeneratorCommand
      */
     protected function getStub()
     {
-        if ($this->option('option') && $this->option('option') == "All") {
-            return __DIR__.'/../Stubs/controller.stub';
-        } else {
-            return __DIR__.'/../Stubs/stlccontroller.stub';
-        }
+        return __DIR__.'/../Stubs/stlccontroller.stub';
     }
 
     /**

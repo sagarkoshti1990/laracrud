@@ -23,7 +23,7 @@
                         var html = $(data.html);
                         var current_page = parseInt(data.data.current_page);
                         var last_page = parseInt(data.data.last_page);
-                        $('.crm-spin,.crm-load-more,.fa.fa-clock-o.bg-gray:last').remove();
+                        $('.crm-spin,.crm-load-more,.fa.fa-clock.bg-gray:last').remove();
                         // console.log(last_page +" - "+ current_page);
                         if(last_page > current_page) {
                             $(html).find('button.crm-load-more').attr('page-number',(current_page+1));

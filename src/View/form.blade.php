@@ -9,7 +9,7 @@
     <section class="content-header">
         <h1>
             <a href="{{ url($crud->route) }}">
-                <span class="fa {{ $crud->icon }}"></span>
+                <span class="{{ $crud->icon }}"></span>
                 <span class="text-capitalize">{{ $crud->label }}</span>
             </a>
             <small>{{ $add_edit }}</small>

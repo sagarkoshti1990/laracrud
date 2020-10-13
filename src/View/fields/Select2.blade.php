@@ -25,19 +25,6 @@
             @if (isset($field['model']))
                 @if(isset($field['model']) && is_object($field['model']))
                     @php $selec_list = $field['model']->get(); @endphp
-                @elseif(method_exists($field['model'],'get_module') && $field['model']::get_module()->name == "Roles")
-                    @php $selec_list = $field['model']::get_all_admin_role(); @endphp
-                @elseif(method_exists($field['model'],'get_module') && in_array( $field['model']::get_module()->name , ["Users","Employees",'MasterUsers']))
-                    @php
-                        if($field['model']::get_module()->name == 'Users') {
-                            $selec_list = $field['model']::whereHas('roles', function ($query) {
-                                return $query->whereNotIn('roles.name', ['Super_admin']);
-                            })->get();
-                        } else {
-                            $selec_list = $field['model']::get();
-                        }
-                        $field['attribute'] = ['title','first_name','last_name'];
-                    @endphp
                 @else
                     @php $selec_list = $field['model']::get(); @endphp
                 @endif
@@ -82,7 +69,7 @@
         </div>
             <div class="col-md-2 col-sm-2 col-xs-2" style="width: 15% !important">
                 <button type="button"
-                    class="btn btn-default btn-xs pull-right quick_add_modal"
+                    class="btn btn-default btn-xs float-right quick_add_modal"
                     data-filedname="{{ $field['name'] }}" data-modal="{{ $field['model'] }}"
                     style="font-size:15px;padding:3px 8px;"
                 ><i class="fa fa-plus"></i></button>

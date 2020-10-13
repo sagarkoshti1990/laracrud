@@ -10,7 +10,7 @@
   <li class="timeline-item-wrap">
     <i class="fa fa-calendar bg-default"></i>
     <div class="timeline-item">
-      <span class="time"><i class="fa fa-clock-o"></i> {{ date('h:ia', strtotime($history->created_at)) }}</span>
+      <span class="time"><i class="fa fa-clock"></i> {{ date('h:ia', strtotime($history->created_at)) }}</span>
       @if($history->key == 'created_at' && !$history->old_value)
         <h3 class="timeline-header">{{ $history->userResponsible()?$history->userResponsible()->name:trans('crud.guest_user') }} {{ trans('crud.created_this') }} {{ $crud->label }}</h3>
       @else

@@ -1,6 +1,6 @@
 @if ($crud->hasAccess('create'))
 	@if(isset($crud->create_button) && $crud->create_button == 'inline')
-		<a href="{{ url($crud->route.'/create') }}" class="btn btn-warning btn-flat pull-right">
+		<a href="{{ url($crud->route.'/create') }}" class="btn btn-warning btn-flat float-right">
 			<i class="glyphicon glyphicon-plus mr5"></i> {{ $crud->label }}
 		</a>
 	@else

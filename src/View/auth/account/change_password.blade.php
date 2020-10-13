@@ -79,8 +79,8 @@
                     </div>
                 </div>
                 <div class="box-footer p15 pt0">
-                    <button type="submit" class="btn bg-orange pull-right btn-flat btn-labeled p5">Change Password</button>
-                    <a href="{{ url(config('stlc.route_prefix')) }}" class="btn p5 btn-default pull-left btn-flat btn-labeled">Cancel</a>
+                    <button type="submit" class="btn bg-orange float-right btn-flat btn-labeled p5">Change Password</button>
+                    <a href="{{ url(config('stlc.route_prefix')) }}" class="btn p5 btn-default float-left btn-flat btn-labeled">Cancel</a>
                 </div>
             </div>
         </form>

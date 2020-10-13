@@ -59,7 +59,7 @@
                 @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_attributes')
             >
             <a class="btn btn-default btn_upload_image btn-labeled {{ $hide }}" file_type='image' selecter="{{ $field['name'] }}">
-                <span class="btn-label"><i class='fa fa-cloud-upload'></i></span>Upload</a>
+                <span class="btn-label"><i class='fa fa-cloud-upload-alt'></i></span>Upload</a>
             <?php
                 echo $img;
             ?>

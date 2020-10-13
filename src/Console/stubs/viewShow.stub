@@ -16,7 +16,7 @@
                     </div>
                 </div>
                 <div class="widget-user-image">
-                    <span class="info-box-icon" style="border-radius:100%;"><i class="fa {{ $crud->module->icon }}"></i></span>
+                    <span class="info-box-icon" style="border-radius:100%;"><i class="{{ $crud->module->icon }}"></i></span>
                 </div>
             </div>
         </div>

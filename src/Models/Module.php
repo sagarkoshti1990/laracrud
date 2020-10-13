@@ -178,11 +178,11 @@ class Module extends Model
      * @param $module_name Module Name
      * @param $module_table Module Database name in lowercase and concatenated by underscore.
      * @param $represent_attr View Column of Module for Index Anchor purpose.
-     * @param string $faIcon Module FontAwesome Icon "fa-smile-o"
+     * @param string $faIcon Module FontAwesome Icon "fa-smile"
      * @param $fields Array of Module fields
      * @throws Exception Throws exceptions if Invalid represent_attrumn_name provided.
      */
-    public static function generate($module_name, $table_name, $represent_attr, $faIcon = "fa-smile-o", $fields)
+    public static function generate($module_name, $table_name, $represent_attr, $faIcon = "fa-smile", $fields)
     {
         
         $names = CustomHelper::generateModuleNames($module_name, $faIcon);

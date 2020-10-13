@@ -714,25 +714,25 @@ class FormBuilder
                     } else {
                         switch ($upload->extension) {
                             case "pdf":
-                            $image = '<i class="fa fa-file-pdf-o"></i>';
+                            $image = '<i class="fa fa-file-pdf"></i>';
                             break;
                         case "xls":
-                            $image = '<i class="fa fa-file-excel-o"></i>';
+                            $image = '<i class="fa fa-file-excel"></i>';
                             break;
                         case "docx":
-                            $image = '<i class="fa fa-file-word-o"></i>';
+                            $image = '<i class="fa fa-file-word"></i>';
                             break;
                         case "xlsx":
-                            $image = '<i class="fa fa-file-excel-o"></i>';
+                            $image = '<i class="fa fa-file-excel"></i>';
                             break;
                         case "csv":
                             $image += '<span class="fa-stack" style="color: #31A867 !important;">';
-                            $image += '<i class="fa fa-file-o fa-stack-2x"></i>';
+                            $image += '<i class="fa fa-file-alt fa-stack-2x"></i>';
                             $image += '<strong class="fa-stack-1x">CSV</strong>';
                             $image += '</span>';
                             break;
                         default:
-                            $image = '<i class="fa fa-file-text-o"></i>'.$upload->extension;
+                            $image = '<i class="fa fa-file-text"></i>'.$upload->extension;
                             break;
                         }
                     }
@@ -773,25 +773,25 @@ class FormBuilder
                         } else {
                             switch ($upload->extension) {
                                 case "pdf":
-                                $image = '<i class="fa fa-file-pdf-o"></i>';
+                                $image = '<i class="fa fa-file-pdf"></i>';
                                 break;
                             case "xls":
-                                $image = '<i class="fa fa-file-excel-o"></i>';
+                                $image = '<i class="fa fa-file-excel"></i>';
                                 break;
                             case "docx":
-                                $image = '<i class="fa fa-file-word-o"></i>';
+                                $image = '<i class="fa fa-file-word"></i>';
                                 break;
                             case "xlsx":
-                                $image = '<i class="fa fa-file-excel-o"></i>';
+                                $image = '<i class="fa fa-file-excel"></i>';
                                 break;
                             case "csv":
                                 $image += '<span class="fa-stack" style="color: #31A867 !important;">';
-                                $image += '<i class="fa fa-file-o fa-stack-2x"></i>';
+                                $image += '<i class="fa fa-file-alt fa-stack-2x"></i>';
                                 $image += '<strong class="fa-stack-1x">CSV</strong>';
                                 $image += '</span>';
                                 break;
                             default:
-                                $image = '<i class="fa fa-file-text-o"></i>';
+                                $image = '<i class="fa fa-file-text"></i>';
                                 break;
                             }
                         }

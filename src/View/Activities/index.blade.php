@@ -3,7 +3,7 @@
 @section('header')
     <section class="content-header">
         <h1>
-            <span class="fa {{ $crud->icon }}"></span>
+            <span class="{{ $crud->icon }}"></span>
             <span class="text-capitalize">{{ $crud->labelPlural }}</span>
             <small>{{ trans('crud.all') }} <span>{{ $crud->labelPlural }}</span> {{ trans('crud.in_the_database') }}.</small>
         </h1>
@@ -21,7 +21,7 @@
             <div class="box">
                 {{-- <div class="box-header {{ $crud->hasAccess('create')?'with-border':'' }}">
                     @include('crud::inc.button_stack', ['stack' => 'top']) 
-                    <div id="datatable_button_stack" class="pull-right text-right"></div>
+                    <div id="datatable_button_stack" class="float-right text-right"></div>
                 </div> --}}
                 <div class="box-body">
                     {{-- propadmin List Filters --}}

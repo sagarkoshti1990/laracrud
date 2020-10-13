@@ -4,10 +4,10 @@
 	<section class="sidebar">
 		<!-- Sidebar user panel -->
 		<div class="user-panel">
-			<div class="pull-left image">
+			<div class="float-left image">
 				<img src="{{ Auth::user()->profile_pic() }}" class="rounded-circle" alt="">
 			</div>
-			<div class="pull-left info">
+			<div class="float-left info">
 				<p>{{ Auth::user()->name }}</p>
 				<a href="{{ url(config('stlc.route_prefix').'/logout') }}">
 					<i class="fa fa-sign-out"></i>

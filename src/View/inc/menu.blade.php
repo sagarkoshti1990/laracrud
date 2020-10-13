@@ -14,7 +14,7 @@
     @else
     <li class="nav-item dropdown notifications-menu">
         <a class="nav-item nav-link dropdown-toggle mr-md-2" href="#" id="bd-versions" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-            <i class="fa fa-bell-o"></i>
+            <i class="fa fa-bell"></i>
             <span class="badge badge-warning">9</span>
         </a>
         <ul class="dropdown-menu dropdown-menu-right">
@@ -72,14 +72,14 @@
             @endif
             <!-- Menu Footer-->
             <li class="user-footer">
-                {{-- <div class="pull-left">
+                {{-- <div class="float-left">
                     <a href="#" class="btn btn-default btn-flat">Profile</a>
                 </div>
-                <div class="pull-right">
+                <div class="float-right">
                     <a href="#" class="btn btn-default btn-flat">Sign out</a>
                 </div> --}}
                 <a href="{{ route('stlc.account.info') }}" class="btn bg-green btn-flat btn-sm mb5">
-                    <span><i class="fa fa-user-circle-o"></i> My Account</span>
+                    <span><i class="fa fa-user-circle"></i> My Account</span>
                 </a>
                 <a href="{{ url($prefix.'/logout') }}" class="btn bg-orange btn-flat btn-sm mb5">
                     <span><i class="fa fa-sign-out"></i>logout</span>

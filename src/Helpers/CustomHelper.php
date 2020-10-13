@@ -295,7 +295,7 @@ class CustomHelper
      */
     public static function img($upload_id, $size = "")
     {
-        $upload = \App\Models\Upload::find($upload_id);
+        $upload = Upload::find($upload_id);
         if(isset($size) && $size != "") {
             $size = "?s=".$size;
         }
@@ -361,47 +361,6 @@ class CustomHelper
     }
     
     /**
-     * Print the menu editor view.
-     * This needs to be done recursively
-     *
-     * CustomHelper::print_menu_editor($menu)
-     *
-     * @param $menu menu array from database
-     * @return string menu editor html string
-     */
-    public static function print_menu_editor($menu)
-    {
-        $editing = \Collective\Html\FormFacade::open(['route' => [config('stlc.route_prefix') . '.menus.destroy', $menu->id], 'method' => 'delete', 'style' => 'display:inline']);
-        $editing .= '<button class="btn btn-xs btn-danger pull-right"><i class="fa fa-times"></i></button>';
-        $editing .= \Collective\Html\FormFacade::close();
-        if($menu->type != "module") {
-            $info = (object)array();
-            $info->id = $menu->id;
-            $info->name = $menu->name;
-            $info->url = $menu->url;
-            $info->type = $menu->type;
-            $info->icon = $menu->icon;
-            
-            $editing .= '<a class="editMenuBtn btn btn-xs btn-success pull-right" info=\'' . json_encode($info) . '\'><i class="fa fa-edit"></i></a>';
-        }
-        $str = '<li class="dd-item dd3-item" data-id="' . $menu->id . '">
-			<div class="dd-handle dd3-handle"></div>
-			<div class="dd3-content"><i class="fa ' . $menu->icon . '"></i> ' . $menu->name . ' ' . $editing . '</div>';
-        
-        $childrens = \App\Models\Menu::where("parent", $menu->id)->orderBy('hierarchy', 'asc')->get();
-        
-        if(count($childrens) > 0) {
-            $str .= '<ol class="dd-list">';
-            foreach($childrens as $children) {
-                $str .= self::print_menu_editor($children);
-            }
-            $str .= '</ol>';
-        }
-        $str .= '</li>';
-        return $str;
-    }
-    
-    /**
      * Print the sidebar menu view.
      * This needs to be done recursively
      *
@@ -433,9 +392,9 @@ class CustomHelper
             foreach($childrens as $children) {
                 if($children->type == 'custom') {
                     if($menu->link == "#") {
-                        $str = '<li' . $treeview . '><a href="javascript:void(0)"><i class="fa ' . $menu->icon . ' text-purple"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
+                        $str = '<li' . $treeview . '><a href="javascript:void(0)"><i class="' . $menu->icon . ' text-purple"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
                     } else {
-                        $str = '<li' . $treeview . '><a href="' . url($prefix_url . $menu->link) . '"><i class="fa ' . $menu->icon . ' text-purple"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
+                        $str = '<li' . $treeview . '><a href="' . url($prefix_url . $menu->link) . '"><i class="' . $menu->icon . ' text-purple"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
                     }
                 } else {
                     if($children->type == 'page') {
@@ -447,12 +406,12 @@ class CustomHelper
                         }
                     }
                     if(isset($module) && (Module::hasAccess($module) || $checkAccess)) {
-                        $str = '<li' . $treeview . '><a href="' . url($prefix_url . $menu->link) . '"><i class="fa ' . $menu->icon . ' text-purple"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
+                        $str = '<li' . $treeview . '><a href="' . url($prefix_url . $menu->link) . '"><i class="' . $menu->icon . ' text-purple"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
                     }
                 }
             }
         } else {
-            $str = '<li' . $treeview . '><a href="' . url($prefix_url . $menu->link) . '"><i class="fa ' . $menu->icon . ' text-purple"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
+            $str = '<li' . $treeview . '><a href="' . url($prefix_url . $menu->link) . '"><i class="' . $menu->icon . ' text-purple"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
         }
         
         if(count($childrens)) {
@@ -565,7 +524,7 @@ class CustomHelper
                         'name' => $menuData['name'],
                         'label' => $menuData['label'] ?? ucfirst(\Str::plural(preg_replace('/[A-Z]/', ' $0', $menuData['name']))),
                         'link' => $menuData['link'] ?? "#",
-                        'icon' => $menuData['icon'] ?? "fa-smile-o",
+                        'icon' => $menuData['icon'] ?? "fa-smile",
                         'type' => $menuData['type'] ?? 'module',
                         'rank' => $menuData['rank'] ?? $key,
                         'parent' => $parent,

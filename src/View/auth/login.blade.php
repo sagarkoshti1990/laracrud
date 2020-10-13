@@ -58,7 +58,7 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <a href="{{ url(config('stlc.route_prefix', 'admin').'/password/reset') }}" >Forgot Password</a>
-                                <a href="{{ url(config('stlc.route_prefix', 'admin').'/register') }}" class="text-center pull-right">Register</a>
+                                <a href="{{ url(config('stlc.route_prefix', 'admin').'/register') }}" class="text-center float-right">Register</a>
                             </div>
                         </div>
                     </form>
