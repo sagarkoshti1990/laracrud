@@ -15,7 +15,7 @@ class CreateModulesTable extends Migration
     public function up()
     {
         Schema::create('modules', function (Blueprint $table) {
-            $table->increments('id');
+            $table->bigIncrements('id');
             $table->string('name');
             $table->string('label');
             $table->string('table_name');
@@ -27,7 +27,7 @@ class CreateModulesTable extends Migration
         
         // field_type
         Schema::create('field_types', function (Blueprint $table) {
-            $table->increments('id');
+            $table->bigIncrements('id');
             $table->string('name');
         });
         
@@ -71,17 +71,18 @@ class CreateModulesTable extends Migration
 
         // fields
         Schema::create('fields', function (Blueprint $table) {
-            $table->increments('id');
+            $table->bigIncrements('id');
             $table->string('name');
             $table->string('label');
-            $table->integer('module_id')->unsigned();
+            $table->integer('rank')->default(0);
+            $table->unsignedBigInteger('module_id');
             $table->foreign('module_id')->references('id')->on('modules');
-            $table->integer('field_type_id')->unsigned();
+            $table->unsignedBigInteger('field_type_id');
             $table->foreign('field_type_id')->references('id')->on('field_types');
             $table->boolean('unique')->default(false);
             $table->string('defaultvalue');
-            $table->integer('minlength')->unsigned()->default(0);
-            $table->integer('maxlength')->unsigned()->default(0);
+            $table->unsignedBigInteger('minlength')->default(0);
+            $table->unsignedBigInteger('maxlength')->default(0);
             $table->boolean('required')->default(false);
             $table->boolean('nullable_required')->default(true);
 			$table->boolean('show_index')->default(false);
@@ -89,30 +90,25 @@ class CreateModulesTable extends Migration
         });
 
         Schema::create('access_modules', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('assessor_id')->nullable();
-            $table->string('assessor_type')->nullable();
-            $table->index(['assessor_id', 'assessor_type']);
-            
-            $table->string('accessible_id')->nullable();
-            $table->string('accessible_type')->nullable();
-            $table->index(['accessible_id', 'accessible_type']);
+            $table->bigIncrements('id');
+            $table->nullableMorphs('assessor');
+            $table->nullableMorphs('accessible');
             $table->enum('access', ['view', 'create','edit','deactivate']);
             $table->softDeletes();
             $table->timestamps();
         });
 
         Schema::create('menus', function (Blueprint $table) {
-            $table->increments('id');
+            $table->bigIncrements('id');
             $table->string('name', 100);
             $table->string('label', 100);
             $table->string('link', 255)->nullable();
             $table->string('icon', 50)->default("fa-cube");
             $table->string('type', 20)->default("module");
             $table->integer('rank')->default(0);
-            $table->integer('parent')->nullable()->unsigned()->default(Null);
+            $table->unsignedBigInteger('parent')->nullable()->default(Null);
             $table->foreign('parent')->references('id')->on('menus')->onUpdate('cascade')->onDelete('cascade');
-            $table->integer('hierarchy')->unsigned()->default(0);
+            $table->unsignedBigInteger('hierarchy')->default(0);
             $table->timestamps();
         });
     }

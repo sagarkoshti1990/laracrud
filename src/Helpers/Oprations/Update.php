@@ -34,6 +34,8 @@ trait Update
         }
     }
 
+    public function beforeUpdate(Request $request,$item){}
+    public function afterUpdate(Request $request,$item){}
     /**
      * Update the specified resource in storage.
      *
@@ -56,18 +58,17 @@ trait Update
                         $request->request->set($key, null);
                     }
                 }
-
+                $this->beforeUpdate($request,$old_item);
                 // update the row in the db
                 $this->data['entry'] = $this->crud->entry = $item = $this->crud->update($id, $request);
                 if (($item instanceof \Illuminate\Http\RedirectResponse) || ($item instanceof \Illuminate\Http\JsonResponse)) {
                     return $item;
                 }
-
+                $this->afterUpdate($request,$item);
                 // show a success message
                 if(!$request->src_ajax) {
                     \Alert::success($this->crud->label." ".trans('crud.update_success'))->flash();
                 }
-
                 if(isset($request->src_ajax) && $request->src_ajax) {
                     return response()->json(['status' => 'success', 'message' => $this->crud->label." ".trans('crud.update_success'), 'item' => $item]);
                 } else if(isset($request->src)) {
@@ -82,5 +83,4 @@ trait Update
             abort(403, trans('crud.unauthorized_access'));
         }
     }
-
 }

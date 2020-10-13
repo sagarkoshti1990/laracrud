@@ -182,9 +182,8 @@ class Module extends Model
      * @param $fields Array of Module fields
      * @throws Exception Throws exceptions if Invalid represent_attrumn_name provided.
      */
-    public static function generate($module_name, $table_name, $represent_attr, $faIcon = "fa-smile", $fields)
+    public static function generate($module_name, $table_name, $represent_attr, $faIcon = "fa fa-smile", $fields)
     {
-        
         $names = CustomHelper::generateModuleNames($module_name, $faIcon);
         $fields = self::format_fields($module_name, $fields);
         
@@ -281,7 +280,7 @@ class Module extends Model
             } else {
                 // Create Database Schema for table
                 Schema::create($table_name, function (Blueprint $table) use ($fields, $module, $ftypes,$table_name) {
-                    $table->increments('id');
+                    $table->bigIncrements('id');
                     foreach($fields as $field) {
                         if(Schema::hasTable('fields') && isset($module->id)) {
                             $mod = Field::where('module_id', $module->id)->where('name', $field->name)->first();
@@ -313,22 +312,6 @@ class Module extends Model
                             self::create_field_schema($table, $field);
                         }
                     }
-                    
-                    // $table->string('name');
-                    // $table->string('designation', 100);
-                    // $table->string('mobile', 20);
-                    // $table->string('mobile2', 20);
-                    // $table->string('email', 100)->unique();
-                    // $table->string('gender')->default('male');
-                    // $table->integer('dept')->unsigned();
-                    // $table->integer('role')->unsigned();
-                    // $table->string('city', 50);
-                    // $table->string('address', 1000);
-                    // $table->string('about', 1000);
-                    // $table->date('date_birth');
-                    // $table->date('date_hire');
-                    // $table->date('date_left');
-                    // $table->double('salary_cur');
                     if($table_name == "users") {
                         $table->rememberToken();
                     }
@@ -448,9 +431,9 @@ class Module extends Model
                 if($field->json_values == "") {
                     if(is_int($field->defaultvalue)) {
                         if($update) {
-                            $var = $table->integer($field->name)->unsigned()->nullable()->change();
+                            $var = $table->unsignedBigInteger($field->name)->nullable()->change();
                         } else {
-                            $var = $table->integer($field->name)->unsigned()->nullable();
+                            $var = $table->unsignedBigInteger($field->name)->nullable();
                         }
                         $var->default($field->defaultvalue);
                         break;
@@ -472,7 +455,7 @@ class Module extends Model
                 if(\Str::startsWith($field->json_values, "@")) {
                     $foreign_table_name = \Str::plural(ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', str_replace("@", "", $field->json_values))), '_'));
                     if($update) {
-                        $var = $table->integer($field->name)->nullable()->unsigned()->change();
+                        $var = $table->unsignedBigInteger($field->name)->nullable()->change();
                         if($field->defaultvalue == "" || $field->defaultvalue == "0") {
                             $var->default(NULL);
                         } else {
@@ -481,7 +464,7 @@ class Module extends Model
                         $table->dropForeign($field->module_obj->table . "_" . $field->name . "_foreign");
                         $table->foreign($field->name)->references('id')->on($foreign_table_name)->onUpdate('cascade')->onDelete('cascade');
                     } else {
-                        $var = $table->integer($field->name)->nullable()->unsigned();
+                        $var = $table->unsignedBigInteger($field->name)->nullable();
                         if($field->defaultvalue == "" || $field->defaultvalue == "0") {
                             $var->default(NULL);
                         } else {
@@ -501,16 +484,11 @@ class Module extends Model
                         $var->default("");
                     }
                 } else if(is_object($json_values)) {
-                    // ############### Remaining
                     if($update) {
-                        $var = $table->integer($field->name)->nullable()->unsigned()->change();
+                        $var = $table->unsignedBigInteger($field->name)->nullable()->change();
                     } else {
-                        $var = $table->integer($field->name)->nullable()->unsigned();
+                        $var = $table->unsignedBigInteger($field->name)->nullable();
                     }
-                    // if(is_int($field->defaultvalue)) {
-                    //     $var->default($field->defaultvalue);
-                    //     break;
-                    // }
                 }
                 break;
             case 'Currency':
@@ -675,9 +653,9 @@ class Module extends Model
                 if($field->json_values == "") {
                     if(is_int($field->defaultvalue)) {
                         if($update) {
-                            $var = $table->integer($field->name)->unsigned()->nullable()->change();
+                            $var = $table->unsignedBigInteger($field->name)->nullable()->change();
                         } else {
-                            $var = $table->integer($field->name)->unsigned()->nullable();
+                            $var = $table->unsignedBigInteger($field->name)->nullable();
                         }
                         $var->default($field->defaultvalue);
                         break;
@@ -695,7 +673,7 @@ class Module extends Model
                 if(\Str::startsWith($field->json_values, "@")) {
                     $foreign_table_name = \Str::plural(ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', str_replace("@", "", $field->json_values))), '_'));
                     if($update) {
-                        $var = $table->integer($field->name)->nullable()->unsigned()->change();
+                        $var = $table->unsignedBigInteger($field->name)->nullable()->change();
                         if($field->defaultvalue == "" || $field->defaultvalue == "0") {
                             $var->default(NULL);
                         } else {
@@ -704,7 +682,7 @@ class Module extends Model
                         $table->dropForeign($field->module_obj->table . "_" . $field->name . "_foreign");
                         $table->foreign($field->name)->references('id')->on($foreign_table_name)->onUpdate('cascade')->onDelete('cascade');
                     } else {
-                        $var = $table->integer($field->name)->nullable()->unsigned();
+                        $var = $table->unsignedBigInteger($field->name)->nullable();
                         if($field->defaultvalue == "" || $field->defaultvalue == "0") {
                             $var->default(NULL);
                         } else {
@@ -748,9 +726,9 @@ class Module extends Model
                 } else if(is_object($json_values)) {
                     // ############### Remaining
                     if($update) {
-                        $var = $table->integer($field->name)->nullable()->unsigned()->change();
+                        $var = $table->unsignedBigInteger($field->name)->nullable()->change();
                     } else {
-                        $var = $table->integer($field->name)->nullable()->unsigned();
+                        $var = $table->unsignedBigInteger($field->name)->nullable();
                     }
                     // if(is_int($field->defaultvalue)) {
                     //     $var->default($field->defaultvalue);
@@ -801,33 +779,28 @@ class Module extends Model
                         }
                     }
                 } else if(is_object($json_values)) {
-                    // ############### Remaining
                     if($update) {
                         if($field->required && $nullable_required) {
-                            $var = $table->integer($field->name)->unsigned()->change();
+                            $var = $table->unsignedBigInteger($field->name)->change();
                         } else {
-                            $var = $table->integer($field->name)->nullable()->unsigned()->change();
+                            $var = $table->unsignedBigInteger($field->name)->nullable()->change();
                         }
                     } else {
                         if($field->required && $nullable_required) {
-                            $var = $table->integer($field->name)->unsigned();
+                            $var = $table->unsignedBigInteger($field->name);
                         } else {
-                            $var = $table->integer($field->name)->nullable()->unsigned();
+                            $var = $table->unsignedBigInteger($field->name)->nullable();
                         }
                     }
-                    // if(is_int($field->defaultvalue)) {
-                    //     $var->default($field->defaultvalue);
-                    //     break;
-                    // }
                 }
                 break;
             case 'Select2_from_ajax':
                 if($field->json_values == "") {
                     if(is_int($field->defaultvalue)) {
                         if($update) {
-                            $var = $table->integer($field->name)->unsigned()->nullable()->change();
+                            $var = $table->unsignedBigInteger($field->name)->nullable()->change();
                         } else {
-                            $var = $table->integer($field->name)->unsigned()->nullable();
+                            $var = $table->unsignedBigInteger($field->name)->nullable();
                         }
                         $var->default($field->defaultvalue);
                         break;
@@ -845,7 +818,7 @@ class Module extends Model
                 if(\Str::startsWith($field->json_values, "@")) {
                     $foreign_table_name = \Str::plural(ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', str_replace("@", "", $field->json_values))), '_'));
                     if($update) {
-                        $var = $table->integer($field->name)->nullable()->unsigned()->change();
+                        $var = $table->unsignedBigInteger($field->name)->nullable()->change();
                         if($field->defaultvalue == "" || $field->defaultvalue == "0") {
                             $var->default(NULL);
                         } else {
@@ -854,7 +827,7 @@ class Module extends Model
                         $table->dropForeign($field->module_obj->table . "_" . $field->name . "_foreign");
                         $table->foreign($field->name)->references('id')->on($foreign_table_name)->onUpdate('cascade')->onDelete('cascade');
                     } else {
-                        $var = $table->integer($field->name)->nullable()->unsigned();
+                        $var = $table->unsignedBigInteger($field->name)->nullable();
                         if($field->defaultvalue == "" || $field->defaultvalue == "0") {
                             $var->default(NULL);
                         } else {
@@ -936,9 +909,9 @@ class Module extends Model
                 if($field->json_values == "") {
                     if(is_int($field->defaultvalue)) {
                         if($update) {
-                            $var = $table->integer($field->name)->unsigned()->nullable()->change();
+                            $var = $table->unsignedBigInteger($field->name)->nullable()->change();
                         } else {
-                            $var = $table->integer($field->name)->unsigned()->nullable();
+                            $var = $table->unsignedBigInteger($field->name)->nullable();
                         }
                         $var->default($field->defaultvalue);
                         break;
@@ -956,7 +929,7 @@ class Module extends Model
                 if(\Str::startsWith($field->json_values, "@")) {
                     $foreign_table_name = \Str::plural(ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', str_replace("@", "", $field->json_values))), '_'));
                     if($update) {
-                        $var = $table->integer($field->name)->nullable()->unsigned()->change();
+                        $var = $table->unsignedBigInteger($field->name)->nullable()->change();
                         if($field->defaultvalue == "" || $field->defaultvalue == "0") {
                             $var->default(NULL);
                         } else {
@@ -965,7 +938,7 @@ class Module extends Model
                         $table->dropForeign($field->module_obj->table . "_" . $field->name . "_foreign");
                         $table->foreign($field->name)->references('id')->on($foreign_table_name)->onUpdate('cascade')->onDelete('cascade');
                     } else {
-                        $var = $table->integer($field->name)->nullable()->unsigned();
+                        $var = $table->unsignedBigInteger($field->name)->nullable();
                         if($field->defaultvalue == "" || $field->defaultvalue == "0") {
                             $var->default(NULL);
                         } else {
@@ -1009,9 +982,9 @@ class Module extends Model
                 } else if(is_object($json_values)) {
                     // ############### Remaining
                     if($update) {
-                        $var = $table->integer($field->name)->nullable()->unsigned()->change();
+                        $var = $table->unsignedBigInteger($field->name)->nullable()->change();
                     } else {
-                        $var = $table->integer($field->name)->nullable()->unsigned();
+                        $var = $table->unsignedBigInteger($field->name)->nullable();
                     }
                     // if(is_int($field->defaultvalue)) {
                     //     $var->default($field->defaultvalue);
@@ -1044,15 +1017,15 @@ class Module extends Model
                     // ############### Remaining
                     if($update) {
                         if($field->required && $nullable_required) {
-                            $var = $table->integer($field->name)->unsigned()->change();
+                            $var = $table->unsignedBigInteger($field->name)->change();
                         } else {
-                            $var = $table->integer($field->name)->nullable()->unsigned()->change();
+                            $var = $table->unsignedBigInteger($field->name)->nullable()->change();
                         }
                     } else {
                         if($field->required && $nullable_required) {
-                            $var = $table->integer($field->name)->unsigned();
+                            $var = $table->unsignedBigInteger($field->name);
                         } else {
-                            $var = $table->integer($field->name)->nullable()->unsigned();
+                            $var = $table->unsignedBigInteger($field->name)->nullable();
                         }
                     }
                     // if(is_int($field->defaultvalue)) {
@@ -1426,9 +1399,9 @@ class Module extends Model
                 if($field->json_values == "") {
                     if(is_int($field->defaultvalue)) {
                         if($update) {
-                            $var = $table->integer($field->name)->unsigned()->change();
+                            $var = $table->unsignedBigInteger($field->name)->change();
                         } else {
-                            $var = $table->integer($field->name)->unsigned();
+                            $var = $table->unsignedBigInteger($field->name);
                         }
                         $var->default($field->defaultvalue);
                         break;
@@ -1451,9 +1424,9 @@ class Module extends Model
                     }
                 } else if(is_string($field->json_values) && \Str::startsWith($field->json_values, "@")) {
                     if($update) {
-                        $var = $table->integer($field->name)->unsigned()->change();
+                        $var = $table->unsignedBigInteger($field->name)->change();
                     } else {
-                        $var = $table->integer($field->name)->unsigned();
+                        $var = $table->unsignedBigInteger($field->name);
                     }
                     break;
                 }
@@ -1480,9 +1453,9 @@ class Module extends Model
                 } else if(is_object($json_values)) {
                     // ############### Remaining
                     if($update) {
-                        $var = $table->integer($field->name)->unsigned()->change();
+                        $var = $table->unsignedBigInteger($field->name)->change();
                     } else {
-                        $var = $table->integer($field->name)->unsigned();
+                        $var = $table->unsignedBigInteger($field->name);
                     }
                     // if(is_int($field->defaultvalue)) {
                     //     $var->default($field->defaultvalue);

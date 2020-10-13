@@ -8,6 +8,8 @@ use Prologue\Alerts\Facades\Alert;
 
 trait Store
 {
+    public function beforeStore(Request $request){}
+    public function afterStore(Request $request,$item){}
     /**
      * Show the form for creating a new resource.
      *
@@ -50,12 +52,13 @@ trait Store
                 }
             }
 
+            $this->beforeStore($request);
             // insert item in the db
             $this->data['entry'] = $this->crud->entry = $item = $this->crud->create($request);
             if (($item instanceof \Illuminate\Http\RedirectResponse) || ($item instanceof \Illuminate\Http\JsonResponse)) {
                 return $item;
             }
-
+            $this->afterStore($request,$item);
             // show a success message
             if(!$request->src_ajax) {
                 Alert::success($this->crud->label." ".trans('crud.insert_success'))->flash();

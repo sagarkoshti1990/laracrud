@@ -22,40 +22,25 @@ class CreateRolesTable extends Migration
 				'label' => 'Name',
 				'field_type' => 'Text',
 				'unique' => true,
-				'defaultvalue' => Null,
-				'minlength' => '0',
-				'maxlength' => '0',
 				'required' => true,
 				'show_index' => true
 			],[
 				'name' => 'label',
 				'label' => 'Label Name',
 				'field_type' => 'Text',
-				'unique' => false,
-				'defaultvalue' => Null,
-				'minlength' => '0',
-				'maxlength' => '0',
 				'required' => true,
 				'show_index' => true
 			],[
 				'name' => 'context_type',
 				'label' => 'Context Type',
 				'field_type' => 'Select2',
-				'unique' => false,
 				'defaultvalue' => 'Employees',
-				'minlength' => '0',
-				'maxlength' => '0',
-				'required' => false,
 				'show_index' => true,
-				'json_values' => ["Employees","MasterUsers","Doctors"]
+				'json_values' => ["Employees","Users"]
 			],[
 				'name' => 'parent_id',
 				'label' => 'Parent Role',
 				'field_type' => 'Select2',
-				'unique' => false,
-				'defaultvalue' => Null,
-				'minlength' => '0',
-				'maxlength' => '0',
 				'required' => true,
 				'show_index' => true,
 				'json_values' => '@Roles'
@@ -63,12 +48,11 @@ class CreateRolesTable extends Migration
         ]);
 		
 		
-        Schema::create('role_user', function (Blueprint $table) {
+        Schema::create('rollables', function (Blueprint $table) {
 			$table->increments('id');
-			$table->integer('role_id')->unsigned();
+			$table->unsignedBigInteger('role_id');
 			$table->foreign('role_id')->references('id')->on('roles')->onUpdate('cascade')->onDelete('cascade');
-			$table->integer('user_id')->unsigned();
-			$table->foreign('user_id')->references('id')->on('users')->onUpdate('cascade')->onDelete('cascade');
+			$table->morphs('rollable');
         });
         /*
         Module::generate('Roles' 'roles', 'name', 'fa-user', [
@@ -140,7 +124,7 @@ class CreateRolesTable extends Migration
         $role_super_admin->label = "Admin";
         $role_super_admin->context_type = "Employees";
         $role_super_admin->parent_id = Null;
-        $role_super_admin->save();
+		$role_super_admin->save();
     }
 
     /**
@@ -150,7 +134,7 @@ class CreateRolesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('role_user');
+        Schema::dropIfExists('rollables');
         Schema::dropIfExists('roles');
     }
 }
