@@ -5,62 +5,58 @@
         </div>
     @endif
     @php
+        $field['attributes']['class'] = $field['attributes']['class']." hide";
+        $values = old($field['name']) ? old($field['name']) : (isset($field['value']) ? $field['value'] : (isset($field['default']) ? $field['default'] : '' ));
         $img = "";
-        if((isset($field['value']) && is_array(json_decode($field['value'])) && count(json_decode($field['value']))) || (isset($field['default']) && is_array(json_decode($field['default'])) && count(json_decode($field['default'])))) {
-            if((isset($field['value'])) && is_array(json_decode($field['value'])) && count(json_decode($field['value']))) {
-                $uploads = App\Models\Upload::whereIn('id',json_decode($field['value']))->get();
-            } else if((isset($field['default'])) && is_array(json_decode($field['default'])) && count(json_decode($field['default']))) {
-                $uploads = App\Models\Upload::whereIn('id',json_decode($field['default']))->get();
-            }
+        if(isset($values) && is_array($values) && count($values)) {
+            $uploads = App\Models\Upload::whereIn('id',$values)->get();
             $img = "<div class='uploaded_files'>";
             foreach ($uploads as $key => $upload) {
-                $url_file = url("files/" . $upload->hash . DIRECTORY_SEPARATOR . $upload->name);
-                $img .= "<a class='uploaded_file2' upload_id='".$upload->id."' target='_blank' href='".$url_file."'>";
+                if(isset($upload->id)) {
+                    $url_file = url("files/" . $upload->hash . DIRECTORY_SEPARATOR . $upload->name);
+                    $img .= "<a class='uploaded_file2' upload_id='".$upload->id."' target='_blank' href='".$url_file."'>";
 
-                $image = '';
-                if(in_array($upload->extension, ["jpg", "jpeg", "png", "gif", "bmp"])) {
-                    $url_file .= "?s=100";
-                    $image = '<img src="'.$url_file.'">';
-                } else if(in_array($upload->extension, ["ogg",'wav','mp3'])) {
-                    $image = '<audio controls>
-                        <source src="'.$url_file.'" type="audio/'.$upload->extension.'">
-                        Your browser does not support the audio element.
-                    </audio>';
-                } else if(in_array($upload->extension, ["mp4","WEBM","MPEG","AVI","WMV","MOV","FLV","SWF"])) {
-                    $image = '<video width="250" controls>
-                                <source src="'.$url_file.'" type="video/'.$upload->extension.'">
-                                <source src="'.$url_file.'" type="video/'.$upload->extension.'">
-                                Your browser does not support HTML5 video.
-                            </video>';
-                } else {
-                    switch ($upload->extension) {
-                        case "pdf":
-                        $image = '<i class="fa fa-file-pdf"></i>';
-                        break;
-                    case "xls":
-                        $image = '<i class="fa fa-file-excel"></i>';
-                        break;
-                    case "docx":
-                        $image = '<i class="fa fa-file-word"></i>';
-                        break;
-                    case "xlsx":
-                        $image = '<i class="fa fa-file-excel"></i>';
-                        break;
-                    case "csv":
-                        $image += '<span class="fa-stack" style="color: #31A867 !important;">';
-                        $image += '<i class="fa fa-file-alt fa-stack-2x"></i>';
-                        $image += '<strong class="fa-stack-1x">CSV</strong>';
-                        $image += '</span>';
-                        break;
-                    default:
-                        $image = '<i class="fa fa-file-alt"></i>';
-                        break;
+                    $image = '';
+                    if(in_array($upload->extension, ["jpg", "JPG", "jpeg", "png", "gif", "bmp"])) {
+                        $url_file .= "?s=100";
+                        $image = '<img width="100" src="'.$url_file.'">';
+                    } else if(in_array($upload->extension, ["ogg",'wav','mp3'])) {
+                        $image = '<audio controls>
+                            <source src="'.$url_file.'" type="audio/'.$upload->extension.'">
+                            Your browser does not support the audio element.
+                        </audio>';
+                    } else if(in_array($upload->extension, ["mp4","WEBM","MPEG","AVI","WMV","MOV","FLV","SWF"])) {
+                        $image = '<i class="fa fa-file-video-o"></i>';
+                    } else {
+                        switch ($upload->extension) {
+                            case "pdf":
+                            $image = '<i class="fa fa-file-pdf-o"></i>';
+                            break;
+                        case "xls":
+                            $image = '<i class="fa fa-file-excel-o"></i>';
+                            break;
+                        case "docx":
+                            $image = '<i class="fa fa-file-word-o"></i>';
+                            break;
+                        case "xlsx":
+                            $image = '<i class="fa fa-file-excel-o"></i>';
+                            break;
+                        case "csv":
+                            $image += '<span class="fa-stack" style="color: #31A867 !important;">';
+                            $image += '<i class="fa fa-file-o fa-stack-2x"></i>';
+                            $image += '<strong class="fa-stack-1x">CSV</strong>';
+                            $image += '</span>';
+                            break;
+                        default:
+                            $image = '<i class="fa fa-file-text-o"></i>';
+                            break;
+                        }
                     }
+                    
+                    $img .= "<span id='img_icon'>$image</span>";
+                    $img .= "<i title='Remove File' class='fa fa-times'></i>";
+                    $img .= "</a>";
                 }
-                
-                $img .= "<span id='img_icon'>$image</span>";
-                $img .= "<i title='Remove File' class='fa fa-times'></i>";
-                $img .= "</a>";
             }
             $img .= "</div>";
         } else {
@@ -74,17 +70,20 @@
         }
     @endphp
     <div class="btn-group">
-        <input
-            type="hidden"
-            name="{{ $field['name'] }}"
-            value="{{ old($field['name']) ? old($field['name']) : (isset($field['value']) ? $field['value'] : (isset($field['default']) ? $field['default'] : '' )) }}"
-            @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_attributes')
-        >
+        <select name="{{ $field['name'] }}[]" @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_attributes') multiple>
+            @if (isset($values) && is_array($values) && count($values))
+                @foreach ($values as $key => $value)
+                    <option value="{{ $value }}" selected>{{ $value }}</option>
+                @endforeach
+            @endif
+        </select>
         <a class="btn btn-default btn_upload_files btn-labeled" file_type='files'
+            ratio="{{ $field['attributes']['ratio'] ?? $field['ratio'] ?? '' }}"
+            image_public="{{ $field['attributes']['image_public'] ?? $field['image_public'] ?? '' }}"
             @if(isset($field['file_type']))
                 extension="{{ $field['file_type'] }}"
             @endif
-            selecter="{{ $field['name'] }}"><span class="btn-label"><i class='fa fa-cloud-upload-alt'></i></span>Upload</a>
+            selecter="{{ $field['name'] }}"><span class="btn-label"><i class='fa fa-cloud-upload'></i></span>Upload</a>
         <?php
             echo $img;
         ?>

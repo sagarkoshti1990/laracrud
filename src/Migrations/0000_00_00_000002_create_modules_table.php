@@ -22,7 +22,7 @@ class CreateModulesTable extends Migration
             $table->string('model');
             $table->string('controller');
             $table->string('represent_attr');
-            $table->string('icon')->default("fa-user");
+            $table->string('icon')->default("fa fa-smile");
         });
         
         // field_type
@@ -35,8 +35,6 @@ class CreateModulesTable extends Migration
             ["name" => "Address"],
             ["name" => "Checkbox"],
             ["name" => "CKEditor"],
-            ["name" => "Color_picker"],
-            ["name" => "Color"],
             ["name" => "Date_picker"],
             ["name" => "Date_range"],
             ["name" => "Date"],
@@ -49,6 +47,7 @@ class CreateModulesTable extends Migration
             ["name" => "Icon_picker"],
             ["name" => "Image"],
             ["name" => "Json"],
+            ["name" => "Link"],
             ["name" => "Month"],
             ["name" => "Multiselect"],
             ["name" => "Number"],
@@ -66,7 +65,8 @@ class CreateModulesTable extends Migration
             ["name" => "Select2"],
             ["name" => "Table"],
             ["name" => "Text"],
-            ["name" => "Textarea"]
+            ["name" => "Textarea"],
+            ["name" => "Time"]
         ]);
 
         // fields

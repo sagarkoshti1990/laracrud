@@ -5,6 +5,7 @@ namespace Sagartakle\Laracrud\Console\Commands;
 use Illuminate\Console\GeneratorCommand;
 use Sagartakle\Laracrud\Models\Module;
 use Sagartakle\Laracrud\Models\FieldType;
+use Sagartakle\Laracrud\Helpers\CustomHelper;
 
 class Migrate extends GeneratorCommand
 {
@@ -43,7 +44,7 @@ class Migrate extends GeneratorCommand
      */
     protected function getStub()
     {
-        return __DIR__.'/../Stubs/crud-migration.stub';
+        return __DIR__.'/../Stubs/migration.stub';
     }
 
     /**
@@ -142,9 +143,21 @@ class Migrate extends GeneratorCommand
                     $out .= ",";
                 }
             }
-
-            // update represent_attr and icon from module
-            $stub = str_replace('__represent_attr__', $modul->represent_attr, $stub);
+            $string_attr = "";
+            $arr = CustomHelper::generateModuleNames($modul->name,$modul);
+            
+            if(isset($arr['model'])) {
+                $string_attr = ",['model'=>'".$arr['model']."']";
+            }
+            if(isset($arr['model'],$arr['controller'])) {
+                $string_attr = ",['model'=>'".$arr['model']."','controller'=>'".$arr['controller']."']";
+            }
+            if(isset($arr['model'],$arr['controller'],$arr['label'])) {
+                $string_attr = ",['model'=>'".$arr['model']."','controller'=>'".$arr['controller']."','label'=>'".$arr['label']."']";
+            }
+            // update attribute and icon from module
+            $stub = str_replace('__attribute__', $modul->attribute, $stub);
+            $stub = str_replace('__Custom_attr__', $string_attr, $stub);
             $stub = str_replace('__icon__', $modul->icon, $stub);
         } else {
             $out .= "[
@@ -161,8 +174,9 @@ class Migrate extends GeneratorCommand
                 'show_index' => true
             ]";
 
-            // default set represent_attr and icon.
-            $stub = str_replace('__represent_attr__', 'name', $stub);
+            // default set attribute and icon.
+            $stub = str_replace('__attribute__', 'name', $stub);
+            $stub = str_replace('__Custom_attr__', null, $stub);
             $stub = str_replace('__icon__', 'fa-smile', $stub);
         }
         

@@ -5,14 +5,14 @@
         @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_translatable_icon')
     @endif
     @if(isset($field['prefix']) || isset($field['suffix'])) <div class="input-group"> @endif
-        @if(isset($field['prefix'])) <div class="input-group-addon">{!! $field['prefix'] !!}</div> @endif
+        @if(isset($field['prefix'])) <div class="input-group-prepend"><span class="input-group-text">{!! $field['prefix'] !!}<span></div> @endif
         <input
             type="text"
             name="{{ $field['name'] }}"
             value="{{ old($field['name']) ? old($field['name']) : (isset($field['value']) ? $field['value'] : (isset($field['default']) ? $field['default'] : '' )) }}"
             @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_attributes')
         >
-        @if(isset($field['suffix'])) <div class="input-group-addon">{!! $field['suffix'] !!}</div> @endif
+        @if(isset($field['suffix'])) <div class="input-group-append"><span class="input-group-text">{!! $field['suffix'] !!}<span></div> @endif
     @if(isset($field['prefix']) || isset($field['suffix'])) </div> @endif
     @if ($errors->has($field['name']))
         <span class="help-block">{{ $errors->first($field['name']) }}</span>

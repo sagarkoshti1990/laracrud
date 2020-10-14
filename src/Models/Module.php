@@ -175,22 +175,24 @@ class Module extends Model
      * This function handles Module Migration via "self::generate()" call from migrations file.
      * This creates all given Module fields into database.
      *
-     * @param $module_name Module Name
+     * @param $module arrya[name,table,etc]
      * @param $module_table Module Database name in lowercase and concatenated by underscore.
      * @param $represent_attr View Column of Module for Index Anchor purpose.
      * @param string $faIcon Module FontAwesome Icon "fa-smile"
      * @param $fields Array of Module fields
-     * @throws Exception Throws exceptions if Invalid represent_attrumn_name provided.
+     * @throws Exception Throws exceptions if Invalid attribute_name provided.
      */
-    public static function generate($module_name, $table_name, $represent_attr, $faIcon = "fa fa-smile", $fields)
+    public static function generate($module_name, $table_name, $represent_attr, $icon = "fa fa-smile", $fields = [],$module = [])
     {
-        $names = CustomHelper::generateModuleNames($module_name, $faIcon);
+        $names = CustomHelper::generateModuleNames($module_name);
+        if(is_array($module) && count($module) > 0) {
+            $names = array_merge($names,$module);
+        }
+        $names['name']=$module_name;$names['table_name'] = $table_name;$names['represent_attr']=$represent_attr;$names['icon']=$icon;
         $fields = self::format_fields($module_name, $fields);
         
-        if(substr_count($represent_attr, " ") || substr_count($represent_attr, ".")) {
-            throw new Exception("Unable to generate migration for " . ($names->module) . " : Invalid represent_attrumn_name. 'This should be database friendly lowercase name.'", 1);
-        } else if(!self::validate_represent_attrumn($fields, $represent_attr)) {
-            throw new Exception("Unable to generate migration for " . ($names->module) . " : represent_attrumn_name not found in field list.", 1);
+        if(!self::validate_represent_attrumn($fields, $names['represent_attr'])) {
+            throw new Exception("Unable to generate migration for " . ($names['name']) . " : attribute_name not found in field list.", 1);
         } else {
             // Check is Generated
             // $is_gen = false;
@@ -204,21 +206,9 @@ class Module extends Model
             
             // Create Module if not exists
             if(Schema::hasTable('modules')) {
-                $module = self::where('name', $names->module)->first();
+                $module = self::where('name', $names['name'])->first();
                 if(!isset($module->id)) {
-                    $module = new self;
-                    $module->name = $names->module;
-                    $module->label = $names->label;
-                    $module->table_name = $table_name;
-                    $module->represent_attr = $represent_attr;
-                    if($names->module == "Users") {
-                        $module->model = "App\\".$names->model;
-                    } else {
-                        $module->model = "App\Models\\".$names->model;
-                    }
-                    $module->controller = $names->controller;
-                    $module->icon = $faIcon;
-                    $module->save();
+                    $module = self::create($names);
                 }
             } else {
                 $module = [];
@@ -345,27 +335,27 @@ class Module extends Model
         
         // Create Field in Database for respective Field Type
         switch($field->field_type) {
-            // case 'Address':
-            //     $var = null;
-            //     if($field->maxlength == 0) {
-            //         if($update) {
-            //             $var = $table->text($field->name)->change();
-            //         } else {
-            //             $var = $table->text($field->name);
-            //         }
-            //     } else {
-            //         if($update) {
-            //             $var = $table->string($field->name, $field->maxlength)->nullable()->change();
-            //         } else {
-            //             $var = $table->string($field->name, $field->maxlength)->nullable();
-            //         }
-            //     }
-            //     if($field->defaultvalue != "") {
-            //         $var->default($field->defaultvalue);
-            //     } else if($field->required) {
-            //         $var->default("");
-            //     }
-            //     break;
+            case 'Address':
+                $var = null;
+                if($field->maxlength == 0) {
+                    if($update) {
+                        $var = $table->text($field->name)->change();
+                    } else {
+                        $var = $table->text($field->name);
+                    }
+                } else {
+                    if($update) {
+                        $var = $table->string($field->name, $field->maxlength)->nullable()->change();
+                    } else {
+                        $var = $table->string($field->name, $field->maxlength)->nullable();
+                    }
+                }
+                if($field->defaultvalue != "") {
+                    $var->default($field->defaultvalue);
+                } else if($field->required) {
+                    $var->default("");
+                }
+                break;
             case 'Checkbox':
                 if($update) {
                     if($field->required && $nullable_required) {
@@ -1661,10 +1651,30 @@ class Module extends Model
                     $var->default($field->defaultvalue);
                 }
                 break;
-            case 'Browse':
-                $var = $table->string($field->name, $field->maxlength)->nullable();
-                $var->default(NULL);
-                
+            case 'Time':
+                if($update) {
+                    if($field->required && $nullable_required) {
+                        $var = $table->time($field->name)->change();
+                    } else {
+                        $var = $table->time($field->name)->nullable()->change();
+                    }
+                } else {
+                    if($field->required && $nullable_required) {
+                        $var = $table->time($field->name);
+                    } else {
+                        $var = $table->time($field->name)->nullable();
+                    }
+                }
+                // $table->timestamp('created_at')->useCurrent();
+                if($field->defaultvalue == NULL || $field->defaultvalue == "" || $field->defaultvalue == "NULL") {
+                    $var->default(Null);
+                } else if($field->defaultvalue == "now()") {
+                    $var->default(DB::raw('CURRENT_TIMESTAMP'));
+                } else if($field->required) {
+                    $var->default("01:01:01");
+                } else {
+                    $var->default($field->defaultvalue);
+                }
                 break;
             default:
                 $var = $table->string($field->name, $field->maxlength)->nullable();

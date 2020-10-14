@@ -58,7 +58,7 @@
                 <li class="user-body p-0">
                     <ul class="nav nav-pills nav-justified">
                         <li class="nav-item" role="presentation">
-                            <a class="nav-link" href="{{ url(config('stlc.route_prefix').'/modules') }}">
+                            <a class="nav-link" href="{{ url(config('stlc.stlc_route_prefix').'/modules') }}">
                                 <i class="fa fa-briefcase"></i> Modules
                             </a>
                         </li>
@@ -71,7 +71,7 @@
                 </li>
             @endif
             <!-- Menu Footer-->
-            <li class="user-footer">
+            <li class="user-footer text-center">
                 {{-- <div class="float-left">
                     <a href="#" class="btn btn-default btn-flat">Profile</a>
                 </div>
@@ -82,7 +82,7 @@
                     <span><i class="fa fa-user-circle"></i> My Account</span>
                 </a>
                 <a href="{{ url($prefix.'/logout') }}" class="btn bg-orange btn-flat btn-sm mb5">
-                    <span><i class="fa fa-sign-out"></i>logout</span>
+                    <span><i class="fa fa-sign-out"></i>Logout</span>
                 </a>
             </li>
         </ul>

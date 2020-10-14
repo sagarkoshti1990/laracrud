@@ -72,29 +72,29 @@ class LaraCrudServiceProvider extends ServiceProvider
         // $this->loadMigrationsFrom(__DIR__.'/Migrations');
         $this->publishes([
             __DIR__.DIRECTORY_SEPARATOR.'Config'.DIRECTORY_SEPARATOR.'stlc.php' => base_path('config'.DIRECTORY_SEPARATOR.'stlc.php'),
-
             // Routes
             __DIR__.DIRECTORY_SEPARATOR.'Routes'.DIRECTORY_SEPARATOR.'stlc.php' => base_path('routes'.DIRECTORY_SEPARATOR.'stlc.php'),
-
-            // // stlc auth
-            // __DIR__.DIRECTORY_SEPARATOR.'Controllers'.DIRECTORY_SEPARATOR.'Auth' => base_path('app'.DIRECTORY_SEPARATOR.'Http'.DIRECTORY_SEPARATOR.'Controllers'.DIRECTORY_SEPARATOR.'Auth'),
-            
-            // // stlc auth view
-            // __DIR__.DIRECTORY_SEPARATOR.'View'.DIRECTORY_SEPARATOR.'auth' => base_path('resources'.DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.'auth'),
-            
-            // // stlc layouts
-            // __DIR__.DIRECTORY_SEPARATOR.'View'.DIRECTORY_SEPARATOR.'layouts' => base_path('resources'.DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.'layouts'),
-
             // migration
             __DIR__.DIRECTORY_SEPARATOR.'Migrations' => base_path('database'.DIRECTORY_SEPARATOR.'migrations'),
-
             // Model
             __DIR__.DIRECTORY_SEPARATOR.'Console'.DIRECTORY_SEPARATOR.'stubs'.DIRECTORY_SEPARATOR.'user.stub' => base_path('app'.DIRECTORY_SEPARATOR.'User.php'),
-
             // 
             __DIR__.DIRECTORY_SEPARATOR.'package.json' => base_path('package.json'),
             __DIR__.DIRECTORY_SEPARATOR.'public' => base_path('public'),
         ]);
+
+        $this->publishes([
+            // stlc auth
+            __DIR__.DIRECTORY_SEPARATOR.'Controllers'.DIRECTORY_SEPARATOR.'Auth' => base_path('app'.DIRECTORY_SEPARATOR.'Http'.DIRECTORY_SEPARATOR.'Controllers'.DIRECTORY_SEPARATOR.'Auth'),
+            // stlc auth view
+            __DIR__.DIRECTORY_SEPARATOR.'View'.DIRECTORY_SEPARATOR.'auth' => base_path('resources'.DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.'auth'),
+            // stlc layouts
+            __DIR__.DIRECTORY_SEPARATOR.'View'.DIRECTORY_SEPARATOR.'layouts' => base_path('resources'.DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.'layouts'),
+        ], 'auth');
+
+        $this->publishes([
+            __DIR__.DIRECTORY_SEPARATOR.'View' => base_path('resources'.DIRECTORY_SEPARATOR.'views'.DIRECTORY_SEPARATOR.'themes'),
+        ], 'view');
 
         Blade::directive('pushonce', function ($expression) {
             $var = '$__env->{"__pushonce_" . md5(__FILE__ . ":" . __LINE__)}';

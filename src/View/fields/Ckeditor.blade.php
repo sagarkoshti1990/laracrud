@@ -51,33 +51,33 @@
         @if(isset($output) && is_array($output))
             arr.removeButtons = "{{ implode(',',$output) }}";
         @endif
-        arr.toolbar = [
-            { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ], items: [ 'Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'CopyFormatting', 'RemoveFormat' ] },
-            { name: 'clipboard', groups: [ 'clipboard', 'undo' ], items: [ 'Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo' ] },
-            { name: 'editing', groups: [ 'find', 'selection', 'spellchecker' ], items: [ 'Find', 'Replace', '-', 'SelectAll', '-', 'Scayt' ] },
-            { name: 'forms', items: [ 'Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField' ] },
-            { name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align', 'bidi' ], items: [ 'NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl', 'Language' ] },
-            { name: 'links', items: [ 'Link', 'Unlink', 'Anchor' ] },
-            { name: 'insert', items: [ 'Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe' ] },
-            { name: 'styles', items: [ 'Styles', 'Format', 'Font', 'FontSize' ] },
-            { name: 'document', groups: [ 'mode', 'document', 'doctools' ], items: [ 'Source', '-', 'Save', 'NewPage', 'Preview', 'Print', '-', 'Templates' ] },
-        ];
+        // {{-- arr.toolbar = [
+        //     { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ], items: [ 'Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'CopyFormatting', 'RemoveFormat' ] },
+        //     { name: 'clipboard', groups: [ 'clipboard', 'undo' ], items: [ 'Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo' ] },
+        //     { name: 'editing', groups: [ 'find', 'selection', 'spellchecker' ], items: [ 'Find', 'Replace', '-', 'SelectAll', '-', 'Scayt' ] },
+        //     { name: 'forms', items: [ 'Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField' ] },
+        //     { name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align', 'bidi' ], items: [ 'NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl', 'Language' ] },
+        //     { name: 'links', items: [ 'Link', 'Unlink', 'Anchor' ] },
+        //     { name: 'insert', items: [ 'Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe' ] },
+        //     { name: 'styles', items: [ 'Styles', 'Format', 'Font', 'FontSize' ] },
+        //     { name: 'document', groups: [ 'mode', 'document', 'doctools' ], items: [ 'Source', '-', 'Save', 'NewPage', 'Preview', 'Print', '-', 'Templates' ] },
+        // ]; --}}
         arr.height="70px";
         arr.extraPlugins='autogrow';
         arr.autoGrow_minHeight="{{ $field['attributes']['minHeight'] ?? '70' }}";
         arr.autoGrow_maxHeight="{{ $field['attributes']['maxHeight'] ?? '300' }}";
         arr.removePlugins= 'elementspath';
         arr.resize_enabled=false;
-        arr.plugins = 'mentions,emoji,basicstyles,undo,link,wysiwygarea,toolbar',
+        arr.plugins = 'mentions,emoji,basicstyles,undo,link,wysiwygarea,toolbar,sourcearea,maximize,colorbutton,colordialog,font';
         arr.toolbar = [{
                 name: 'document',
-                items: ['Undo', 'Redo']
-            },
-            {
+                items: ['Undo', 'Redo','Source','Maximize']
+            },{
+                name: 'colors', items: [ 'TextColor', 'BGColor', 'FontSize' ]
+            },{
                 name: 'basicstyles',
                 items: ['Bold', 'Italic', 'Strike']
-            },
-            {
+            },{
                 name: 'links',
                 items: ['EmojiPanel', 'Link', 'Unlink']
             }

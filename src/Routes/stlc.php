@@ -103,7 +103,7 @@ Route::group([
         'as' => '',
         'uses' => 'LoginController@login'
     ]);
-    Route::post('logout', [
+    Route::get('logout', [
         'as' => 'logout',
         'uses' => 'LoginController@logout'
     ]);
@@ -135,7 +135,7 @@ Route::group([
     'as' => 'register.store',
     'uses' => 'RegisterController@register'
     ]);
-    Route::get('logout', 'LoginController@logout');
+
     // if not otherwise configured, setup the dashboard routes
     // Route::get('dashboard', 'AdminController@dashboard');
     // Route::get('/', 'AdminController@redirect');

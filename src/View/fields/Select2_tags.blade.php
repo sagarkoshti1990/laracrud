@@ -10,8 +10,10 @@
         @if(isset($field['multiple']) && $field['multiple']) multiple @endif
         @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_attributes', ['default_class' =>  'form-control select2_field_tag'])
         >
-        @if(!(isset($field['attributes']['allows_null'])) || (isset($field['attributes']['allows_null']) && ($field['attributes']['allows_null'])))
-            <option value="">{{ 'Select '.str_replace('*','',strip_tags($field['label'])) }}</option>
+        @if(!(isset($field['multiple']) && $field['multiple']))
+            @if(!(isset($field['attributes']['allows_null'])) || (isset($field['attributes']['allows_null']) && ($field['attributes']['allows_null'])))
+                <option value="">{{ 'Select '.str_replace('*','',strip_tags($field['label'])) }}</option>
+            @endif
         @endif
 
         @if (isset($field['allows_null']) && $field['allows_null'] == true)

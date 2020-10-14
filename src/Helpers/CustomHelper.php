@@ -32,94 +32,36 @@ class CustomHelper
      * @param $icon module icon in FontAwesome
      * @return object
      */
-    public static function generateModuleNames($module_name, $icon)
+    public static function generateModuleNames($module_name,$module_compair=[])
     {
         $array = array();
         $module_name = trim($module_name);
         $module_name = str_replace(" ", "_", $module_name);
-        
-        $array['module'] = ucfirst(\Str::plural($module_name));
+        $array['name'] = ucfirst(\Str::plural($module_name));
         $array['label'] = ucfirst(\Str::plural(preg_replace('/[A-Z]/', ' $0', $module_name)));
-        $array['table'] = \Str::plural(ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', $module_name)), '_'));
-        $array['model'] = ucfirst(\Str::singular($module_name));
-        $array['fa_icon'] = $icon;
-        $array['controller'] = $array['module'] . "Controller";
-        $array['singular_l'] = strtolower(\Str::singular($module_name));
-        $array['singular_c'] = ucfirst(\Str::singular($module_name));
-        
-        return (object)$array;
-    }
-    
-    /**
-     * Get list of Database tables excluding  Context tables like
-     * backups, configs, menus, migrations, modules, module_fields, module_field_types
-     * password_resets, permissions, permission_role, role_module, role_module_fields, role_user
-     *
-     * Method currently supports MySQL and SQLite databases
-     *
-     * You can exclude additional tables by $$remove_tables
-     *
-     * $tables = CustomHelper::getDBTables([]);
-     *
-     * @param array $remove_tables exclude additional tables
-     * @return array
-     */
-    public static function getDBTables($remove_tables = [])
-    {
-        if(env('DB_CONNECTION') == "sqlite") {
-            $tables_sqlite = DB::select('select * from sqlite_master where type="table"');
-            $tables = array();
-            foreach($tables_sqlite as $table) {
-                if($table->tbl_name != 'sqlite_sequence') {
-                    $tables[] = $table->tbl_name;
-                }
-            }
-        } else if(env('DB_CONNECTION') == "pgsql") {
-            $tables_pgsql = DB::select("SELECT table_name FROM information_schema.tables WHERE table_type = 'BASE TABLE' AND table_schema = 'public' ORDER BY table_name;");
-            $tables = array();
-            foreach($tables_pgsql as $table) {
-                $tables[] = $table->table_name;
-            }
-        } else if(env('DB_CONNECTION') == "mysql") {
-            $tables = DB::select('SHOW TABLES');
+        $array['table_name'] = \Str::plural(ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', $module_name)), '_'));
+        if($module_name == "Users") {
+            $array['model'] = "\\App\\".ucfirst(\Str::singular($module_name));
         } else {
-            $tables = DB::select('SHOW TABLES');
+            $array['model'] = "\\App\Models\\".ucfirst(\Str::singular($module_name));
         }
+        $array['controller'] = "\\App\Http\Controllers\Admin\\".$array['name'] . "Controller";
         
-        $tables_out = array();
-        foreach($tables as $table) {
-            $table = (Array)$table;
-            $tables_out[] = array_values($table)[0];
+        if(isset($module_compair) && collect($module_compair)->count() > 0) {
+            $arr = [];
+            if(isset($module_compair['model']) && $module_compair['model'] != $array['model']) {
+                $arr['model'] = $module_compair['model'];
+            }
+            if(isset($module_compair['controller']) && $module_compair['controller'] != $array['controller']) {
+                $arr['controller'] = $module_compair['controller'];
+            }
+            if(isset($module_compair['label']) && $module_compair['label'] != $array['label']) {
+                $arr['label'] = $module_compair['label'];
+            }
+            $array = $arr;
         }
-        if(in_array(-1, $remove_tables)) {
-            $remove_tables2 = array();
-        } else {
-            $remove_tables2 = array(
-                'backups',
-                'configs',
-                'menus',
-                'migrations',
-                'modules',
-                'module_fields',
-                'module_field_types',
-                'password_resets',
-                'permissions',
-                'permission_role',
-                'role_module',
-                'role_module_fields',
-                'role_user'
-            );
-        }
-        $remove_tables = array_merge($remove_tables, $remove_tables2);
-        $remove_tables = array_unique($remove_tables);
-        $tables_out = array_diff($tables_out, $remove_tables);
-        
-        $tables_out2 = array();
-        foreach($tables_out as $table) {
-            $tables_out2[$table] = $table;
-        }
-        
-        return $tables_out2;
+
+        return $array;
     }
     
     /**
@@ -392,9 +334,9 @@ class CustomHelper
             foreach($childrens as $children) {
                 if($children->type == 'custom') {
                     if($menu->link == "#") {
-                        $str = '<li' . $treeview . '><a href="javascript:void(0)"><i class="' . $menu->icon . ' text-purple"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
+                        $str = '<li' . $treeview . '><a href="javascript:void(0)"><i class="' . $menu->icon . '"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
                     } else {
-                        $str = '<li' . $treeview . '><a href="' . url($prefix_url . $menu->link) . '"><i class="' . $menu->icon . ' text-purple"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
+                        $str = '<li' . $treeview . '><a href="' . url($prefix_url . $menu->link) . '"><i class="' . $menu->icon . '"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
                     }
                 } else {
                     if($children->type == 'page') {
@@ -406,12 +348,12 @@ class CustomHelper
                         }
                     }
                     if(isset($module) && (Module::hasAccess($module) || $checkAccess)) {
-                        $str = '<li' . $treeview . '><a href="' . url($prefix_url . $menu->link) . '"><i class="' . $menu->icon . ' text-purple"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
+                        $str = '<li' . $treeview . '><a href="' . url($prefix_url . $menu->link) . '"><i class="' . $menu->icon . '"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
                     }
                 }
             }
         } else {
-            $str = '<li' . $treeview . '><a href="' . url($prefix_url . $menu->link) . '"><i class="' . $menu->icon . ' text-purple"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
+            $str = '<li' . $treeview . '><a href="' . url($prefix_url . $menu->link) . '"><i class="' . $menu->icon . '"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
         }
         
         if(count($childrens)) {

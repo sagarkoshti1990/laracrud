@@ -22,7 +22,11 @@ trait Index
 		if($this->crud->hasAccess('view')) {
             $crud = $this->crud;
             if(isset($request->get_data_ajax) && $request->get_data_ajax) {
-                return response()->json(['status' => 'success', 'message' => 'updated', 'item' => $crud->model->paginate(10)]);
+                $query = $crud->model;
+                if(isset($request->q)) {
+                    $query = $query->where($crud->represent_attr,'LIKE',"%".$request->q."%");
+                }
+                return response()->json(['status' => 'success', 'message' => 'updated', 'item' => $query->paginate(10)]);
             } else {
                 return view($crud->view_path['index'], ['crud' => $crud]);
             }

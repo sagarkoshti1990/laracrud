@@ -9,6 +9,8 @@
         $code = $field['attributes']['code'] ?? null;
         $allowDropdown = $field['attributes']['allowDropdown'] ?? true;
     @endphp
+    @if(isset($field['prefix']) || isset($field['suffix'])) <div class="input-group"> @endif
+        @if(isset($field['prefix'])) <div class="input-group-prepend"><span class="input-group-text">{!! $field['prefix'] !!}<span></div> @endif
         <input
             type="tel"
             name="{{ $field['name'] }}"
@@ -18,7 +20,8 @@
         @if(isset($code))
             <input type="hidden" name="{{$code}}" value="91">
         @endif
-        @if(isset($field['suffix'])) <div class="input-group-addon">{!! $field['suffix'] !!}</div> @endif
+        @if(isset($field['suffix'])) <div class="input-group-append"><span class="input-group-text">{!! $field['suffix'] !!}<span></div> @endif
+    @if(isset($field['prefix']) || isset($field['suffix'])) </div> @endif
     @if ($errors->has($field['name']))
         <span class="help-block">{{ $errors->first($field['name']) }}</span>
     @endif

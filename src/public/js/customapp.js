@@ -7,7 +7,7 @@ function isset (variable) {
 }
 function IsJsonString(str) {
     try {
-        JSON.parse(str);
+        return JSON.parse(str);
     } catch (e) {
         return false;
     }
@@ -32,32 +32,46 @@ $.validator.setDefaults({
     errorClass: "error invalid-feedback",
     errorElement: "span",
     highlight: function(element) {
-        if(isset($(element).parents('.form-group'))) {
-            $(element).parents('.form-group').addClass("has-error");
+        if(isset($(element).closest('.form-group'))) {
+            $(element).closest('.form-group').addClass("has-error");
             $(element).addClass('is-invalid');
         } else {
             $(element).addClass('is-invalid');
         }
     },
     unhighlight: function(element) {
-        if(isset($(element).parents('.form-group'))) {
-            $(element).parents('.form-group').removeClass("has-error");
-            $(element).parents('.form-group').find('label.error').remove();
-            $(element).parents('.form-group').find('.help-block').remove();
+        if(isset($(element).closest('.form-group'))) {
+            $(element).closest('.form-group').removeClass("has-error");
+            $(element).closest('.form-group').find('label.error').remove();
+            $(element).closest('.form-group').find('.help-block').remove();
             $(element).removeClass('is-invalid');
         }
     },
     errorPlacement: function (error, element) {
-        $(element).parents('.form-group').find('.help-block').remove();
+        $(element).closest('.form-group').find('.help-block').remove();
         if (element.attr("type") == "checkbox") {
-            error.insertAfter($(element).parents('.form-group').find(':last'));
+            error.insertAfter($(element).closest('.form-group').find(':last'));
         } else {
-            error.insertAfter($(element).parents('.form-group').children().last());
+            if($(element).closest('.form-group').length > 0) {
+                error.insertAfter($(element).closest('.form-group').children().last());
+            } else if($(element).closest('.input-group').length > 0) {
+                error.insertAfter($(element).closest('.input-group').children().last());
+            }
         }
     },
     invalidHandler: function(event, validator) {
-        var target = $(validator.errorList[0].element).parents('.tab-pane').attr('id');
+        var element = validator.errorList[0].element;
+        var target = $(element).closest('.tab-pane').attr('id');
         $(`[data-target='#${target}']`).click();
+        var errors = validator.numberOfInvalids();
+        if (errors) {
+            if(element.type && element.type == 'hidden') {
+                $(element).closest('.form-group').find(':input').not(':input[name='+element.name+']').first().focus();
+            } else {
+                element.focus();
+            }
+        }
+        $(validator.currentForm).find('[type="submit"]').removeAttr('disabled');
     }
 });
 // jquery custome validate methode
@@ -135,7 +149,7 @@ jQuery.validator.classRuleSettings.unique = {
 };
 
 $.validator.addMethod("mininput", function(value, element,params) {
-    var $from = $(element).parents('form');
+    var $from = $(element).closest('form');
     var selector = $from.find("[name='"+$(element).attr('target')+"']").first();
     return (parseInt(value) < parseInt($(selector).val()));
 }, function(params, element) {
@@ -150,18 +164,20 @@ function UpperCase(params) {
 }
 
 $(function () {
-    $('input[type="checkbox"], input[type="radio"]').iCheck({
-        checkboxClass: 'icheckbox_square-orange',
-        radioClass: 'icheckbox_square-orange',
-        increaseArea: '10%' // optional
-    });
+    if($('input[type="checkbox"], input[type="radio"]').length > 0) {
+        $('input[type="checkbox"], input[type="radio"]').iCheck({
+            checkboxClass: 'icheckbox_square-orange',
+            radioClass: 'icheckbox_square-orange',
+            increaseArea: '10%' // optional
+        });
+    }
     $(".alert.alert-danger.alert-dismissable").fadeTo(90000, 500).slideUp(500, function(){
         $(".alert.alert-danger.alert-dismissable").slideUp(500);
     });
 });
 
 $('button.btn.f-next-btn.btn-success').on('click', function() {
-    $data = $(this).parents('.tab-pane').find(':input');
+    $data = $(this).closest('.tab-pane').find(':input');
     if($data.valid()) {
         var classli = $(this).data('target');
         $('a[href="#' + classli + '"]').click();
@@ -218,8 +234,8 @@ function datatable_assined(table,table_data) {
     });
 }
 
-$(':input.f-show-password+.fa').on('click',function(){
-    $input = $(this).parent().find(':input.f-show-password');
+$(':input.f-show-password+.input-group-append .fa').on('click',function(){
+    $input = $(this).closest('.form-group').find(':input.f-show-password');
     if(typeof $input != undefined && $input.attr('type') == 'password') {
         $input.attr('type','text');
         $(this).removeClass('fa-eye-slash').addClass('fa-eye');
@@ -228,14 +244,13 @@ $(':input.f-show-password+.fa').on('click',function(){
         $(this).removeClass('fa-eye').addClass('fa-eye-slash');
     }
 });
-function sweetAlert(title = 'Alert',text = 'alert text',type = 'success') {
-	Swal.fire({
-		title: title,
-		text: text,
-		type: type,
-		showConfirmButton: false,
-		timer: 2500
-	})
+function sweetAlert(title = 'Alert',text = 'alert text',type = 'success',attrData = {}) {
+    var data = {title: title, text: text, type: type, showConfirmButton: false,timer: 2500};
+    if(typeof attrData == "object") {
+        var data = Object.assign(data, attrData);
+    }
+    
+	Swal.fire(data)
 }
 function  xeditable(nRow) {
     $.fn.editable.defaults.mode = 'inline';
@@ -264,8 +279,26 @@ function  xeditable(nRow) {
 }
 $(document).ready(function () {
     $('body.hide').fadeIn(1000).removeClass('hide');
+    $('.overlay').on('click',function(){
+        $('body').find('#f-bg-gallery').remove();
+        var type = $(this).attr('type');
+        var htmlData = "";
+        if(typeof type == "undefined" || type == "image") {
+            htmlData = `<div id="f-bg-gallery"
+                style="position: fixed;left: 0;right: 0;top: 0;bottom: 0;z-index: 9999;background-color: #000;display: flex;align-items: center;justify-content: center;">
+                <img src="${this.src.replace("?s=350X350", "?s=full")}" height="100%" alt="">
+                <i class="fa fa-times" style="position:fixed;top:20px;right:20px;font-size:25px;color:#fff;"></i>
+            </div>`;
+        }
+        $('body').prepend(htmlData);
+    });
+
+    $('body').on('click','#f-bg-gallery .fa.fa-times',function(){
+        $('body').find('#f-bg-gallery').remove();
+    });
 });
 function ajax_form_notification(form,data,$refresh=true) {
+    $(form).find('.alert,.error').remove();
     if(data.status == "validation_error" || data.status == '422') {
         var errors = [];
         if(isset(data.errors)) {
@@ -275,18 +308,26 @@ function ajax_form_notification(form,data,$refresh=true) {
         }
         $.each(errors,function(index, value){
             if($(form).find(':input[name='+index+']').not('[type="hidden"]').length == 0) {
-                $(form).prepend(`<div class="alert alert-danger">
-                    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-                    <strong>${data.status}</strong> ${value}
-                </div>`);
+                if($(form).find('.alert').length > 0) {
+                    $(form).find('.alert').append(`<li><strong>${data.status}</strong> ${value}</li>`);
+                } else {
+                    $(form).prepend(`<div class="alert alert-danger">
+                        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                        <li><strong>${data.status}</strong> ${value}</li>
+                    </div>`);
+                }
             } else {
-                $(form).find(':input[name='+index+']').parents('.form-group').addClass('has-error').append(`<label class="error">${value}</label>`)
+                $(form).find(':input[name='+index+']').addClass('is-invalid');
+                $(form).find(':input[name='+index+']').parent().append(`<span class="error invalid-feedback">${value[0]}</span>`)
             }
         });
+        if(typeof Object.keys(errors)[0] != 'undefined') {
+            $(form).find(':input[name='+Object.keys(errors)[0]+']').first().focus();
+        }
     } else if(data.status == "exception_error") {
-        $(form).append(`<div class="alert alert-danger">
+        $(form).append(`<div class="alert alert-danger m-3">
             <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-            <strong>Danger!</strong>${data.errors}
+            <strong>errors! </strong>${data.errors}
         </div>`);
     } else if(data.status == "success" || data.status == "200") {
         sweetAlert(data.status,data.message);
@@ -300,4 +341,30 @@ function ajax_form_notification(form,data,$refresh=true) {
         </div>`));
     }
     $(form).find('[type=submit]').attr('disabled', false);
+}
+function lodingBtn(btn) {
+    if(typeof btn != "undefined" && btn) {
+        text = btn.innerText;
+        btn.setAttribute('disabled',true);
+        btn.innerHTML = `<span class="">Loading </span><i class="fa fa-circle-o-notch fa-spin fa-1x fa-fw"></i>`;
+        return text;
+    } else {
+        console.log('loding btn undefind',btn);
+    }
+}
+function stopLodingBtn(btn,text = "") {
+    if(typeof btn != "undefined" && typeof text != "undefined" && btn && text) {
+        btn.removeAttribute('disabled');
+        btn.innerText = text;
+    } else {
+        console.log('loding btn',btn,'text',text);
+    }
+}
+function base_url(url) {
+    var bsurl = document.body.getAttribute('bsurl');
+    if(bsurl) {
+        return bsurl+'/'+url;
+    } else {
+        return "set base url in body tag";
+    }
 }

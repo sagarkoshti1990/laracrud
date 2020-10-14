@@ -6,7 +6,7 @@
     } else {
         $json_values = json_decode($field['json_values']);
     }
-    $modules = \Module::whereIn('name',$json_values)->get();
+    $modules = \Module::whereIn('name',$json_values ?? [])->get();
     $name_type = $field['name'].'_type';
     $name_id = $field['name'].'_id';
     $value_type = $crud->row->{$name_type} ?? ""; 
@@ -18,7 +18,7 @@
         @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_translatable_icon')
     @endif
     <div class="input-group">
-        @if(isset($field['prefix'])) <div class="input-group-addon">{!! $field['prefix'] !!}</div> @endif
+        @if(isset($field['prefix'])) <div class="input-group-prepend"><span class="input-group-text">{!! $field['prefix'] !!}<span></div> @endif
         <select
             name="{{ $name_type }}"
             @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_attributes')
@@ -42,7 +42,7 @@
                 <option value="">{{ 'Select '.str_replace('*','',strip_tags($field['label'])) }} id</option>
             @endif
         </select>
-        @if(isset($field['suffix'])) <div class="input-group-addon">{!! $field['suffix'] !!}</div> @endif
+        @if(isset($field['suffix'])) <div class="input-group-append"><span class="input-group-text">{!! $field['suffix'] !!}<span></div> @endif
     </div>
     @if ($errors->has($field['name']))
         <span class="help-block">{{ $errors->first($field['name']) }}</span>
@@ -70,10 +70,10 @@
                             for (var i = 0; i < data.data.length; i++) {
                                 var item = data.data[i];
                                 var selected = "";
-                                if(isset(value) && value != "" && item.id == value) {
+                                if(isset(value) && value != "" && (item.id == value || item.value == value)) {
                                     selected = "selected";
                                 }
-                                html += '<option value="' + item.id + '" '+selected+'>' + item.name + '</option>';
+                                html += '<option value="' + item.value + '" '+selected+'>' + item.text + '</option>';
                             }
                             $(child).html(html).attr('disabled',false);
                         } else {

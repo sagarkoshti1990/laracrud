@@ -16,7 +16,7 @@
             value="{{ old($field['name']) ? old($field['name']) : (isset($field['value']) ? $field['value'] : (isset($field['default']) ? $field['default'] : '' )) }}"
             @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_attributes')
         >
-        <a class="profile-pic" file_type='image' selecter="{{ $field['name'] }}">
+        <a class="profile-pic" file_type='image' selecter="{{ $field['name'] }}" ratio={{ $field['attributes']['ratio'] ?? $field['ratio'] ?? '' }}>
             <div class="profile-pic profile-pic-img" style="background-image: url('{{ $url_img }}')" >
                 <span class="fa fa-upload"></span>
             </div>
@@ -32,14 +32,14 @@
             if(isset($field['value']) && is_numeric($field['value']) && $field['value']) {
                 $url_img = CustomHelper::img($field['value']).'?s=100';
                 $img = "<div class='uploaded_image'>";
-                $img .= "<img src='$url_img'>";
+                $img .= "<img width='100' src='$url_img'>";
                 $img .= "<i title='Remove Image' class='fa fa-times'></i>";
                 $img .= "</div>";
                 $hide = "hide";
             } elseif(isset($field['default']) && is_numeric($field['default']) && $field['default']) {
                 $url_img = CustomHelper::img($field['default']).'?s=100';
                 $img = "<div class='uploaded_image'>";
-                $img .= "<img src='$url_img'>";
+                $img .= "<img width='100' src='$url_img'>";
                 $img .= "<i title='Remove Image' class='fa fa-times'></i>";
                 $img .= "</div>";
                 $hide = "hide";
@@ -58,8 +58,8 @@
                 value="{{ old($field['name']) ? old($field['name']) : (isset($field['value']) ? $field['value'] : (isset($field['default']) ? $field['default'] : '' )) }}"
                 @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_attributes')
             >
-            <a class="btn btn-default btn_upload_image btn-labeled {{ $hide }}" file_type='image' selecter="{{ $field['name'] }}">
-                <span class="btn-label"><i class='fa fa-cloud-upload-alt'></i></span>Upload</a>
+            <a class="btn btn-default btn_upload_image btn-labeled {{ $hide }}" file_type='image' selecter="{{ $field['name'] }}" ratio={{ $field['attributes']['ratio'] ?? $field['ratio'] ?? '' }}>
+                <span class="btn-label"><i class='fa fa-cloud-upload'></i></span>Upload</a>
             <?php
                 echo $img;
             ?>

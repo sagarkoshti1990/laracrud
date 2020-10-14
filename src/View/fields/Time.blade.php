@@ -1,4 +1,4 @@
-<!-- bootstrap datepicker input -->
+<!-- bootstrap timepicker input -->
 @php
     if (isset($field['attributes']['value'])) {
         $field['value'] = \CrudHelper::date_format($field['attributes']['value'], 'data_save');
@@ -16,7 +16,7 @@
     <div class="input-group date">
         @if(isset($field['prefix'])) <div class="input-group-prepend"><span class="input-group-text">{!! $field['prefix'] !!}<span></div> @endif
         <input
-            data-bs-datepicker="{{ isset($field['date_picker_options']) ? json_encode($field['date_picker_options']) : '{}'}}"
+            data-bs-timepicker="{{ isset($field['date_picker_options']) ? json_encode($field['date_picker_options']) : '{}'}}"
             type="text"
             data-name="{{ $field['name'] }}"
             @foreach ($field['attributes'] as $attribute => $value)
@@ -25,7 +25,7 @@
                 @endif
             @endforeach
             >
-        <div class="input-group-append"><span class="input-group-text">@if(isset($field['suffix'])) {!! $field['suffix'] !!} @else <span class="fa fa-calendar"></span> @endif <span></div>
+        <div class="input-group-append"><span class="input-group-text">@if(isset($field['suffix'])) {!! $field['suffix'] !!} @else <span class="fa fa-clock"></span> @endif <span></div>
     </div>
     <input
         type="hidden"
@@ -59,7 +59,7 @@
 <script src="{{ asset('node_modules/bootstrap-datetimepicker-npm/build/js/bootstrap-datetimepicker.min.js') }}"></script>
     <script>
         jQuery(document).ready(function($){
-            $('[data-bs-datepicker]').each(function(){
+            $('[data-bs-timepicker]').each(function(){
                 var $fake = $(this),
                 $field = $fake.parents('.form-group').find('input[type="hidden"]'),
                 $customConfig = $.extend({
@@ -74,7 +74,7 @@
                         clear: 'fa fa-trash',
                         close: 'fa fa-times'
                     },
-                    format: 'DD/MM/YYYY',
+                    format: 'LT',
                     // inline: true,
                     // sideBySide: true,
                     defaultDate: $field.val()
@@ -83,14 +83,14 @@
                 delete($customConfig['language']);
                 $picker = $fake.datetimepicker($customConfig);
                 if(isset($picker.startDate)) {
-                    $field.val($picker.startDate.format('YYYY-MM-DD'));
+                    $field.val($picker.startDate.format('HH:mm:ss'));
                 }
                 // $fake.on('keydown', function(e){
                 //     e.preventDefault();
                 //     return false;
                 // });
                 $picker.on('dp.change', function(e){
-                    var sqlDate = e.date ? e.date.format('YYYY-MM-DD') : null;
+                    var sqlDate = e.date ? e.date.format('HH:mm:ss') : null;
                     $field.val(sqlDate).trigger('change');
                 });
             });

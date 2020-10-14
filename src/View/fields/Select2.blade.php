@@ -14,7 +14,7 @@
         @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_attributes', ['default_class' =>  'form-control select2_field'])
         >
         @if(!(isset($field['attributes']['allows_null'])) || (isset($field['attributes']['allows_null']) && ($field['attributes']['allows_null'])))
-            <option value="">{{ 'Select '.str_replace('*','',strip_tags($field['label'])) }}</option>
+            <option value="">{{ (isset($field['attributes']['select_option']) && $field['attributes']['select_option'] == false) ? '' : "Select" }} {{ str_replace('*','',strip_tags($field['label'])) }}</option>
         @endif
 
         @if (isset($field['allows_null']) && $field['allows_null'] == true)
@@ -86,30 +86,20 @@
 {{-- FIELD JS - will be loaded in the after_scripts section --}}
 @pushonce('crud_fields_styles')
     <link href="{{ asset('node_modules/admin-lte/bower_components/select2/dist/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
-    {{-- <link href="{{ asset('public/vendor/select2/css/select2-bootstrap.css') }}" rel="stylesheet" type="text/css" /> --}}
     <style>
-        select[readonly].select2 + .select2-container {
-            pointer-events: none;
-            touch-action: none;
-            .select2-selection {
-                background: #eee;
-                box-shadow: none;
-            }
-            .select2-selection__arrow,
-            .select2-selection__clear {
-                display: none;
-            }
+        .select2-container--default .select2-selection--single{
+            display: block;width: 100%;height: calc(1.5em + 0.75rem + 2px);
+            padding: 0.375rem 0.75rem;border: 1px solid #ced4da;border-radius: 0;
         }
-        .disabled-select {
-            background-color:#e5e9ed;
-            opacity:0.5;
-            border-radius:3px;
-            cursor:not-allowed;
-            position:absolute;
-            top:0;
-            bottom:0;
-            right:0;
-            left:0;
+        .select2-container--default .select2-selection--single .select2-selection__rendered{line-height:2;padding:0}
+        .select2-container--default .select2-selection--single .select2-selection__arrow{height:36px}
+        select[readonly].select2 + .select2-container {
+            pointer-events: none;touch-action: none;
+            .select2-selection {background: #eee;box-shadow: none;}
+            .select2-selection__arrow,.select2-selection__clear {display: none;}
+        }
+        .disabled-select {background-color:#e5e9ed;opacity:0.5;border-radius:3px;cursor:not-allowed;
+            position:absolute;top:0;bottom:0;right:0;left:0;
         }
         .has-error .select2-dropdown, .has-error .select2-selection{
             border-color: #f55753 !important;

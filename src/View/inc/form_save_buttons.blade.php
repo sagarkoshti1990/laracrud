@@ -1,7 +1,7 @@
 
 <button @if(isset($submit_type)) type="{{ $submit_type }}" @else type="submit" @endif  class="btn bg-orange btn-flat float-right @if(isset($submit_class)){{$submit_class}}@endif">
    
-    {{ $button_submit_name ?? 'save' }}
+    {{ $button_submit_name ?? 'Save' }}
 </button>
 @if(!isset($button_cancel) || $button_cancel)
 <a
@@ -12,6 +12,6 @@
     @endif
         class="btn btn-default btn-flat float-left @if(isset($cancel_class)){{$cancel_class}}@endif">
     
-    {{ $button_cancel_name ?? 'cancel' }}
+    {{ $button_cancel_name ?? 'Cancel' }}
 </a>
 @endif

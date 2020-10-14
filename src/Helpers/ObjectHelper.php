@@ -289,7 +289,7 @@ class ObjectHelper
 
     /**
      * Set the entity name in singular and plural.
-     * Used all over the CRUD interface (header, add button, reorder button, breadcrumbs).
+     * Used all over the CRUD interface (header, add button, breadcrumbs).
      *
      * @param [string] Entity name, in singular. Ex: article
      * @param [string] Entity name, in plural. Ex: articles
