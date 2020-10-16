@@ -1,5 +1,5 @@
 @if (Auth::check())
-<aside class="main-sidebar">
+<aside class="main-sidebar pt-5">
 	<!-- sidebar: style can be found in sidebar.less -->
 	<section class="sidebar">
 		<!-- Sidebar user panel -->

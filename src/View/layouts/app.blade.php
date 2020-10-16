@@ -4,7 +4,7 @@
     <div class="wrapper">
         <header class="main-header">
             <!-- Logo -->
-            <a href="{{ url('/') }}" class="logo text-secondary d-none d-sm-block">
+            <a href="{{ url('/') }}" class="logo text-secondary d-none d-md-block">
                 <span class="logo-mini">{!! config('stlc.logo_mini') !!}</span>
                 <span class="logo-lg">{!! config('stlc.logo_lg') !!}</span>
             </a>

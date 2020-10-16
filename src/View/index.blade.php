@@ -6,7 +6,7 @@
             <span class="text-capitalize">{{ $crud->labelPlural }}</span>
             <small>List.</small>
         </h1>
-        <ol class="breadcrumb float-right">
+        <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="{{ url(config('stlc.route_prefix'), 'dashboard') }}">Home</a></li>
             <li class="breadcrumb-item"><a href="{{ url($crud->route) }}" class="text-capitalize">{{ $crud->labelPlural }}</a></li>
             <li class="breadcrumb-item active">List</li>
@@ -22,7 +22,7 @@
                     <table id="crudTable" class="table crudTable display" cellspacing="0" width="100%">
                         <thead class="table-success mob-hide">
                             <tr>
-                                <th>{{ $crud->label }} ID</th>
+                                <th>ID</th>
                                 {{-- Table columns --}}
                                 @foreach ($crud->columns as $column)
                                 <th>{{ $column['label'] }}</th>

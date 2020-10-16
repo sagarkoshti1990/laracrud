@@ -77,7 +77,7 @@
                     format: 'LT',
                     // inline: true,
                     // sideBySide: true,
-                    defaultDate: $field.val()
+                    defaultDate: (typeof $field.val() != 'undefined' && $field.val() != "") ? moment($field.val(),'HH:mm:ss').format('YYYY-MM-DD HH:mm:ss') : ''
                 }, $fake.data('bs-datetimepicker'));
                 $customConfig.locale = $customConfig['language'];
                 delete($customConfig['language']);

@@ -4,13 +4,13 @@ namespace DummyNamespace;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-// use Actuallymab\LaravelComment\Commentable;
+use Sagartakle\Laracrud\Helpers\Traits\Polymorphic;
 use Sagartakle\Laracrud\Helpers\Traits\ActivityTrait;
 
 class DummyClassSingular extends Model
 {
     use SoftDeletes;
-    // use Commentable;
+    use Polymorphic;
     use ActivityTrait;
      /*
     |--------------------------------------------------------------------------
