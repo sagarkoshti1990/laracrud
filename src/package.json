@@ -18,6 +18,7 @@
         "ckeditor-full": "^4.7.3",
         "cropper": "^4.1.0",
         "datatables.net-bs4": "^1.10.20",
+        "datatables.net-responsive-bs4": "^2.2.6",
         "dropzone": "^5.5.1",
         "intl-tel-input": "^16.0.7",
         "jquery-pincode-autotab": "^2.2.0",

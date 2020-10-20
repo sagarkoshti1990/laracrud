@@ -86,7 +86,7 @@
                 "aaSorting": [],
                 "processing": true,
                 "serverSide": true,
-                // "responsive": true,
+                "responsive": true,
                 "language": {"paginate": {"next":">","previous":"<"}},
                 "ajax": {
                     "url": "{!! url($crud->route.'/datatable') !!}",

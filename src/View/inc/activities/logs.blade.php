@@ -36,6 +36,7 @@
                             $('#ul_timeline_activies').append(html);
                         }
                     } else {
+                        $('#ul_timeline_activies').html('<h1 class="text-center">data not found</h1>');
                         console.log(data);
                     }
                 }

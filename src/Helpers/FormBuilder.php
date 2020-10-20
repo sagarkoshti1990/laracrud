@@ -943,24 +943,9 @@ class FormBuilder
                         //$value = DB::table($module->table_name)->where('id', $value)->first()->$represent_attr;
                         $test_val = DB::table($module->table_name)->where('id', $value)->first();
                         if(is_object($test_val)) {
-                            if(isset($module->name) && in_array($module->name,['Users'])) {
-                                $value = $test_val->{'first_name'}." ".$test_val->{'last_name'};
-                            } else if(isset($module->name) && in_array($module->name,['Employees','MasterUsers','PartnerUsers'])) {
-                                $test_val = ($module->model)::find($value);
-                                if($module->name == 'PartnerUsers') {
-                                    $value = ($test_val->name ?? "").' ('.$test_val->brand_name.')';
-                                } else {
-                                    $value = $test_val->{'first_name'}." ".$test_val->{'last_name'};
-                                }
-                            } else {
-                                $value = $test_val->{$represent_attr};
-                            }
+                            $value = $test_val->{$represent_attr};
                         } elseif(is_array($test_val)) {
-                            if(isset($module->name) && in_array($module->name,['Users','Employees','MasterUsers','PartnerUsers'])) {
-                                $value = $test_val['first_name']." ".$test_val['last_name'];
-                            } else {
-                                $value = $test_val[$represent_attr];
-                            }
+                            $value = $test_val[$represent_attr];
                         }
                     }
                 }

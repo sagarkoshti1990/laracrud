@@ -97,7 +97,7 @@ trait ActivityTrait
             if ($array)
             {
                 if (count($data) == 2)
-                    return trans(config('App.log.language_key.prefixes.details').'.'.$data[0]).': '.$data[1];
+                    return trans(config('stlc.language_key.prefixes.details').'.'.$data[0]).': '.$data[1];
             }
             else
             {
@@ -105,7 +105,7 @@ trait ActivityTrait
 
                 foreach ($data as $label => $value)
                 {
-                    $details[] = trans(config('App.log.language_key.prefixes.details').'.'.$label).': '.$value;
+                    $details[] = trans(config('stlc.language_key.prefixes.details').'.'.$label).': '.$value;
                 }
 
                 return implode(', ', $details);

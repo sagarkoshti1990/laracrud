@@ -192,7 +192,7 @@ class Activity extends Model
     public static function make($data = [])
     {
         // set the defaults from config
-        $defaults = config('App.log.defaults');
+        $defaults = config('stlc.defaults');
         if (!is_array($defaults)) {
             $defaults = [];
         }
@@ -349,16 +349,16 @@ class Activity extends Model
     public function getName()
     {
         if ((bool) $this->developer)
-            return config('App.log.names.developer');
+            return config('stlc.names.developer');
 
         $user = $this->user;
         if (empty($user))
-            return config('App.log.names.unknown');
+            return config('stlc.names.unknown');
 
-        if (!config('App.log.full_name_as_name'))
+        if (!config('stlc.full_name_as_name'))
             return !is_null($user->username) ? $user->username : $user->name;
 
-        if (config('App.log.full_name_last_name_first'))
+        if (config('stlc.full_name_last_name_first'))
             return $user->last_name.', '.$user->first_name;
         else
             return $user->first_name.' '.$user->last_name;
@@ -386,9 +386,9 @@ class Activity extends Model
      */
     public function getIcon()
     {
-        $actionIcons = config('App.log.action_icons');
+        $actionIcons = config('stlc.action_icons');
 
-        $action_icon_bd_colors = config('App.log.action_icon_bd_colors');
+        $action_icon_bd_colors = config('stlc.action_icon_bd_colors');
 
         $actionFormatted = str_replace(' ', '_', trim(strtolower($this->action)));
 
@@ -405,8 +405,8 @@ class Activity extends Model
      */
     public function getIconMarkup()
     {
-        $iconElement     = config('App.log.action_icon.element');
-        $iconClassPrefix = config('App.log.action_icon.class_prefix');
+        $iconElement     = config('stlc.action_icon.element');
+        $iconClassPrefix = config('stlc.action_icon.class_prefix');
 
         return '<'.$iconElement.' class="'.$iconClassPrefix.$this->getIcon().'" title="'.$this->action.'"></'.$iconElement.'>';
     }
@@ -505,7 +505,7 @@ class Activity extends Model
         if (!isset($replacements['user']))
             $replacements['user'] = $this->getName();
 
-        $descriptionsKeyPrefix = config('App.log.language_key.prefixes.descriptions');
+        $descriptionsKeyPrefix = config('stlc.language_key.prefixes.descriptions');
 
         $makeFirstPerson = $firstPersonIfUser && Auth::check() && Auth::id() == $this->user_id;
 
@@ -575,7 +575,7 @@ class Activity extends Model
             if ($array)
             {
                 if (count($data) == 2)
-                    return trans(config('App.log.language_key.prefixes.details').'.'.$data[0]).': '.$data[1];
+                    return trans(config('stlc.language_key.prefixes.details').'.'.$data[0]).': '.$data[1];
             }
             else
             {
@@ -583,7 +583,7 @@ class Activity extends Model
 
                 foreach ($data as $label => $value)
                 {
-                    $details[] = trans(config('App.log.language_key.prefixes.details').'.'.$label).': '.$value;
+                    $details[] = trans(config('stlc.language_key.prefixes.details').'.'.$label).': '.$value;
                 }
 
                 return implode(', ', $details);
@@ -603,7 +603,7 @@ class Activity extends Model
     protected function getReplacementValue($value, $replacementsData)
     {
         if (is_null($this->replacementsPrefix)) {
-            $this->replacementsPrefix = config('App.log.language_key.prefixes.replacements');
+            $this->replacementsPrefix = config('stlc.language_key.prefixes.replacements');
             if (!is_null($this->replacementsPrefix))
                 $this->replacementsPrefix .= ".";
         }
@@ -681,7 +681,7 @@ class Activity extends Model
     public function getContextItem($returnArray = false)
     {
         if (is_null($this->contextItem)) {
-            $contextTypeSettings = config('App.log.context_types.'.strtolower(\Str::snake($this->context_type)));
+            $contextTypeSettings = config('stlc.context_types.'.strtolower(\Str::snake($this->context_type)));
 
             if (!is_array($contextTypeSettings) || !isset($contextTypeSettings['model']))
                 return null;

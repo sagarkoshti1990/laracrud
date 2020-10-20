@@ -39,6 +39,7 @@
 @endpush
 @push('p_after_styles')
     <link href="{{ asset('node_modules/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('node_modules/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="{{ asset('node_modules/sweetalert2/dist/sweetalert2.css') }}">
 
     @stack('crud_list_styles')
@@ -51,6 +52,7 @@
 @push('p_after_scripts')
     <script src="{{ asset('node_modules/admin-lte/bower_components/datatables.net/js/jquery.dataTables.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('node_modules/datatables.net-bs4/js/dataTables.bootstrap4.min.js') }}" type="text/javascript"></script>
+    <script src="{{ asset('node_modules/datatables.net-responsive/js/dataTables.responsive.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('node_modules/admin-lte/bower_components/morris.js/morris.min.js') }}"></script>
     <script src="{{ asset('node_modules/admin-lte/plugins/pace/pace.min.js') }}"></script>
     <script src="{{ asset('node_modules/admin-lte/bower_components/moment/min/moment.min.js') }}"></script>
