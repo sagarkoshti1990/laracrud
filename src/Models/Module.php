@@ -215,16 +215,13 @@ class Module extends Model
             }
             if(Schema::hasTable('field_types')) {
                 $ftypes = FieldType::getFTypes();
-                //print_r($ftypes);
-                //print_r($module);
-                //print_r($fields);
             } else {
                 $ftypes = [];
             }
             
             if(Schema::hasTable($table_name)) {
                 Schema::table($table_name, function (Blueprint $table) use ($fields, $module, $ftypes) {
-                    foreach($fields as $field) {
+                    foreach($fields as $key => $field) {
                         if(Schema::hasTable('fields') && isset($module->id)) {
                             $mod = Field::where('module_id', $module->id)->where('name', $field->name)->first();
                         }
@@ -243,6 +240,7 @@ class Module extends Model
                                 $field_obj = Field::create([
                                     'name' => $field->name,
                                     'label' => $field->label,
+                                    'rank' => $field->rank ?? ($key * 5),
                                     'module_id' => $module->id,
                                     'field_type_id' => $ftypes[$field->field_type],
                                     'unique' => $field->unique,
@@ -271,7 +269,7 @@ class Module extends Model
                 // Create Database Schema for table
                 Schema::create($table_name, function (Blueprint $table) use ($fields, $module, $ftypes,$table_name) {
                     $table->bigIncrements('id');
-                    foreach($fields as $field) {
+                    foreach($fields as $key => $field) {
                         if(Schema::hasTable('fields') && isset($module->id)) {
                             $mod = Field::where('module_id', $module->id)->where('name', $field->name)->first();
                             if(!isset($mod->id)) {
@@ -279,6 +277,7 @@ class Module extends Model
                                 $field_obj = Field::create([
                                     'name' => $field->name,
                                     'label' => $field->label,
+                                    'rank' => $field->rank ?? ($key * 5),
                                     'module_id' => $module->id,
                                     'field_type_id' => $ftypes[$field->field_type],
                                     'unique' => $field->unique,
@@ -2311,7 +2310,7 @@ class Module extends Model
      */
     public function fields()
     {
-        return $this->hasMany('Sagartakle\Laracrud\Models\Field', 'module_id', 'id');
+        return $this->hasMany('Sagartakle\Laracrud\Models\Field', 'module_id', 'id')->orderBy('rank');
     }
     /**
      * Get the fields of this module.

@@ -1,4 +1,4 @@
-<div class="panel p-4 clearfix">
+<div class="panel p-md-4 clearfix">
     <ul class="timeline timeline-inverse" id="ul_timeline_activies"></ul>
 </div>
 @push('after_scripts')

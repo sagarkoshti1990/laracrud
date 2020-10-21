@@ -814,8 +814,8 @@ class FormBuilder
                     if(!isset($module->model)) {
                         $json_values_arr = explode('|',$fields[$field_name]->json_values);
                         $module = (object)[];
-                        $module->name = $module->model = collect(str_replace("@", "", $json_values_arr))->first();
-                        $module->table_name = ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', str_replace('\\', '', Str::plural($module->model)))), '_');
+                        $module->model = collect(str_replace("@", "", $json_values_arr))->first();
+                        $module->table_name = (new $module->model)->getTable();
                         $module->represent_attr = collect(str_replace("|", "", $json_values_arr))->last();
                     }
                     $represent_attr = $module->represent_attr;
@@ -934,13 +934,12 @@ class FormBuilder
                     if(!isset($module->model)) {
                         $json_values_arr = explode('|',$fields[$field_name]->json_values);
                         $module = (object)[];
-                        $module->name = $module->model = collect(str_replace("@", "", $json_values_arr))->first();
-                        $module->table_name = ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', str_replace('\\', '', Str::plural($module->model)))), '_');
+                        $module->model = collect(str_replace("@", "", $json_values_arr))->first();
+                        $module->table_name = (new $module->model)->getTable();
                         $module->represent_attr = collect(str_replace("|", "", $json_values_arr))->last();
                     }
                     $represent_attr = $module->represent_attr;
                     if(isset($value) && !empty($value)) {
-                        //$value = DB::table($module->table_name)->where('id', $value)->first()->$represent_attr;
                         $test_val = DB::table($module->table_name)->where('id', $value)->first();
                         if(is_object($test_val)) {
                             $value = $test_val->{$represent_attr};
@@ -961,8 +960,8 @@ class FormBuilder
                             if(!isset($module->model)) {
                                 $json_values_arr = explode('|',$fields[$field_name]->json_values);
                                 $module = (object)[];
-                                $module->name = $module->model = collect(str_replace("@", "", $json_values_arr))->first();
-                                $module->table_name = ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', str_replace('\\', '', Str::plural($module->model)))), '_');
+                                $module->model = collect(str_replace("@", "", $json_values_arr))->first();
+                                $module->table_name = (new $module->model)->getTable();
                                 $module->represent_attr = collect(str_replace("|", "", $json_values_arr))->last();
                             }
                             $represent_attr = $module->represent_attr;

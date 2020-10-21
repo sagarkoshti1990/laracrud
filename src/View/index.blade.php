@@ -7,7 +7,7 @@
             <small>List.</small>
         </h1>
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ url(config('stlc.route_prefix'), 'dashboard') }}">Home</a></li>
+            <li class="breadcrumb-item"><a href="{{ url(config('stlc.route_prefix'), 'dashboard') }}">Dashboard</a></li>
             <li class="breadcrumb-item"><a href="{{ url($crud->route) }}" class="text-capitalize">{{ $crud->labelPlural }}</a></li>
             <li class="breadcrumb-item active">List</li>
         </ol>

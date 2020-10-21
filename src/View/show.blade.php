@@ -14,8 +14,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="widget-user-image">
-                    <span class="info-box-icon" style="border-radius:100%;"><i class="{{ $crud->module->icon }}"></i></span>
+                <div class="widget-user-image" style="top: 5px;">
+                    <span class="info-box-icon" style="border-radius:100%;height: 55px;width: 55px;font-size: 30px;line-height: 60px;"><i class="fa {{ $crud->module->icon }}"></i></span>
                 </div>
             </div>
         </div>
@@ -26,8 +26,8 @@
             <div class="nav-tabs-custom">
                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
                     <a class="nav-item nav-link" href="{{ $src ?? url($crud->route) }}"><i class="fa fa-arrow-left"></i></a>
-                    <a class="nav-item nav-link active" href="#information" data-target="#tab-information" data-toggle="tab"><i class="fa fa-info-circle"></i>{{ $crud->label }} Details</a>
-                    <a class="nav-item nav-link" href="#logs" data-target="#tab-logs" data-toggle="tab"><i class="fa fa-history"></i>Logs</a>
+                    <a class="nav-item nav-link active" href="#information" data-target="#tab-information" data-toggle="tab"><i class="fa fa-info-circle mr-2"></i>{{ $crud->label }} Details</a>
+                    <a class="nav-item nav-link" href="#logs" data-target="#tab-logs" data-toggle="tab"><i class="fa fa-history mr-2"></i>Logs</a>
                 </div>
                 <div class="tab-content">
                     <div class="tab-pane fade show in active" id="tab-information">

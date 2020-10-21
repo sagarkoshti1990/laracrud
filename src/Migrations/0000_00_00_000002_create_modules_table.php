@@ -80,13 +80,13 @@ class CreateModulesTable extends Migration
             $table->unsignedBigInteger('field_type_id');
             $table->foreign('field_type_id')->references('id')->on('field_types');
             $table->boolean('unique')->default(false);
-            $table->string('defaultvalue');
-            $table->unsignedBigInteger('minlength')->default(0);
-            $table->unsignedBigInteger('maxlength')->default(0);
+            $table->string('defaultvalue')->nullable()->default(Null);
+            $table->unsignedBigInteger('minlength')->nullable()->default(0);
+            $table->unsignedBigInteger('maxlength')->nullable()->default(0);
             $table->boolean('required')->default(false);
             $table->boolean('nullable_required')->default(true);
 			$table->boolean('show_index')->default(false);
-            $table->text('json_values');
+            $table->text('json_values')->nullable();
         });
 
         Schema::create('access_modules', function (Blueprint $table) {

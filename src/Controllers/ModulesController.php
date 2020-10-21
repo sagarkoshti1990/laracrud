@@ -29,9 +29,9 @@ class ModulesController extends StlcController
         $module->name = "Modules";
         $module->label = "Modules";
         $module->table_name = "modules";
-        $module->controller = "ModulesController";
+        $module->controller = self::class;
         $module->represent_attr = "label";
-        $module->icon = "fa-briefcase";
+        $module->icon = "fa fa-briefcase";
         $module->model = Module::class;
 
         $module->fields = [
@@ -44,43 +44,38 @@ class ModulesController extends StlcController
 				'name' => 'label',
 				'label' => 'label',
 				'field_type' => 'Text',
-				'required' => true,
-				'show_index' => true
+				'required' => true
 			],[
 				'name' => 'table_name',
 				'label' => 'Table Name',
 				'field_type' => 'Text',
-				'required' => true,
-				'show_index' => true
+				'required' => true
 			],[
 				'name' => 'model',
 				'label' => 'Model',
 				'field_type' => 'Text',
-				'required' => true,
-				'show_index' => true
+				'required' => true
 			],[
 				'name' => 'controller',
 				'label' => 'Controller',
 				'field_type' => 'Text',
-				'required' => true,
-				'show_index' => true
+				'required' => true
 			],[
 				'name' => 'represent_attr',
 				'label' => 'Represent Attribute',
 				'field_type' => 'Text',
-				'required' => true,
-				'show_index' => true
+				'required' => true
 			],[
 				'name' => 'icon',
 				'label' => 'Icon',
 				'field_type' => 'Text',
-				'required' => true,
-                'show_index' => true
+				'required' => true
 			]
         ];
         // echo "<pre>".json_encode($module->fields,JSON_PRETTY_PRINT);exit;
         $this->crud->setModule($module);
-        
+        $this->crud->setRoute(config("stlc.stlc_route_prefix",'developer') . '/'.$module->table_name);
+
         $this->crud_filed = new ObjectHelper;
         $module = (object)[];
         $module->name = "Fields";
@@ -88,7 +83,7 @@ class ModulesController extends StlcController
         $module->table_name = "fields";
         $module->controller = "ModulesController";
         $module->represent_attr = "label";
-        $module->icon = "fa-list";
+        $module->icon = "fa fa-list";
         $module->model = Field::class;
 
         $module->fields = [
@@ -96,77 +91,71 @@ class ModulesController extends StlcController
 				'name' => 'name',
 				'label' => 'Name',
 				'field_type' => 'Text',
-				'required' => true,
-				'show_index' => false
+				'required' => true
 			],[
 				'name' => 'label',
 				'label' => 'label',
 				'field_type' => 'Text',
-				'required' => true,
-				'show_index' => true
+				'required' => true
+			],[
+				'name' => 'rank',
+				'label' => 'Rank',
+				'field_type' => 'Number',
+				'required' => true
 			],[
 				'name' => 'module_id',
 				'label' => 'Module',
 				'field_type' => 'Select2',
 				'required' => true,
-                'show_index' => true,
                 'json_values' => '@'.(Module::class).'|name'
 			],[
 				'name' => 'field_type_id',
 				'label' => 'Field Type',
 				'field_type' => 'Select2',
 				'required' => true,
-                'show_index' => true,
                 'json_values' => '@'.(FieldType::class).'|name'
 			],[
 				'name' => 'unique',
 				'label' => 'Unique',
 				'field_type' => 'Radio',
-				'required' => true,
-				'show_index' => true
+				'required' => true
 			],[
 				'name' => 'defaultvalue',
 				'label' => 'Default Value',
-				'field_type' => 'Text',
-				'show_index' => true
+				'field_type' => 'Text'
 			],[
 				'name' => 'minlength',
 				'label' => 'Min Length',
-				'field_type' => 'Number',
-				'show_index' => true
+				'field_type' => 'Number'
 			],[
 				'name' => 'maxlength',
 				'label' => 'Max Length',
-				'field_type' => 'Number',
-                'show_index' => true
+				'field_type' => 'Number'
 			],[
 				'name' => 'required',
 				'label' => 'Required',
 				'field_type' => 'Radio',
-				'required' => true,
-				'show_index' => true
+				'required' => true
 			],[
 				'name' => 'show_index',
 				'label' => 'Show Index',
 				'field_type' => 'Radio',
-				'required' => true,
-				'show_index' => true
+				'required' => true
 			],[
 				'name' => 'json_type',
 				'label' => 'Json Type',
 				'field_type' => 'Radio',
 				'defaultvalue' => 'Module',
 				'required' => true,
-                'show_index' => true,
                 'json_values' => ['Module','Json']
 			],[
 				'name' => 'json_values',
 				'label' => 'Json Values',
-				'field_type' => 'Text',
-				'show_index' => true
+				'field_type' => 'Text'
 			]
         ];
         $this->crud_filed->setModule($module);
+        $this->crud_filed->setRoute(config("stlc.stlc_route_prefix",'developer') . '/'.$module->table_name);
         
         if(class_exists(\App\Models\Setting::class)) {
             $this->setting_crud = new ObjectHelper;
@@ -176,7 +165,7 @@ class ModulesController extends StlcController
             $crud->table_name = "settings";
             $crud->controller = "ModulesController";
             $crud->represent_attr = "key";
-            $crud->icon = "fa-cog";
+            $crud->icon = "fa fa-cog";
             $crud->model = (\App\Models\Setting::class);
             $setting_keys = \App\Models\Setting::select('key')->get()->pluck('key');
             $setting_keys = collect(config('stlc.setting_keys'))->whereNotIn('key',$setting_keys)->pluck('key');
@@ -199,6 +188,7 @@ class ModulesController extends StlcController
             ];
 
             $this->setting_crud->setModule($crud);
+            $this->setting_crud->setRoute(config("stlc.stlc_route_prefix",'developer') . '/'.$crud->table_name);
         } else {
             $this->setting_crud = ["\App\Models\Setting not found"];
         }
@@ -231,16 +221,16 @@ class ModulesController extends StlcController
             if(isset($request->src_ajax) && $request->src_ajax) {
                 return response()->json(['status' => 'success', 'message' => 'created', 'item' => $modules]);
             } else {
-                return view('admin.Modules.index', [
+                return view(config('stlc.stlc_modules_folder_name','stlc::').'Modules.index', [
                     'crud' => $crud,
                     'modules' => $modules
                 ]);
             }
         } else {
             if(isset($request->src_ajax) && $request->src_ajax) {
-                return response()->json(['status' => 'failed', 'message' => trans('crud.unauthorized_access')]);
+                return response()->json(['status' => 'failed', 'message' => 'Unauthorized Access']);
             } else {
-                abort(403, trans('crud.unauthorized_access'));
+                abort(403, 'Unauthorized Access');
             }
         }
     }
@@ -293,12 +283,12 @@ class ModulesController extends StlcController
             
             $crud = $this->crud;
 
-            return view('admin.Modules.create', [
+            return view(config('stlc.stlc_modules_folder_name','stlc::').'Modules.create', [
                 'crud' => $crud,
                 'src' => $src
             ]);
         } else {
-            abort(403, trans('crud.unauthorized_access'));
+            abort(403, 'Unauthorized Access');
         }
     }
 
@@ -338,7 +328,7 @@ class ModulesController extends StlcController
 
             // show a success message
             if(!$request->src_ajax) {
-                \Alert::success($this->crud->label." ".trans('crud.insert_success'))->flash();
+                \Alert::success($this->crud->label." The item has been added successfully.")->flash();
             }
 
             if(isset($request->go_view) && $request->go_view) {
@@ -351,7 +341,7 @@ class ModulesController extends StlcController
                 return redirect($this->crud->route);
             }
         } else {
-            abort(403, trans('crud.unauthorized_access'));
+            abort(403, 'Unauthorized Access');
         }
     }
 
@@ -382,7 +372,7 @@ class ModulesController extends StlcController
                 if(isset($request->get_data_ajax) && $request->get_data_ajax) {
                     return response()->json(['status' => 'success', 'message' => 'updated', 'item' => $module]);
                 } else {
-                    return view('admin.Modules.show', [
+                    return view(config('stlc.stlc_modules_folder_name','stlc::').'Modules.show', [
                         'crud' => $crud,
                         'crud_filed' => $crud_filed,
                         'module' => $module,
@@ -403,9 +393,9 @@ class ModulesController extends StlcController
             }
         } else {
             if(isset($request->get_data_ajax) && $request->get_data_ajax) {
-                return response()->json(['status' => 'failed', 'message' => trans('crud.unauthorized_access')]);
+                return response()->json(['status' => 'failed', 'message' => 'Unauthorized Access']);
             } else {
-                abort(403, trans('crud.unauthorized_access'));
+                abort(403, 'Unauthorized Access');
             }
         }
     }
@@ -431,7 +421,7 @@ class ModulesController extends StlcController
                 $crud = $this->crud;
                 $crud->row = $module;
             
-                return view('admin.Modules.edit', [
+                return view(config('stlc.stlc_modules_folder_name','stlc::').'Modules.edit', [
                     'crud' => $crud,
                     'module' => $module,
                     'src' => $src
@@ -443,7 +433,7 @@ class ModulesController extends StlcController
                 ]);
             }
         } else {
-            abort(403, trans('crud.unauthorized_access'));
+            abort(403, 'Unauthorized Access');
         }
     }
 
@@ -501,7 +491,7 @@ class ModulesController extends StlcController
                 abort(403, trans('crud.data_not_found'));
             }
         } else {
-            abort(403, trans('crud.unauthorized_access'));
+            abort(403, 'Unauthorized Access');
         }
     }
 
@@ -518,13 +508,13 @@ class ModulesController extends StlcController
             $crud->onlyButton('restore');
             $crud->labelPlural = trans('crud.delete')." ".$crud->labelPlural;
             $crud->datatable = true;
-            return view('admin.Modules.index', [
+            return view(config('stlc.stlc_modules_folder_name','stlc::').'Modules.index', [
                 'crud' => $crud,
                 'modules' => $modules,
                 'btn_hide' => true
             ]);
         } else {
-            abort(403, trans('crud.unauthorized_access'));
+            abort(403, 'Unauthorized Access');
         }
     }
 
@@ -564,9 +554,9 @@ class ModulesController extends StlcController
             }
         } else {
             if(isset($request->src_ajax) && $request->src_ajax) {
-                return response()->json(['status' => 'failed', 'message' => trans('crud.unauthorized_access')]);
+                return response()->json(['status' => 'failed', 'message' => 'Unauthorized Access']);
             } else {
-                abort(403, trans('crud.unauthorized_access'));
+                abort(403, 'Unauthorized Access');
             }
         }
     }
@@ -605,9 +595,9 @@ class ModulesController extends StlcController
             }
         } else {
             if(isset($request->src_ajax) && $request->src_ajax) {
-                return response()->json(['status' => 'failed', 'message' => trans('crud.unauthorized_access')]);
+                return response()->json(['status' => 'failed', 'message' => 'Unauthorized Access']);
             } else {
-                abort(403, trans('crud.unauthorized_access'));
+                abort(403, 'Unauthorized Access');
             }
         }
     }
@@ -684,15 +674,23 @@ class ModulesController extends StlcController
                     $request->request->set($key, null);
                 }
             }
-
+            
             if(isset($request->json_type) && $request->json_type == "Json") {
-                $request['json_values'] = json_encode($request->json_values);
+                if(isset($request->json_values) && is_array($request->json_values)) {
+                    $request['json_values'] = json_encode(array_filter($request->json_values));
+                } else {
+                    $request['json_values'] = '[]';
+                }
             } else {
-                $request['json_values'] = '@'.$request->json_values;
+                if(isset($request->json_values) && !empty($request->json_values)) {
+                    $request['json_values'] = '@'.$request->json_values;
+                } else {
+                    $request['json_values'] = "";
+                }
             }
 
             // insert item in the db
-            $item = $this->crud_filed->create($request);
+            $item = $this->crud_filed->create($request->except(['json_type']));
             $this->data['entry'] = $this->crud_filed->entry = $item;
 
             // add activity log
@@ -700,7 +698,7 @@ class ModulesController extends StlcController
 
             // show a success message
             if(!$request->src_ajax) {
-                \Alert::success($this->crud_filed->label." ".trans('crud.insert_success'))->flash();
+                \Alert::success($this->crud_filed->label." The item has been added successfully.")->flash();
             }
 
             if(isset($request->go_view) && $request->go_view) {
@@ -717,11 +715,11 @@ class ModulesController extends StlcController
                 }
             }
         } else {
-            abort(403, trans('crud.unauthorized_access'));
+            abort(403, 'Unauthorized Access');
         }
     }
 
-    public function edit_field($id)
+    public function edit_field(Request $request, $id)
     {
         if(Auth::user()->isSuperAdmin()) {
             if(isset($request->src)) {
@@ -736,7 +734,7 @@ class ModulesController extends StlcController
                 $crud = $this->crud_filed;
                 $crud->row = $field;
             
-                return view('admin.Modules.edit_field', [
+                return view(config('stlc.stlc_modules_folder_name','stlc::').'Modules.edit_field', [
                     'crud' => $crud,
                     'field' => $field,
                     'src' => $src
@@ -748,7 +746,7 @@ class ModulesController extends StlcController
                 ]);
             }
         } else {
-            abort(403, trans('crud.unauthorized_access'));
+            abort(403, 'Unauthorized Access');
         }
     }
 
@@ -777,9 +775,8 @@ class ModulesController extends StlcController
                 if(isset($request->get_data_ajax) && $request->get_data_ajax) {
                     return response()->json(['status' => 'success', 'message' => 'updated', 'item' => $field]);
                 } else {
-                    return view('admin.Modules.show_field', [
+                    return view(config('stlc.stlc_modules_folder_name','stlc::').'Modules.show_field', [
                         'crud' => $crud,
-                        'crud_filed' => $this->crud_filed,
                         'field' => $field,
                         'src' => $src,
                         'represent_attr' => $crud->module->represent_attr,
@@ -798,9 +795,9 @@ class ModulesController extends StlcController
             }
         } else {
             if(isset($request->get_data_ajax) && $request->get_data_ajax) {
-                return response()->json(['status' => 'failed', 'message' => trans('crud.unauthorized_access')]);
+                return response()->json(['status' => 'failed', 'message' => 'Unauthorized Access']);
             } else {
-                abort(403, trans('crud.unauthorized_access'));
+                abort(403, 'Unauthorized Access');
             }
         }
     }
@@ -828,11 +825,18 @@ class ModulesController extends StlcController
                         $request->request->set($key, null);
                     }
                 }
-
                 if(isset($request->json_type) && $request->json_type == "Json") {
-                    $request['json_values'] = json_encode($request->json_values);
+                    if(isset($request->json_values) && is_array($request->json_values)) {
+                        $request['json_values'] = json_encode(array_filter($request->json_values));
+                    } else {
+                        $request['json_values'] = '[]';
+                    }
                 } else {
-                    $request['json_values'] = '@'.$request->json_values;
+                    if(isset($request->json_values) && !empty($request->json_values)) {
+                        $request['json_values'] = '@'.$request->json_values;
+                    } else {
+                        $request['json_values'] = "";
+                    }
                 }
 
                 // update the row in the db
@@ -862,7 +866,7 @@ class ModulesController extends StlcController
                 abort(403, trans('crud.data_not_found'));
             }
         } else {
-            abort(403, trans('crud.unauthorized_access'));
+            abort(403, 'Unauthorized Access');
         }
     }
     
@@ -902,9 +906,9 @@ class ModulesController extends StlcController
             }
         } else {
             if(isset($request->src_ajax) && $request->src_ajax) {
-                return response()->json(['status' => 'failed', 'message' => trans('crud.unauthorized_access')]);
+                return response()->json(['status' => 'failed', 'message' => 'Unauthorized Access']);
             } else {
-                abort(403, trans('crud.unauthorized_access'));
+                abort(403, 'Unauthorized Access');
             }
         }
     }
@@ -922,12 +926,12 @@ class ModulesController extends StlcController
                 unset($this->setting_crud->fields['value']);
             }
             $this->setting_crud->create_button = 'modal';
-            return view('admin.Modules.settings', [
+            return view(config('stlc.stlc_modules_folder_name','stlc::').'Modules.settings', [
                 'crud' => $this->setting_crud,
                 'settings' => $settings
             ]);
         } else {
-            abort(403, trans('crud.unauthorized_access'));
+            abort(403, 'Unauthorized Access');
         }
     }
 
@@ -953,7 +957,7 @@ class ModulesController extends StlcController
                 $this->setting_crud->fields['value']->field_type = $setting_keys;
                 
                 $this->setting_crud->row = $setting; 
-                return view('admin.Modules.setting_edit', [
+                return view(config('stlc.stlc_modules_folder_name','stlc::').'Modules.setting_edit', [
                     'crud' => $this->setting_crud,
                     'setting' => $setting
                 ]);
@@ -964,7 +968,7 @@ class ModulesController extends StlcController
                 ]);
             }
         } else {
-            abort(403, trans('crud.unauthorized_access'));
+            abort(403, 'Unauthorized Access');
         }
     }
 
@@ -1018,7 +1022,7 @@ class ModulesController extends StlcController
 
             // show a success message
             if(!$request->src_ajax) {
-                \Alert::success(trans('crud.insert_success'))->flash();
+                \Alert::success("The item has been added successfully.")->flash();
             }
 
             if(isset($request->go_view) && $request->go_view) {
@@ -1031,7 +1035,7 @@ class ModulesController extends StlcController
                 return redirect($this->setting_crud->route);
             }
         } else {
-            abort(403, trans('crud.unauthorized_access'));
+            abort(403, 'Unauthorized Access');
         }
     }
 
@@ -1090,7 +1094,7 @@ class ModulesController extends StlcController
                 abort(403, trans('crud.data_not_found'));
             }
         } else {
-            abort(403, trans('crud.unauthorized_access'));
+            abort(403, 'Unauthorized Access');
         }
     }
 
@@ -1226,7 +1230,7 @@ class ModulesController extends StlcController
                 Alert::error("Employee user not exit. please edit employee, give password & generate user")->flash();
                 return redirect()->back();
             } else {
-                abort(403, trans('crud.unauthorized_access'));
+                abort(403, 'Unauthorized Access');
             }
         }
     }
