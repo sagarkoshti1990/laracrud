@@ -31,7 +31,7 @@ trait Index
                 return view($crud->view_path['index'], ['crud' => $crud]);
             }
         } else {
-            abort(403, trans('crud.unauthorized_access'));
+            abort(403, trans('stlc.unauthorized_access'));
         }
     }
 

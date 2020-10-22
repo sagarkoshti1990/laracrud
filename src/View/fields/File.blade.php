@@ -74,7 +74,7 @@
             @if(isset($field['file_type']))
                 extension="{{ $field['file_type'] }}"
             @endif
-            selecter="{{ $field['name'] }}"><span class="btn-label"><i class='fa fa-cloud-upload'></i></span>Upload</a>
+            selecter="{{ $field['name'] }}"><span class="btn-label"><i class='fa fa-cloud-upload-alt'></i></span>Upload</a>
         <?php
             echo $img;
         ?>

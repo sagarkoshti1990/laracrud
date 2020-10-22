@@ -4,12 +4,12 @@
         <h1>
             <span class="{{ $crud->icon }}"></span>
             <span class="text-capitalize">{{ $crud->labelPlural }}</span>
-            <small>List.</small>
+            <small>{{ trans('stlc.list') }}</small>
         </h1>
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ url(config('stlc.route_prefix'), 'dashboard') }}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{{ url(config('stlc.route_prefix'), 'dashboard') }}">{{ trans('stlc.dashboard') }}</a></li>
             <li class="breadcrumb-item"><a href="{{ url($crud->route) }}" class="text-capitalize">{{ $crud->labelPlural }}</a></li>
-            <li class="breadcrumb-item active">List</li>
+            <li class="breadcrumb-item active">{{ trans('stlc.list') }}</li>
         </ol>
     </section>
 @endsection
@@ -28,7 +28,7 @@
                                 <th>{{ $column['label'] }}</th>
                                 @endforeach
                                 @if ( $crud->buttons->where('stack', 'line')->count() )
-                                <th style="width: 110px;">Actions</th>
+                                <th style="width: 110px;">{{ trans('stlc.actions') }}</th>
                                 @endif
                             </tr>
                         </thead>
@@ -46,7 +46,7 @@
                 {!! Form::open(array('url' => $crud->route, 'method' => 'post', 'id' => 'add_form')) !!}
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal">&times;</button>
-                        <h4 class="box-title">Add {{ $crud->label }}</h4>
+                        <h4 class="box-title">{{ trans('stlc.add') }} {{ $crud->label }}</h4>
                     </div>
                     <div class="modal-body pb5">
                         @if(isset($src))

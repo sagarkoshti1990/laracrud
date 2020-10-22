@@ -20,7 +20,7 @@
     
                 (new PNotify({
                     title: "Confirmation",
-                    text: "{{ trans('crud.restore_confirm') }}",
+                    text: "{{ trans('stlc.restore_confirm') }}",
                     icon: 'glyphicon glyphicon-question-sign',
                     hide: false,
                     type: "warning",
@@ -45,8 +45,8 @@
                             // Show an alert with the result
                             if(result.status == "success") {
                                 new PNotify({
-                                    title: "{{ trans('crud.restore_confirmation_title') }}",
-                                    text: "{{ trans('crud.restore_confirmation_message') }}",
+                                    title: "{{ trans('stlc.restore_confirmation_title') }}",
+                                    text: "{{ trans('stlc.restore_confirmation_message') }}",
                                     type: "success"
                                 });
                                 // restore the row from the table
@@ -65,16 +65,16 @@
                         error: function(result) {
                             // Show an alert with the result
                             new PNotify({
-                                title: "{{ trans('crud.restore_confirmation_not_title') }}",
-                                text: "{{ trans('crud.restore_confirmation_not_message') }}",
+                                title: "{{ trans('stlc.restore_confirmation_not_title') }}",
+                                text: "{{ trans('stlc.restore_confirmation_not_message') }}",
                                 type: "warning"
                             });
                         }
                     });
                 }).on('pnotify.cancel', function() {
                     new PNotify({
-                        title: "{{ trans('crud.restore_confirmation_not_restored_title') }}",
-                        text: "{{ trans('crud.restore_confirmation_not_restored_message') }}",
+                        title: "{{ trans('stlc.restore_confirmation_not_restored_title') }}",
+                        text: "{{ trans('stlc.restore_confirmation_not_restored_message') }}",
                         type: "info"
                     });
                 });

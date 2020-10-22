@@ -12,13 +12,13 @@
     <div class="timeline-item">
       <span class="time"><i class="fa fa-clock"></i> {{ date('h:ia', strtotime($history->created_at)) }}</span>
       @if($history->key == 'created_at' && !$history->old_value)
-        <h3 class="timeline-header">{{ $history->userResponsible()?$history->userResponsible()->name:trans('crud.guest_user') }} {{ trans('crud.created_this') }} {{ $crud->label }}</h3>
+        <h3 class="timeline-header">{{ $history->userResponsible()?$history->userResponsible()->name:trans('stlc.guest_user') }} {{ trans('stlc.created_this') }} {{ $crud->label }}</h3>
       @else
-        <h3 class="timeline-header">{{ $history->userResponsible()?$history->userResponsible()->name:trans('crud.guest_user') }} {{ trans('crud.changed_the') }} {{ $history->fieldName() }}</h3>
+        <h3 class="timeline-header">{{ $history->userResponsible()?$history->userResponsible()->name:trans('stlc.guest_user') }} {{ trans('stlc.changed_the') }} {{ $history->fieldName() }}</h3>
         <div class="timeline-body p-b-0">
           <div class="row">
-            <div class="col-md-6">{{ ucfirst(trans('crud.from')) }}:</div>
-            <div class="col-md-6">{{ ucfirst(trans('crud.to')) }}:</div>
+            <div class="col-md-6">{{ ucfirst(trans('stlc.from')) }}:</div>
+            <div class="col-md-6">{{ ucfirst(trans('stlc.to')) }}:</div>
           </div>
           <div class="row">
             <div class="col-md-6"><div class="well well-sm" style="overflow: hidden;">{{ $history->oldValue() }}</div></div>
@@ -28,7 +28,7 @@
         <div class="timeline-footer p-t-0">
           {!! Form::open(array('url' => \Request::url().'/'.$history->id.'/restore', 'method' => 'post')) !!}
           <button type="submit" class="btn btn-primary btn-sm restore-btn" data-entry-id="{{ $entry->id }}" data-revision-id="{{ $history->id }}" onclick="onRestoreClick(event)">
-            <i class="fa fa-undo"></i> {{ trans('crud.undo') }}</button>
+            <i class="fa fa-undo"></i> {{ trans('stlc.undo') }}</button>
           {!! Form::close() !!}
         </div>
       @endif
@@ -63,7 +63,7 @@
           // Animate the new revision in (by sliding)
           $('.timeline-item-wrap').first().addClass('fadein');
           new PNotify({
-              text: '{{ trans('crud.revision_restored') }}',
+              text: '{{ trans('stlc.revision_restored') }}',
               type: 'success'
           });
         }

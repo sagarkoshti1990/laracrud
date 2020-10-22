@@ -5,12 +5,12 @@
         <h1>
             <span class="{{ $crud->icon }}"></span>
             <span class="text-capitalize">{{ $crud->labelPlural }}</span>
-            <small>{{ trans('crud.all') }} <span>{{ $crud->labelPlural }}</span> {{ trans('crud.in_the_database') }}.</small>
+            <small>{{ trans('stlc.list') }}</small>
         </h1>
         <ol class="breadcrumb">
-            {{-- <li><a href="{{ url(config('backpack.base.route_prefix'), 'dashboard') }}">{{ trans('crud.admin') }}</a></li>
-            <li><a href="{{ url($crud->route) }}" class="text-capitalize">{{ $crud->entity_name_plural }}</a></li>
-            <li class="active">{{ trans('crud.list') }}</li> --}}
+            <li class="breadcrumb-item"><a href="{{ url(config('stlc.route_prefix'), 'dashboard') }}">{{ trans('stlc.dashboard') }}</a></li>
+            <li class="breadcrumb-item"><a href="{{ url($crud->route) }}" class="text-capitalize">{{ $crud->labelPlural }}</a></li>
+            <li class="breadcrumb-item active">{{ trans('stlc.list') }}</li>
         </ol>
     </section>
 @endsection

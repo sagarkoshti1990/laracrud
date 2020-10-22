@@ -1,15 +1,17 @@
-@extends('layouts.app')
+@extends(config('stlc.stlc_layout_path','stlc::layouts.app'))
 @section('header')
     <section class="content-header">
-        <h1 class="floating-box md-pr-5">
+        <h1>
             <a href="{{ url($crud->route) }}">
-            <span class="{{ $crud->icon }}"></span><span>{{ $crud->label }}</span></a>
-            <small><i class="fa fa-angle-double-right"></i> {{ trans('crud.add') }}</small>
+                <span class="{{ $crud->icon }}"></span>
+                <span class="text-capitalize">{{ $crud->label }}</span>
+            </a>
+            <small>{{ trans('stlc.add') }}</small>
         </h1>
         <ol class="breadcrumb">
-            <li><a href="{{ url(config('stlc.route_prefix'), 'dashboard') }}">{{ trans('crud.admin') }}</a></li>
-            <li><a href="{{ url($crud->route) }}" class="text-capitalize">{{ $crud->labelPlural }}</a></li>
-            <li class="active">{{ trans('crud.add') }}</li>
+            <li class="breadcrumb-item"><a href="{{ url(config('stlc.route_prefix'), 'dashboard') }}">{{ trans('stlc.dashboard') }}</a></li>
+            <li class="breadcrumb-item"><a href="{{ url($crud->route) }}" class="text-capitalize">{{ $crud->labelPlural }}</a></li>
+            <li class="breadcrumb-item active">{{ trans('stlc.add') }}</li>
         </ol>
     </section>
 @endsection
@@ -19,18 +21,14 @@
         <div class="col-md-12">
             {!! Form::open(array('url' => $crud->route, 'method' => 'post', 'id' => 'add_form')) !!}
                 <div class="box">
-                    <div class="box-header">
-                        <h4 class="box-title">{{ trans('crud.add_a_new') }} {{ $crud->label }}</h4>
-                    </div>
+                    {{-- <div class="box-header">
+                        <h4 class="box-title">{{ $crud->label }}</h4>
+                    </div> --}}
                     <div class="box-body">
                         @if(isset($src))
                             {{ Form::hidden('src', $src) }}
                         @endif
                         @form($crud, [], ["class" => "col-md-6"])
-
-                        {{-- 
-                            __single_input__
-                        --}}
                     </div>
                     <div class="box-footer">
                         @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.form_save_buttons')

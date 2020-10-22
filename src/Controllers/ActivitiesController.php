@@ -74,7 +74,7 @@ class ActivitiesController extends StlcController
             $this->data['title'] = ucfirst($crud->labelPlural);
             return view('stlc::Activities.index', $this->data);
         } else {
-            abort(403, trans('crud.unauthorized_access'));
+            abort(403, trans('stlc.unauthorized_access'));
         }
     }
 
@@ -131,7 +131,7 @@ class ActivitiesController extends StlcController
                 ]);
             }
         } else {
-            abort(403, trans('crud.unauthorized_access'));
+            abort(403, trans('stlc.unauthorized_access'));
         }
     }
     

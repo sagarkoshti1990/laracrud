@@ -3,6 +3,7 @@
 namespace Sagartakle\Laracrud\Helpers;
 
 use Schema;
+use Illuminate\Support\Str;
 use Collective\Html\FormFacade as Form;
 use DB;
 use Sagartakle\Laracrud\Models\Module;
@@ -62,6 +63,14 @@ class FormBuilder
             $field['type'] = $fields[$field_name]->field_type;
         }
         
+        if(isset($params['prefix'])) {
+            $field['prefix'] = $params['prefix'];
+        }
+
+        if(isset($params['suffix'])) {
+            $field['suffix'] = $params['suffix'];
+        }
+
         if(isset($params['wrapperAttributes'])) {
             $field['wrapperAttributes'] = $params['wrapperAttributes'];
             unset($params['wrapperAttributes']);
@@ -80,12 +89,12 @@ class FormBuilder
                 $field_type = $fields[$field_name]->field_type;
             }
         }
-        $label = $fields[$field_name]->label;
+        $label = $fields[$field_name]->label ?? ucfirst(str_replace('_',' ',$field_name));
         
         if(isset($field['attributes']) && is_array($field['attributes'])) {
             $field['attributes'] = array_replace($field['attributes'],$params);
         } else {
-            $field['attributes'] = ['placeholder' => 'Enter ' . $label];
+            $field['attributes'] = ['placeholder' => $label];
         }
         $unique = $fields[$field_name]->unique ?? false;
         $field['default'] = $fields[$field_name]->defaultvalue ?? Null;
@@ -101,9 +110,9 @@ class FormBuilder
         }
         
         if($required) {
-            $field['label'] = $fields[$field_name]->label." <span style='color:red;'>*</span>";
+            $field['label'] = $label." <span style='color:red;'>*</span>";
         } else {
-            $field['label'] = $fields[$field_name]->label;
+            $field['label'] = $label;
         }
 
         if(isset($fields[$field_name]->json_values)) {
@@ -169,22 +178,20 @@ class FormBuilder
                 $class = "form-control select2_multiple";
                 $field['attributes'] = ['placeholder' => 'Select ' . $label];
                 if(isset($module)) {
+                    $ralasion_field = $module->fields->firstWhere('name',($module->represent_attr ?? ""));
+                    $polymorphic_module = $ralasion_field->getJsonModule();
+                    $polymorphic_field = $module->fields->firstWhere('field_type.name','Polymorphic_select');
                     if(isset($params['query']) || isset($fields[$field_name]->query)) {
                         $field['model'] = $params['query'] ?? $fields[$field_name]->query;
                         unset($params['query']);
                     } else {
-                        if(isset($module->fields)) {
-                            $ralasion_field = $module->fields->firstWhere('name',($module->represent_attr ?? ""));
-                            $polymorphic_module = $ralasion_field->getJsonModule();
-                            $polymorphic_field = $module->fields->firstWhere('field_type.name','Polymorphic_select');
-                            if(isset($polymorphic_module->id)) {
-                                $field['model'] = $polymorphic_module->model ?? null;
-                                if(isset($row) && $row instanceof \Illuminate\Database\Eloquent\Model) {
-                                    $field['value'] = $row->morphToMany($polymorphic_module->model, $polymorphic_field->name,$module->table_name,null,$module->represent_attr)->get()->pluck('id')->toJson();
-                                    // \CustomHelper::ajprint($field['value']);
-                                }
-                            }
+                        if(isset($polymorphic_module->id)) {
+                            $field['model'] = $polymorphic_module->model ?? null;
                         }
+                    }
+                    if(isset($polymorphic_module->id) && isset($row) && $row instanceof \Illuminate\Database\Eloquent\Model) {
+                        $field['value'] = $row->morphToMany($polymorphic_module->model, $polymorphic_field->name,$module->table_name)->where('attribute',$field_name)->get()->pluck('id')->toJson();
+                        // \CustomHelper::ajprint($field['value']);
                     }
                     if(isset($params['attribute']) && is_array($params['attribute'])) {
                         $field['attribute'] = $params['attribute'];
@@ -496,6 +503,17 @@ class FormBuilder
                     $field['file_type'] = $params['file_type']; 
                     unset($params['file_type']);
                 }
+                $module = $fields[$field_name]->getJsonModule();
+                if(isset($module)) {
+                    $ralasion_field = $module->fields->firstWhere('name',($module->represent_attr ?? ""));
+                    $polymorphic_module = $ralasion_field->getJsonModule();
+                    $polymorphic_field = $module->fields->firstWhere('field_type.name','Polymorphic_select');
+                    
+                    if(isset($polymorphic_module->id) && isset($row) && $row instanceof \Illuminate\Database\Eloquent\Model) {
+                        $field['value'] = $row->morphToMany($polymorphic_module->model, $polymorphic_field->name,$module->table_name)->where('attribute',$field_name)->get()->pluck('id')->toArray();
+                        // \CustomHelper::ajprint($field['value']);
+                    }
+                }
                 break;
             case 'Json':
                 $arr = [];
@@ -623,13 +641,17 @@ class FormBuilder
         $value = '';
         if(isset($crud) && is_array($crud) && isset($crud['row'])) {
             $item = $crud['row'];
-            $value = $item[$field_name];
+            if(gettype($item) == "object" && isset($item->{$field_name})) {
+                $value = $item->{$field_name};
+            } else if(gettype($item) == "array" && isset($item[$field_name])) {
+                $value = $item[$field_name];
+            }
         } else if(isset($crud) && is_object($crud) && isset($crud->row)) {
             $item = $crud->row;
-            if(is_array($item)) {
-                $value = $item[$field_name];
-            } else {
+            if(gettype($item) == "object" && isset($item->{$field_name})) {
                 $value = $item->{$field_name};
+            } else if(gettype($item) == "array" && isset($item[$field_name])) {
+                $value = $item[$field_name];
             }
         }
         
@@ -692,84 +714,22 @@ class FormBuilder
                 $img = "";
                 if((isset($value) && $value)) {
                     $upload = Upload::find($value);
-                    $img = "<div class='uploaded_files'>";
-                    $url_file = url("files/" . $upload->hash . DIRECTORY_SEPARATOR . $upload->name);
-                    $img .= "<a class='uploaded_file2 view' title='".$upload->name."' upload_id='".$upload->id."' target='_blank' href='".$url_file."'>";
-                    
-                    $image = '';
-                    if(in_array($upload->extension, ["jpg", "jpeg", "png", "gif", "bmp"])) {
-                        $url_file .= "?s=30";
-                        $image = '<img src="'.$url_file.'">';
-                    } else if(in_array($upload->extension, ["ogg",'wav','mp3'])) {
-                        $image = '<audio controls>
-                                <source src="'.$url_file.'" type="audio/'.$upload->extension.'">
-                                Your browser does not support the audio element.
-                            </audio>';
-                    } else if(in_array($upload->extension, ["mp4","WEBM","MPEG","AVI","WMV","MOV","FLV","SWF"])) {
-                        $image = '<video width="250" controls>
-                                    <source src="'.$url_file.'" type="video/'.$upload->extension.'">
-                                    <source src="'.$url_file.'" type="video/'.$upload->extension.'">
-                                    Your browser does not support HTML5 video.
-                                </video>';
-                    } else {
-                        switch ($upload->extension) {
-                            case "pdf":
-                            $image = '<i class="fa fa-file-pdf"></i>';
-                            break;
-                        case "xls":
-                            $image = '<i class="fa fa-file-excel"></i>';
-                            break;
-                        case "docx":
-                            $image = '<i class="fa fa-file-word"></i>';
-                            break;
-                        case "xlsx":
-                            $image = '<i class="fa fa-file-excel"></i>';
-                            break;
-                        case "csv":
-                            $image += '<span class="fa-stack" style="color: #31A867 !important;">';
-                            $image += '<i class="fa fa-file-alt fa-stack-2x"></i>';
-                            $image += '<strong class="fa-stack-1x">CSV</strong>';
-                            $image += '</span>';
-                            break;
-                        default:
-                            $image = '<i class="fa fa-file-text"></i>'.$upload->extension;
-                            break;
-                        }
-                    }
-                    
-                    $img .= "<span id='img_icon'>$image</span>";
-                    $img .= "</a>";
-                    $img .= "</div>";
-                }
-                
-                $value = $img;
-
-                break;
-            case 'Files':
-                
-                $img = "";
-                if((isset($value) && is_array(json_decode($value)) && count(json_decode($value)))) {
-                    $uploads = Upload::whereIn('id',json_decode($value))->get();
-                    $img = "<div class='uploaded_files'>";
-                    foreach ($uploads as $key => $upload) {
+                    if(isset($upload->id)) {
+                        $img = "<div class='uploaded_files'>";
                         $url_file = url("files/" . $upload->hash . DIRECTORY_SEPARATOR . $upload->name);
                         $img .= "<a class='uploaded_file2 view' title='".$upload->name."' upload_id='".$upload->id."' target='_blank' href='".$url_file."'>";
-        
+                        
                         $image = '';
-                        if(in_array($upload->extension, ["jpg", "jpeg", "png", "gif", "bmp"])) {
+                        if(in_array($upload->extension, ["jpg", "JPG", "jpeg", "png", "gif", "bmp"])) {
                             $url_file .= "?s=30";
                             $image = '<img src="'.$url_file.'">';
                         } else if(in_array($upload->extension, ["ogg",'wav','mp3'])) {
-                            $image = '<audio controls>
+                            $image = '<audio controls playsinline>
                                     <source src="'.$url_file.'" type="audio/'.$upload->extension.'">
                                     Your browser does not support the audio element.
                                 </audio>';
                         } else if(in_array($upload->extension, ["mp4","WEBM","MPEG","AVI","WMV","MOV","FLV","SWF"])) {
-                            $image = '<video width="250" controls>
-                                        <source src="'.$url_file.'" type="video/'.$upload->extension.'">
-                                        <source src="'.$url_file.'" type="video/'.$upload->extension.'">
-                                        Your browser does not support HTML5 video.
-                                    </video>';
+                            $image = '<i class="fa fa-file-video"></i>';
                         } else {
                             switch ($upload->extension) {
                                 case "pdf":
@@ -791,15 +751,83 @@ class FormBuilder
                                 $image += '</span>';
                                 break;
                             default:
-                                $image = '<i class="fa fa-file-text"></i>';
+                                $image = '<i class="fa fa-file-text"></i>'.$upload->extension;
                                 break;
                             }
                         }
                         
                         $img .= "<span id='img_icon'>$image</span>";
                         $img .= "</a>";
+                        $img .= "</div>";
                     }
-                    $img .= "</div>";
+                }
+                if(isset($html) && $html == true) {
+                    $value = $url_file;
+                } else {
+                    $value = $img;
+                }
+
+                break;
+            case 'Files':
+                $img = "";
+                $module = $fields[$field_name]->getJsonModule();
+                if(isset($module->id)) {
+                    $ralasion_field = $module->fields->firstWhere('name',($module->represent_attr ?? ""));
+                    $polymorphic_module = $ralasion_field->getJsonModule();
+                    $polymorphic_field = $module->fields->firstWhere('field_type.name','Polymorphic_select');
+                    if(isset($polymorphic_module->id)) {
+                        if(isset($item) && $item instanceof \Illuminate\Database\Eloquent\Model) {
+                            $uploads = $item->morphToMany($polymorphic_module->model, $polymorphic_field->name,$module->table_name)->where('attribute',$field_name)->get();
+                            $img = "<div class='uploaded_files'>";
+                            foreach ($uploads as $key => $upload) {
+                                if(isset($upload->id)) {
+                                    $url_file = url("files/" . $upload->hash . DIRECTORY_SEPARATOR . $upload->name);
+                                    $img .= "<a class='uploaded_file2 view' title='".$upload->name."' upload_id='".$upload->id."' target='_blank' href='".$url_file."'>";
+                    
+                                    $image = '';
+                                    if(in_array($upload->extension, ["jpg", "JPG", "jpeg", "png", "gif", "bmp"])) {
+                                        $url_file .= "?s=30";
+                                        $image = '<img src="'.$url_file.'">';
+                                    } else if(in_array($upload->extension, ["ogg",'wav','mp3'])) {
+                                        $image = '<audio controls>
+                                                <source src="'.$url_file.'" type="audio/'.$upload->extension.'">
+                                                Your browser does not support the audio element.
+                                            </audio>';
+                                    } else if(in_array($upload->extension, ["mp4","WEBM","MPEG","AVI","WMV","MOV","FLV","SWF"])) {
+                                        $image = '<i class="fa fa-file-video"></i>';
+                                    } else {
+                                        switch ($upload->extension) {
+                                            case "pdf":
+                                            $image = '<i class="fa fa-file-pdf"></i>';
+                                            break;
+                                        case "xls":
+                                            $image = '<i class="fa fa-file-excel"></i>';
+                                            break;
+                                        case "docx":
+                                            $image = '<i class="fa fa-file-word"></i>';
+                                            break;
+                                        case "xlsx":
+                                            $image = '<i class="fa fa-file-excel"></i>';
+                                            break;
+                                        case "csv":
+                                            $image += '<span class="fa-stack" style="color: #31A867 !important;">';
+                                            $image += '<i class="fa fa-file-alt fa-stack-2x"></i>';
+                                            $image += '<strong class="fa-stack-1x">CSV</strong>';
+                                            $image += '</span>';
+                                            break;
+                                        default:
+                                            $image = '<i class="fa fa-file-text"></i>';
+                                            break;
+                                        }
+                                    }
+                                    
+                                    $img .= "<span id='img_icon'>$image</span>";
+                                    $img .= "</a>";
+                                }
+                            }
+                            $img .= "</div>";
+                        }
+                    }
                 }
                 if(isset($html) && $html == "value") {
                     $value = $url_file;
@@ -846,7 +874,7 @@ class FormBuilder
                         if(isset($html) && $html == "value") {
                             $value = url("files/" . $upload->hash . DIRECTORY_SEPARATOR . $upload->name);
                         } else {
-                            $value = '<a class="preview" title="'.$upload->name.'" target="_blank" href="' . url("files/" . $upload->hash . DIRECTORY_SEPARATOR . $upload->name) . '"><img src="' . url("files/" . $upload->hash . DIRECTORY_SEPARATOR . $upload->name) . '?s=50"></a>';
+                            $value = '<a class="preview" title="'.$upload->name.'" target="_blank" href="' . url("files/" . $upload->hash . DIRECTORY_SEPARATOR . $upload->name) . '"><img width="50" src="' . url("files/" . $upload->hash . DIRECTORY_SEPARATOR . $upload->name) . '?s=50"></a>';
                         }
                     } else {
                         $value = 'Uploaded image not found.';
@@ -910,12 +938,11 @@ class FormBuilder
                 $module = $fields[$field_name]->getJsonModule();
                 if(isset($module->id)) {
                     $ralasion_field = $module->fields->firstWhere('name',($module->represent_attr ?? ""));
-                    echo json_encode($module->represent_attr);
                     $polymorphic_module = $ralasion_field->getJsonModule();
                     $polymorphic_field = $module->fields->firstWhere('field_type.name','Polymorphic_select');
                     if(isset($polymorphic_module->id)) {
                         if(isset($item) && $item instanceof \Illuminate\Database\Eloquent\Model) {
-                            $values = $item->morphToMany($polymorphic_module->model, $polymorphic_field->name,$module->table_name,null,$module->represent_attr)->get();
+                            $values = $item->morphToMany($polymorphic_module->model, $polymorphic_field->name,$module->table_name,null,$module->represent_attr)->where('attribute',$field_name)->get();
                             // \CustomHelper::ajprint($values);
                             foreach($values as $val) {
                                 $data .= '<span class="badge large bg-purple mr-1">'.$val->{$polymorphic_module->represent_attr}.'</span>';
@@ -927,10 +954,9 @@ class FormBuilder
                 $value = $data;
                 break;
             case 'Select2':
-            
+            case 'Select2_from_ajax':
                 if(\Str::startsWith($fields[$field_name]->json_values, "@")) {
                     $module = Module::where('name',substr($fields[$field_name]->json_values, 1))->first();
-                    
                     if(!isset($module->model)) {
                         $json_values_arr = explode('|',$fields[$field_name]->json_values);
                         $module = (object)[];
@@ -948,11 +974,9 @@ class FormBuilder
                         }
                     }
                 }
-
                 break;
             case 'Select2_multiple':
                 $data = "";
-                
                 if(\Str::startsWith($fields[$field_name]->json_values, "@")) {
                     if(isset($value) && is_array(json_decode($value))) {
                         foreach(json_decode($value) as $val) {
@@ -982,6 +1006,17 @@ class FormBuilder
                     }
                 }
                     
+                $value = $data;
+                break;
+            case 'Select2_multiple_tags':
+                $data = "";
+                if(isset($value) && is_array(json_decode($value))) {
+                    foreach(json_decode($value) as $val) {
+                        $data .= '<span class="badge large bg-purple mr-1">'.$val.'</span>';
+                    }
+                } else {
+                    $data .= '<span class="badge large bg-purple mr-1">'.$value.'</span>';
+                }
                 $value = $data;
                 break;
             case 'Text':
@@ -1057,7 +1092,7 @@ class FormBuilder
         // echo "<pre>".json_encode($field_names,JSON_PRETTY_PRINT)."</pre>";exit;
         $out = '';
         $col = (isset($input_attr['col']) && $input_attr['col'] <= 12 ) ? $input_attr['col'] : 2;
-        $col_class = "col-".(($col > 0) ? 12/$col : 6);
+        $col_class = "col-12 col-sm-".(($col > 0) ? 12/$col : 6);
         $field_names = collect($field_names)->chunk($col);
         foreach($field_names as $key => $field_parent) {
             $out .= "<div class='row'>";

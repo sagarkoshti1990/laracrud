@@ -23,13 +23,13 @@ trait Update
      *
      * @return [Eloquent Collection]
      */
-    public function update($id, $data)
+    public function update($id, $data,$transaction = true)
     {
         $data = $this->decodeJsonCastedAttributes($data);
         $old_item = $this->model->findOrFail($id);
         $item = $this->model->findOrFail($id);
         $column_names_ralationaldata = collect($this->fields)->where('type','relationalDataFields')->pluck('name');
-        $polymorphic_multiple_fields = collect($this->fields)->where('field_type.name','Polymorphic_multiple');
+        $polymorphic_multiple_fields = collect($this->fields)->whereIn('field_type.name',['Polymorphic_multiple',"Files"]);
         // $this->syncPivot($item, $data, 'update');
         // echo "<pre>";
         // echo json_encode($data, JSON_PRETTY_PRINT);
@@ -37,38 +37,44 @@ trait Update
         // echo json_encode(collect($data)->only($this->column_names)->toArray(), JSON_PRETTY_PRINT);
         // echo "</pre>";
         // return ;
-        $item = \DB::transaction(function() use ($data,$old_item,$item,$column_names_ralationaldata,$polymorphic_multiple_fields) {
-            try{
-                $updated = $item->update(collect($data)->only($this->column_names)->toArray());
-                if($polymorphic_multiple_fields->count() > 0) {
-                    foreach($polymorphic_multiple_fields as $pm_field) {
-                        if(!isset($data->xeditable) || (isset($data->xeditable) && $data->xeditable != "Yes") && method_exists($item,'polymorphic_save')) {
-                            $item->polymorphic_save($pm_field->name,$data->{$pm_field->name});
-                        }
+        if(isset($transaction) && $transaction == true) {
+            \DB::beginTransaction();
+        }
+        try{
+            $updated = $item->update(collect($data)->only($this->column_names)->toArray());
+            if($polymorphic_multiple_fields->count() > 0) {
+                foreach($polymorphic_multiple_fields as $pm_field) {
+                    if(!isset($data->xeditable) || (isset($data->xeditable) && $data->xeditable != "Yes")) {
+                        $item->polymorphic_save($pm_field->name,$data->{$pm_field->name});
                     }
-                }
-                if(isset($column_names_ralationaldata) && count($column_names_ralationaldata) > 0) {
-                    $update_data = collect($data)->only($column_names_ralationaldata)->toArray();
-                    $ftypes = FieldType::getFTypes();
-                    foreach($update_data as $key => $value) {
-                        $r_datas['field_type_id'] = $ftypes[$this->fields['feats']->field_type];
-                        RelationalDataTable::updateOrCreate(
-                            ['context_id' => $item->id,'context_type' => get_class($this->model),'key' => $key],
-                            ['value' => $value]
-                        );
-                    }
-                }
-                Activity::log(config('App.activity_log.UPDATED'), $this, ['new' => $item, 'old' => $old_item]);
-                return $item;
-            } catch (\Exception $ex) {
-                \DB::rollback();
-                if(isset($data->src_ajax) && $data->src_ajax) {
-                    return response()->json(['status' => 'exception_error', 'message' => 'created', 'errors' => $ex->getMessage()]);
-                } else {
-                    return redirect()->back()->withErrors($ex->getMessage())->withInput();
                 }
             }
-        });
+            if(isset($column_names_ralationaldata) && count($column_names_ralationaldata) > 0) {
+                $update_data = collect($data)->only($column_names_ralationaldata)->toArray();
+                $ftypes = FieldType::getFTypes();
+                foreach($update_data as $key => $value) {
+                    $r_datas['field_type_id'] = $ftypes[$this->fields['feats']->field_type];
+                    RelationalDataTable::updateOrCreate(
+                        ['context_id' => $item->id,'context_type' => get_class($this->model),'key' => $key],
+                        ['value' => $value]
+                    );
+                }
+            }
+            \Activity::log(config('App.activity_log.UPDATED'), $this, ['new' => $item, 'old' => $old_item]);
+            if(isset($transaction) && $transaction == true) {
+                \DB::commit();
+            }
+            return $item;
+        } catch (\Exception $ex) {
+            if(isset($transaction) && $transaction == true) {
+                \DB::rollback();
+            }
+            if(isset($data->src_ajax) && $data->src_ajax) {
+                return response()->json(['status' => 'exception_error', 'message' => 'error', 'errors' => $ex->getMessage()]);
+            } else {
+                return redirect()->back()->withErrors($ex->getMessage())->withInput();
+            }
+        }
 
         return $item;
     }

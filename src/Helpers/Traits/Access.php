@@ -123,7 +123,7 @@ trait Access
         if(isset($this->module->name)) {
             return \Module::hasAccess($this, $permission);
         } else if(! in_array($permission, $this->access)) {
-            abort(403, trans('crud.unauthorized_access'));
+            abort(403, trans('stlc.unauthorized_access'));
         }
     }
 }

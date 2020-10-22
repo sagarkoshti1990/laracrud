@@ -22,11 +22,11 @@ trait Create
      *
      * @return [Eloquent Collection]
      */
-    public function create($data)
+    public function create($data,$transaction = true)
     {
         $data = $this->decodeJsonCastedAttributes($data);
         $column_names_ralationaldata = collect($this->fields)->where('type','relationalDataFields')->pluck('name');
-        $polymorphic_multiple_fields = collect($this->fields)->where('field_type.name','Polymorphic_multiple');
+        $polymorphic_multiple_fields = collect($this->fields)->whereIn('field_type.name',['Polymorphic_multiple',"Files"]);
         // $data = $this->compactFakeFields($data, 'create');
         if(\Auth::check()) {
             $data['created_by'] = \Auth::id();
@@ -36,50 +36,54 @@ trait Create
         // \CustomHelper::ajprint(collect($data)->only($this->column_names)->toArray());
         // ommit the n-n relationships when updating the eloquent item
         // $nn_relationships = array_pluck($this->getRelationFieldsWithPivot('create'), 'name');
-        
-        $item = \DB::transaction(function() use ($data,$column_names_ralationaldata,$polymorphic_multiple_fields) {
-            try{
-                $item = $this->model->create(collect($data)->only($this->column_names)->toArray());
-                if($polymorphic_multiple_fields->count() > 0) {
-                    foreach($polymorphic_multiple_fields as $pm_field) {
-                        $pm_value = $data->{$pm_field->name} ?? $data[$pm_field->name] ?? [];
-                        // if($pm_field->name == 'attribute_id') {
-                        //     \CustomHelper::ajprint($pm_value);
-                        // }
-                        
-                        if(isset($pm_value) && method_exists($item,'polymorphic_save')) {
-                            $item->polymorphic_save($pm_field->name,$pm_value);
-                        }
+        if(isset($transaction) && $transaction == true) {
+            \DB::beginTransaction();
+        }
+        try{
+            $item = $this->model->create(collect($data)->only($this->column_names)->toArray());
+            if($polymorphic_multiple_fields->count() > 0) {
+                foreach($polymorphic_multiple_fields as $pm_field) {
+                    $pm_value = $data->{$pm_field->name} ?? $data[$pm_field->name] ?? [];
+                    // if($pm_field->name == 'attribute_id') {
+                        // \CustomHelper::ajprint($pm_value,false);
+                    // }
+                    if(isset($pm_value)) {
+                        $item->polymorphic_save($pm_field->name,$pm_value);
                     }
-                }
-                if(isset($column_names_ralationaldata) && count($column_names_ralationaldata) > 0) {
-                    $update_data = collect($data)->only($column_names_ralationaldata)->toArray();
-                    $i = 0;
-                    $ftypes = FieldType::getFTypes();
-                    foreach($update_data as $key => $r_data) {
-                        $r_datas[$i]['context_id'] = $item->id ?? null;;
-                        $r_datas[$i]['context_type'] = get_class($this->model);
-                        $r_datas[$i]['key'] = $key;
-                        $r_datas[$i]['value'] = $r_data;
-                        $r_datas[$i]['field_type_id'] = $ftypes[$this->fields['feats']->field_type];
-                        $r_datas[$i]['created_at'] = date('Y-m-d H:i:s');
-                        $r_datas[$i]['updated_at'] = date('Y-m-d H:i:s');
-                        // $r_datas[] = RelationalDataTable::where([['key',$key]])->first();
-                        $i++;
-                    }
-                    RelationalDataTable::insert($r_datas);
-                }            
-                Activity::log(config('App.activity_log.CREATED','Created'), $this, ['new' => $item]);
-                return $item;
-            } catch (Exception $ex) {
-                \DB::rollback();
-                if(isset($data->src_ajax) && $data->src_ajax) {
-                    return response()->json(['status' => 'exception_error', 'message' => 'created', 'errors' => $ex->getMessage()]);
-                } else {
-                    return redirect()->back()->withErrors($ex->getMessage())->withInput();
                 }
             }
-        });
+            if(isset($column_names_ralationaldata) && count($column_names_ralationaldata) > 0) {
+                $update_data = collect($data)->only($column_names_ralationaldata)->toArray();
+                $i = 0;
+                $ftypes = FieldType::getFTypes();
+                foreach($update_data as $key => $r_data) {
+                    $r_datas[$i]['context_id'] = $item->id ?? null;;
+                    $r_datas[$i]['context_type'] = get_class($this->model);
+                    $r_datas[$i]['key'] = $key;
+                    $r_datas[$i]['value'] = $r_data;
+                    $r_datas[$i]['field_type_id'] = $ftypes[$this->fields['feats']->field_type];
+                    $r_datas[$i]['created_at'] = date('Y-m-d H:i:s');
+                    $r_datas[$i]['updated_at'] = date('Y-m-d H:i:s');
+                    // $r_datas[] = RelationalDataTable::where([['key',$key]])->first();
+                    $i++;
+                }
+                RelationalDataTable::insert($r_datas);
+            }
+            \Activity::log(config('App.activity_log.CREATED','Created'), $this, ['new' => $item]);
+            if(isset($transaction) && $transaction == true) {
+                \DB::commit();
+            }
+            return $item;
+        } catch (Exception $ex) {
+            if(isset($transaction) && $transaction == true) {
+                \DB::rollback();
+            }
+            if((isset($data->src_ajax) && $data->src_ajax) || isset($data['src_ajax']) && $data['src_ajax'] ) {
+                return response()->json(['status' => 'exception_error', 'message' => 'error', 'errors' => $ex->getMessage()]);
+            } else {
+                return redirect()->back()->withErrors($ex->getMessage())->withInput();
+            }
+        }
 
         // if there are any relationships available, also sync those
         // $this->syncPivot($item, $data);

@@ -30,7 +30,7 @@ trait Update
                 abort(404, $crud->name);
             }
         } else {
-            abort(403, trans('crud.unauthorized_access'));
+            abort(403, trans('stlc.unauthorized_access'));
         }
     }
 
@@ -67,20 +67,20 @@ trait Update
                 $this->afterUpdate($request,$item);
                 // show a success message
                 if(!$request->src_ajax) {
-                    \Alert::success($this->crud->label." ".trans('crud.update_success'))->flash();
+                    \Alert::success($this->crud->label." ".trans('stlc.update_success'))->flash();
                 }
                 if(isset($request->src_ajax) && $request->src_ajax) {
-                    return response()->json(['status' => 'success', 'message' => $this->crud->label." ".trans('crud.update_success'), 'item' => $item]);
+                    return response()->json(['status' => 'success', 'message' => $this->crud->label." ".trans('stlc.update_success'), 'item' => $item]);
                 } else if(isset($request->src)) {
                     return redirect($request->src);
                 } else {
                     return redirect($this->crud->route);
                 }
             } else {
-                abort(403, trans('crud.data_not_found'));
+                abort(403, trans('stlc.data_not_found'));
             }
         } else {
-            abort(403, trans('crud.unauthorized_access'));
+            abort(403, trans('stlc.unauthorized_access'));
         }
     }
 }

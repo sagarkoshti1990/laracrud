@@ -60,11 +60,15 @@ class Field extends Model
     | FUNCTIONS
     |--------------------------------------------------------------------------
     */
-    
     public function getJsonModule()
     {
-        return Module::where('name', str_replace("@", "", $this->json_values))->first();
+        if(isset($this->field_type_id) && $this->field_type->name == "Files") {
+            return Module::where('name',"Uploadables")->first();
+        } else {
+            return Module::where('name', str_replace("@", "", $this->json_values))->first();
+        }
     }
+
     /**
      * Get Array of Fields for given Module
      *

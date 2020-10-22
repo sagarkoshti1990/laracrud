@@ -22,7 +22,7 @@
             {!! Form::open(array('url' => $crud->route.'/'.$module->id, 'method' => 'put', 'id' => 'edit_form', "autocomplete"=>"off")) !!}
                 <div class="box">
                     {{-- <div class="box-header with-border">
-                        <h4 class="box-title">{{ trans('crud.edit') }}</h4>
+                        <h4 class="box-title">{{ trans('stlc.edit') }}</h4>
                     </div> --}}
                     <div class="box-body">
                         @if(isset($src))

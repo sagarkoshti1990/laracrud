@@ -26,8 +26,8 @@
             <div class="nav-tabs-custom">
                 <div class="nav nav-tabs" id="nav-tab" role="tablist">
                     <a class="nav-item nav-link" href="{{ $src ?? url($crud->route) }}"><i class="fa fa-arrow-left"></i></a>
-                    <a class="nav-item nav-link active" href="#information" data-target="#tab-information" data-toggle="tab"><i class="fa fa-info-circle mr-2"></i>{{ $crud->label }} Details</a>
-                    <a class="nav-item nav-link" href="#logs" data-target="#tab-logs" data-toggle="tab"><i class="fa fa-history mr-2"></i>Logs</a>
+                    <a class="nav-item nav-link active" href="#information" data-target="#tab-information" data-toggle="tab"><i class="fa fa-info-circle mr-2"></i>{{ $crud->label }} {{ trans('stlc.details') }}</a>
+                    <a class="nav-item nav-link" href="#logs" data-target="#tab-logs" data-toggle="tab"><i class="fa fa-history mr-2"></i>{{ trans('stlc.logs') }}</a>
                 </div>
                 <div class="tab-content">
                     <div class="tab-pane fade show in active" id="tab-information">

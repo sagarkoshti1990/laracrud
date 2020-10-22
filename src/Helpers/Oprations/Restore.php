@@ -27,16 +27,16 @@ trait Restore
                 }
             } else {
                 if(isset($request->src_ajax) && $request->src_ajax) {
-                    return response()->json(['status' => 'failed', 'message' => trans('crud.data_not_found')]);
+                    return response()->json(['status' => 'failed', 'message' => trans('stlc.data_not_found')]);
                 } else {
-                    abort(403, trans('crud.data_not_found'));
+                    abort(403, trans('stlc.data_not_found'));
                 }
             }
         } else {
             if(isset($request->src_ajax) && $request->src_ajax) {
-                return response()->json(['status' => 'failed', 'message' => trans('crud.unauthorized_access')]);
+                return response()->json(['status' => 'failed', 'message' => trans('stlc.unauthorized_access')]);
             } else {
-                abort(403, trans('crud.unauthorized_access'));
+                abort(403, trans('stlc.unauthorized_access'));
             }
         }
     }

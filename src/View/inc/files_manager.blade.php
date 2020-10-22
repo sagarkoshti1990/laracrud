@@ -23,7 +23,7 @@
 									</div>
 									<div class="col-xs-12 col-sm-12 col-md-12 float-right">
 										<label class="fm_folder_title mr0 ml0 mt30">Is {{ trans('base.public') }}
-											<input type="checkbox" name="public" checked class="minimal-blue">
+											{{ Form::checkbox("public",1,true) }}
 										</label>
 									</div>
 								</div>
@@ -64,7 +64,6 @@
 	var acceptedFiles = "audio/*,image/*,application/pdf,application/docx,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/docx,text/plain,application/msword,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,video/*";
 	$(document).ready(function() {
 		function set_file(upload) {
-			
 			type = $("#image_selecter_origin_type").val();
 			// upload = JSON.parse(upload);
 			// console.log("upload sel: "+JSON.stringify(upload)+" type: "+type);
@@ -74,7 +73,7 @@
 				$hinput.val(upload.id);
 				$hinput.parents(".btn-group").find("a.btn").addClass("hide");
 				$hinput.parents(".btn-group").find(".uploaded_image").removeClass("hide");
-				$hinput.parents(".btn-group").find(".uploaded_image").children("img").attr("src", bsurl+'/files/'+upload.hash+'/'+upload.name+'?s=100');
+				$hinput.parents(".btn-group").find(".uploaded_image").children("img").attr("src", bsurl+'/files/'+upload.hash+'/'+upload.name+'?s=100').attr('width','100');
 				$hinput.parents(".btn-group").find(".uploaded_image i.fa.fa-times").removeClass('hide');
 				$hinput.parents(".btn-group").find("a.profile-pic").children(".profile-pic.profile-pic-img").css("background-image","url("+image_path+")");
 				$hinput.parents(".btn-group").find("#"+$("#image_selecter_origin").val()+"-error").remove();
@@ -90,10 +89,11 @@
 				$hinput.parents(".btn-group").find(".uploaded_file").attr("href", bsurl+'/files/'+upload.hash+'/'+upload.name);
 				$hinput.parents(".btn-group").find(".uploaded_file").find('#img_icon').html(htmlFile(upload));
 			} else if(type == "files") {
-				var hiddenFIDs = [];
-				$hinput = $("input[name="+$("#image_selecter_origin").val()+"]");
+				$hinput = $(`:input[name="${$("#image_selecter_origin").val()}[]"]`);
 				if(isset($hinput.val()) && $hinput.val() != "") {
-					var hiddenFIDs = JSON.parse($hinput.val());
+					var hiddenFIDs = $hinput.val();
+				} else {
+					var hiddenFIDs = [];
 				}
 				// check if upload_id exists in array
 				var upload_id_exists = false;
@@ -109,7 +109,11 @@
 					hiddenFIDs.push(upload.id);
 					$hinput.parents(".btn-group").find("div.uploaded_files").append("<a class='uploaded_file2' upload_id='"+upload.id+"' target='_blank' href='"+bsurl+"/files/"+upload.hash+"/"+upload.name+"'><span id='img_icon'>"+htmlFile(upload)+"</span><i title='Remove File' class='fa fa-times'></i></a>");
 				}
-				$hinput.val(JSON.stringify(hiddenFIDs));
+				var options_html = "";
+				hiddenFIDs.forEach((value,index) => {
+					options_html += `<option value="${value}" selected>${value}</option>`; 
+				});
+				$hinput.html(options_html);
 			}
 			$hinput.parents(".btn-group").find("a.btn.btn-default.btn-labeled").attr('disabled', false).find('.btn-label').html('<i class="fa fa-cloud-upload-alt"></i>');
 		}
@@ -117,12 +121,40 @@
 			$("#image_selecter_origin_type").val(type);
 			$("#image_selecter_extension_type").val(extension);
 			$("#image_selecter_origin").val($(btn).attr("selecter"));
-			
+			var image_public = $(btn).attr("image_public");
+			if(typeof image_public != "undefined" && image_public == "0") {
+				$(`:input[name="public"]`).prop('checked',false);
+			}
 			if(isset(extension) && extension == 'image') {
 				acceptedFiles = "image/*";
 				var ratio = $(btn).attr("ratio");
-				if(typeof ratio != 'undefined') {
-					aspectRatio = ratio;
+				if(typeof ratio != 'undefined' && ratio == "") {
+					var ratio = $(btn).closest('.btn-group').find(':input[type="hidden"]').first().attr("ratio");
+				}
+				if(typeof ratio != 'undefined' && ratio != "") {
+					if(typeof ratio == 'string') {
+						var format = /[X,x]/;
+						if(format.test(ratio)){
+							var string = ratio.split("X");
+							if(typeof string[1] == "undefined") {
+								var string = ratio.split("x");
+							}
+							if(typeof string[1] != "undefined") {
+								string1 = parseInt(string[0]);
+								if(typeof string[1] != "undefined") {
+									string2 = parseInt(string[1]);
+									if(typeof string1 == 'number' && typeof string2 == 'number') {
+										aspectRatio = (string1 / string2);
+									}
+								}
+							}
+						} else {
+							console.log(format);
+						}
+					}else if(typeof ratio == 'number') {
+						aspectRatio = ratio;
+					}
+					console.log(aspectRatio);
 				}
 			} else if(isset(extension) && extension == 'pdf') {
 				acceptedFiles = "application/pdf";
@@ -153,9 +185,9 @@
 		// function loadFMFiles(type = "") {
 		// 	var url1 = "";
 		// 	if(isset(type) && type != "") {
-		// 		url1 = "{{ url(config('stlc.route_prefix')) }}/uploaded_files?file_type="+type;
+		// 		url1 = "{{ url(config('stlc.stlc_route_prefix')) }}/uploaded_files?file_type="+type;
 		// 	} else {
-		// 		url1 = "{{ url(config('stlc.route_prefix')) }}/uploaded_files";
+		// 		url1 = "{{ url(config('stlc.stlc_route_prefix')) }}/uploaded_files";
 		// 	}
 		// 	// load uploaded files
 		// 	$.ajax({
@@ -203,10 +235,8 @@
 			transformFile: function(file, done) {
 				if(typeof file.type == 'string' && file.type.includes('image/')) {
 					var myDropZone = this;
-					// Create the image editor overlay
 					var editor = document.createElement('div');
 					editor.className = 'crop-editor';
-					// Create the confirm button
 					var confirm = document.createElement('button');
 					confirm.textContent = 'Confirm';
 					confirm.className = 'btn btn-success upload-confirm-btn';
@@ -225,7 +255,6 @@
 								}
 							);
 						});
-						// Remove the editor from view
 						editor.parentNode.removeChild(editor);
 					});
 					
@@ -237,12 +266,10 @@
 					});
 					editor.appendChild(confirm);
 					editor.appendChild(close);
-					// Load the image
 					var image = new Image();
 					image.src = URL.createObjectURL(file);
 					editor.appendChild(image);
 					document.body.appendChild(editor);
-					// Create Cropper.js and pass image
 					var cropper = new Cropper(image, {
 						aspectRatio: aspectRatio
 					});
@@ -254,7 +281,7 @@
 				this.on("complete", function(file) {
 					if(file.size > (1024 * 1024 * file_size_limit)) {
 						this.removeFile(file);
-						sweetAlert("{{ trans('crud.file_size_titel') }}","{{ trans('crud.file_size_text') }}","warning");
+						sweetAlert("{{ trans('stlc.file_size_titel') }}","{{ trans('stlc.file_size_text') }}","warning");
 					};
 					this.removeFile(file);
 				});
@@ -265,7 +292,6 @@
 							var progress = responsetext.done;
 						}
 					}
-
 					if (file.previewElement) {
 						for (var _iterator8 = file.previewElement.querySelectorAll("[data-dz-uploadprogress]"), _isArray8 = true, _i8 = 0, _iterator8 = _isArray8 ? _iterator8 : _iterator8[Symbol.iterator]();;) {
 							var _ref7;
@@ -289,16 +315,6 @@
 						if(response.status == 'success') {
 							set_file(response.upload);
 							set_file_progress(100,true);
-							// if(isset($('#fm_dropzone > .dz-message').attr("selecter"))) {
-							// 	$hinput = $("input[name="+$('#fm_dropzone > .dz-message').attr("selecter")+"]");
-							// 	// console.log($hinput);
-							// 	$hinput.val(response.upload.id);
-							// 	var image_path = bsurl+"/files/"+response.upload.hash+"/"+response.upload.name;
-							// 	$hinput.next("a.profile-pic").children(".profile-pic.profile-pic-img").css("background-image","url("+image_path+")");
-							// 	$hinput.closest("form").submit();
-							// } else {
-							// 	loadFMFiles($("#image_selecter_extension_type").val());
-							// }
 						}
 					} else {
 						if(response.status == 'success') {
@@ -314,7 +330,12 @@
 		});
 
 		function set_file_progress(progress = 100,remove = false) {
-			$hinput = $("input[name="+$("#image_selecter_origin").val()+"]");
+			var type = $("#image_selecter_origin_type").val();
+			if(type == "files") {
+				$hinput = $(`:input[name="${$("#image_selecter_origin").val()}[]"]`);
+			} else {
+				$hinput = $("input[name="+$("#image_selecter_origin").val()+"]");
+			}
 			var progress_html = $hinput.closest('.form-group').find('.progress');
 			// console.log(progress);
 			if(remove) {
@@ -332,7 +353,7 @@
 
 		function htmlFile(upload) {
 			var image = "";
-			if($.inArray(upload.extension, ["jpg", "jpeg", "png", "gif", "bmp"]) > -1) {
+			if($.inArray(upload.extension, ["jpg","JPG","jpeg", "png", "gif", "bmp"]) > -1) {
 				image = '<img src="'+bsurl+'/files/'+upload.hash+'/'+upload.name+'?s=100" width=100>';
 			} else if($.inArray(upload.extension, ["ogg",'wav','mp3']) > -1) {
 				image = `<audio controls>
@@ -375,7 +396,6 @@
 
 		$("#fm input[type=search]").keyup(function () {
 			var sstring = $(this).val().trim();
-			// console.log(sstring);
 			if(sstring != "") {
 				$(".fm_file_selector ul").empty();
 				for (var index = 0; index < cntFiles.length; index++) {
@@ -402,7 +422,6 @@
 		});
 
 		$(".btn_upload_file").on("click", function() {
-
 			if(isset($(this).attr("extension"))) {
 				var extension = $(this).attr("extension");
 			} else {
@@ -415,7 +434,6 @@
 		});
 
 		$(".btn_upload_files").on("click", function() {
-
 			if(isset($(this).attr("extension"))) {
 				var extension = $(this).attr("extension");
 			} else {
@@ -450,22 +468,19 @@
 		});
 
 		$("body").on("click", ".uploaded_file2 i.fa.fa-times",function(e) {
-			var upload_id = $(this).parents(".uploaded_file2").attr("upload_id");
-			var $hiddenFIDs = $(this).parents(".btn-group").find('input[type="hidden"]');
-			
-			var hiddenFIDs = JSON.parse($hiddenFIDs.val());
-			var hiddenFIDs2 = [];
-			for (var key in hiddenFIDs) {
-				if (hiddenFIDs.hasOwnProperty(key)) {
-					var element = hiddenFIDs[key];
-					if(element != upload_id) {
-						hiddenFIDs2.push(element);
-					}
-				}
-			}
-			$hiddenFIDs.val(JSON.stringify(hiddenFIDs2));
-			$(this).parent().remove();
 			e.preventDefault();
+			var upload_id = $(this).parents(".uploaded_file2").attr("upload_id");
+			var $hiddenFIDs = $(this).parents(".btn-group").find('select');
+			var hiddenFIDs = $hiddenFIDs.val();
+			
+			var options_html = "";
+			hiddenFIDs.forEach((value,index) => {
+				if(upload_id != value) {
+					options_html += `<option value="${value}" selected>${value}</option>`; 
+				}
+			});
+			$hiddenFIDs.html(options_html);
+			$(this).parent().remove();
 		});
 		
 		$("body").on("click", ".fm_file_sel", function() {

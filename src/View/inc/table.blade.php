@@ -13,13 +13,13 @@
     <table class="table crudTable display table-{{$crud->name}} {{$table_class ?? ""}}" cellspacing="0" width="100%">
         <thead class="mob-hide">
             <tr>
-                <th>{{ $crud->label }} ID</th>
+                <th>ID</th>
                 {{-- Table columns --}}
                 @foreach ($crud->columns as $column)
                 <th>{{ $column['label'] }}</th>
                 @endforeach
                 @if ( $crud->buttons->where('stack', 'line')->count() )
-                    <th style="width: 110px;">{{ trans('crud.actions') }}</th>
+                    <th style="width: 110px;">{{ trans('stlc.actions') }}</th>
                 @endif
             </tr>
         </thead>

@@ -33,16 +33,16 @@ trait Show
                 }
             } else {
                 if(isset($request->get_data_ajax) && $request->get_data_ajax) {
-                    return response()->json(['status' => 'failed', 'message' => trans('crud.data_not_found')]);
+                    return response()->json(['status' => 'failed', 'message' => trans('stlc.data_not_found')]);
                 } else {
                     abort(404, $crud->name);
                 }
             }
         } else {
             if(isset($request->get_data_ajax) && $request->get_data_ajax) {
-                return response()->json(['status' => 'failed', 'message' => trans('crud.unauthorized_access')]);
+                return response()->json(['status' => 'failed', 'message' => trans('stlc.unauthorized_access')]);
             } else {
-                abort(403, trans('crud.unauthorized_access'));
+                abort(403, trans('stlc.unauthorized_access'));
             }
         }
     }

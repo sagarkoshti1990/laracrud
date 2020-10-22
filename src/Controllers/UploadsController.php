@@ -223,7 +223,8 @@ class UploadsController extends StlcController
 				"caption" => "",
 				"hash" => "",
 				"public" => $public,
-				"user_id" => Auth::user()->id
+				"context_id" => Auth::id(),
+				"context_type" => get_class(Auth::user())
 			]);
 			// apply unique random hash to file
 			while(true) {

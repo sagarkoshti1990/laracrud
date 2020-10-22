@@ -383,7 +383,7 @@ class ModulesController extends StlcController
                 }
             } else {
                 if(isset($request->get_data_ajax) && $request->get_data_ajax) {
-                    return response()->json(['status' => 'failed', 'message' => trans('crud.data_not_found')]);
+                    return response()->json(['status' => 'failed', 'message' => trans('stlc.data_not_found')]);
                 } else {
                     return view('errors.404', [
                         'record_id' => $id,
@@ -477,7 +477,7 @@ class ModulesController extends StlcController
 
                 // show a success message
                 if(!$request->src_ajax) {
-                    \Alert::success($this->crud->label." ".trans('crud.update_success'))->flash();
+                    \Alert::success($this->crud->label." ".trans('stlc.update_success'))->flash();
                 }
 
                 if(isset($request->src_ajax) && $request->src_ajax) {
@@ -488,7 +488,7 @@ class ModulesController extends StlcController
                     return redirect($this->crud->route);
                 }
             } else {
-                abort(403, trans('crud.data_not_found'));
+                abort(403, trans('stlc.data_not_found'));
             }
         } else {
             abort(403, 'Unauthorized Access');
@@ -506,7 +506,7 @@ class ModulesController extends StlcController
             $crud = $this->crud;
             $modules = Module::onlyTrashed()->get();
             $crud->onlyButton('restore');
-            $crud->labelPlural = trans('crud.delete')." ".$crud->labelPlural;
+            $crud->labelPlural = trans('stlc.delete')." ".$crud->labelPlural;
             $crud->datatable = true;
             return view(config('stlc.stlc_modules_folder_name','stlc::').'Modules.index', [
                 'crud' => $crud,
@@ -536,20 +536,20 @@ class ModulesController extends StlcController
                 // \Activity::log(config('activity_log.context.DELETED'), $this->crud, ['old' => $old_item]);
                 
                 if(isset($request->src_ajax) && $request->src_ajax) {
-                    return response()->json(['status' => 'success', 'message' => trans('crud.delete_confirmation_message')]);
+                    return response()->json(['status' => 'success', 'message' => trans('stlc.delete_confirmation_message')]);
                 } else if(isset($request->src)) {
-                    Alert::success(trans('crud.delete_confirmation_message'))->flash();
+                    Alert::success(trans('stlc.delete_confirmation_message'))->flash();
                     return redirect($request->src);
                 } else {
-                    Alert::success(trans('crud.delete_confirmation_message'))->flash();
+                    Alert::success(trans('stlc.delete_confirmation_message'))->flash();
                     // return redirect()->route(config('aquaspade.base.route_prefix') . 'modules');
                     return (string) $module;
                 }
             } else {
                 if(isset($request->src_ajax) && $request->src_ajax) {
-                    return response()->json(['status' => 'failed', 'message' => trans('crud.data_not_found')]);
+                    return response()->json(['status' => 'failed', 'message' => trans('stlc.data_not_found')]);
                 } else {
-                    abort(403, trans('crud.data_not_found'));
+                    abort(403, trans('stlc.data_not_found'));
                 }
             }
         } else {
@@ -588,9 +588,9 @@ class ModulesController extends StlcController
                 }
             } else {
                 if(isset($request->src_ajax) && $request->src_ajax) {
-                    return response()->json(['status' => 'failed', 'message' => trans('crud.data_not_found')]);
+                    return response()->json(['status' => 'failed', 'message' => trans('stlc.data_not_found')]);
                 } else {
-                    abort(403, trans('crud.data_not_found'));
+                    abort(403, trans('stlc.data_not_found'));
                 }
             }
         } else {
@@ -785,7 +785,7 @@ class ModulesController extends StlcController
                 }
             } else {
                 if(isset($request->get_data_ajax) && $request->get_data_ajax) {
-                    return response()->json(['status' => 'failed', 'message' => trans('crud.data_not_found')]);
+                    return response()->json(['status' => 'failed', 'message' => trans('stlc.data_not_found')]);
                 } else {
                     return view('errors.404', [
                         'record_id' => $id,
@@ -848,7 +848,7 @@ class ModulesController extends StlcController
 
                 // show a success message
                 if(!$request->src_ajax) {
-                    \Alert::success($this->crud_filed->label." ".trans('crud.update_success'))->flash();
+                    \Alert::success($this->crud_filed->label." ".trans('stlc.update_success'))->flash();
                 }
 
                 if(isset($request->src_ajax) && $request->src_ajax) {
@@ -863,7 +863,7 @@ class ModulesController extends StlcController
                     }
                 }
             } else {
-                abort(403, trans('crud.data_not_found'));
+                abort(403, trans('stlc.data_not_found'));
             }
         } else {
             abort(403, 'Unauthorized Access');
@@ -888,20 +888,20 @@ class ModulesController extends StlcController
                 // \Activity::log(config('activity_log.context.DELETED'), $this->crud, ['old' => $old_item]);
                 
                 if(isset($request->src_ajax) && $request->src_ajax) {
-                    return response()->json(['status' => 'success', 'message' => trans('crud.delete_confirmation_message')]);
+                    return response()->json(['status' => 'success', 'message' => trans('stlc.delete_confirmation_message')]);
                 } else if(isset($request->src)) {
-                    Alert::success(trans('crud.delete_confirmation_message'))->flash();
+                    Alert::success(trans('stlc.delete_confirmation_message'))->flash();
                     return redirect($request->src);
                 } else {
-                    Alert::success(trans('crud.delete_confirmation_message'))->flash();
+                    Alert::success(trans('stlc.delete_confirmation_message'))->flash();
                     // return redirect()->route(config('stlc.route_prefix') . 'modules');
                     return (string) $module;
                 }
             } else {
                 if(isset($request->src_ajax) && $request->src_ajax) {
-                    return response()->json(['status' => 'failed', 'message' => trans('crud.data_not_found')]);
+                    return response()->json(['status' => 'failed', 'message' => trans('stlc.data_not_found')]);
                 } else {
-                    abort(403, trans('crud.data_not_found'));
+                    abort(403, trans('stlc.data_not_found'));
                 }
             }
         } else {
@@ -1076,7 +1076,7 @@ class ModulesController extends StlcController
 
                 // show a success message
                 if(!$request->src_ajax) {
-                    \Alert::success($this->setting_crud->label." ".trans('crud.update_success'))->flash();
+                    \Alert::success($this->setting_crud->label." ".trans('stlc.update_success'))->flash();
                 }
 
                 if(isset($request->src_ajax) && $request->src_ajax) {
@@ -1091,7 +1091,7 @@ class ModulesController extends StlcController
                     }
                 }
             } else {
-                abort(403, trans('crud.data_not_found'));
+                abort(403, trans('stlc.data_not_found'));
             }
         } else {
             abort(403, 'Unauthorized Access');
@@ -1128,7 +1128,7 @@ class ModulesController extends StlcController
                 \Activity::log('Created', $crud_comment, ['new' => $comment]);
                 return response()->json(['status' => 'success', 'message' => 'updated', 'item' => $comment]);
             } else {
-                return response()->json(['status' => 'failed', 'message' => trans('crud.data_not_found'), 'item'=> $old_item]);
+                return response()->json(['status' => 'failed', 'message' => trans('stlc.data_not_found'), 'item'=> $old_item]);
             }
         } else {
             return response()->json(['status' => 'failed', 'message' => 'modal class not exist']);
@@ -1160,7 +1160,7 @@ class ModulesController extends StlcController
                 
                 return response()->json(['status' => 'success', 'message' => 'get html data', 'htmlData' => $htmlData]);
             } else {
-                return response()->json(['status' => 'failed', 'message' => trans('crud.data_not_found'), 'item'=> $item]);
+                return response()->json(['status' => 'failed', 'message' => trans('stlc.data_not_found'), 'item'=> $item]);
             }
         } else {
             return response()->json(['status' => 'failed', 'message' => 'modal class not exist']);

@@ -30,7 +30,7 @@ trait Store
                 'src' => $request->src ?? null
             ]);
         } else {
-            abort(403, trans('crud.unauthorized_access'));
+            abort(403, trans('stlc.unauthorized_access'));
         }
     }
     
@@ -61,20 +61,20 @@ trait Store
             $this->afterStore($request,$item);
             // show a success message
             if(!$request->src_ajax) {
-                Alert::success($this->crud->label." ".trans('crud.insert_success'))->flash();
+                Alert::success($this->crud->label." ".trans('stlc.insert_success'))->flash();
             }
 
             if(isset($request->go_view) && $request->go_view) {
                 return redirect($this->crud->route.'/'.$item->id);
             } else if(isset($request->src_ajax) && $request->src_ajax) {
-                return response()->json(['status' => 'success', 'message' => $this->crud->label." ".trans('crud.insert_success'), 'item' => $item]);
+                return response()->json(['status' => 'success', 'message' => $this->crud->label." ".trans('stlc.insert_success'), 'item' => $item]);
             } else if(isset($request->src)) {
                 return redirect($request->src);
             } else {
                 return redirect($this->crud->route);
             }
         } else {
-            abort(403, trans('crud.unauthorized_access'));
+            abort(403, trans('stlc.unauthorized_access'));
         }
     }
 } 

@@ -16,7 +16,7 @@ class CreateRolesTable extends Migration
      */
     public function up()
     {
-        Module::generate('Roles', 'roles', 'name', 'fa-user', [
+        Module::generate('Roles', 'roles', 'name', 'fa fa-user-circle', [
             [
 				'name' => 'name',
 				'label' => 'Name',
@@ -45,8 +45,7 @@ class CreateRolesTable extends Migration
 				'show_index' => true,
 				'json_values' => '@Roles'
 			]
-        ]);
-		
+        ],['model' => \Sagartakle\Laracrud\Models\Role::class]);
 		
         Schema::create('rollables', function (Blueprint $table) {
 			$table->increments('id');
@@ -124,7 +123,14 @@ class CreateRolesTable extends Migration
         $role_super_admin->label = "Admin";
         $role_super_admin->context_type = "Employees";
         $role_super_admin->parent_id = Null;
-		$role_super_admin->save();
+        $role_super_admin->save();
+        
+        $role_super_admin = new Role;
+        $role_super_admin->name = "Users";
+        $role_super_admin->label = "Users";
+        $role_super_admin->context_type = "Users";
+        $role_super_admin->parent_id = $role_super_admin->id;
+        $role_super_admin->save();
     }
 
     /**

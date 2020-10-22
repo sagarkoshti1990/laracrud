@@ -15,7 +15,7 @@ class CreateUploadsTable extends Migration
      */
     public function up()
     {
-        Module::generate('Uploads', 'uploads', 'name', 'fa-cloud-upload', [
+        Module::generate('Uploads', 'uploads', 'name', 'fa-cloud-upload-alt', [
             [
 				'name' => 'name',
 				'label' => 'Name',
@@ -38,12 +38,12 @@ class CreateUploadsTable extends Migration
 				'field_type' => 'Text',
 				'show_index' => true
 			],[
-				'name' => 'user_id',
-				'label' => 'Owner',
-				'field_type' => 'Select2',
-				'defaultvalue' => '1',
-				'show_index' => true,
-				'json_values' => '@users'
+                'name' => 'context',
+                'label' => 'Context',
+                'field_type' => 'Polymorphic_select',
+                'required' => true,
+                'show_index' => true,
+				'json_values' => ['Users','Employees']
 			],[
 				'name' => 'hash',
 				'label' => 'Hash',
@@ -55,10 +55,26 @@ class CreateUploadsTable extends Migration
 				'field_type' => 'Checkbox',
 				'show_index' => true
 			]
-        ]);
-        
+			],['model' => \Sagartakle\Laracrud\Models\Upload::class]);
+		
+		Module::generate('Uploadables', 'uploadables', 'upload_id', 'fa-scissors', [
+            [
+                'name' => 'upload_id',
+                'label' => 'Upload',
+                'field_type' => 'Select2',
+                'required' => true,
+                'show_index' => true,
+                'json_values' => '@Uploads'
+            ],[
+                'name' => 'uploadable',
+                'label' => 'Uploadable',
+                'field_type' => 'Polymorphic_select',
+                'required' => true,
+                'show_index' => true,
+			]
+		]);
         /*
-        Module::generate('Uploads' 'uploads', 'name', 'fa-cloud-upload', [
+        Module::generate('Uploads' 'uploads', 'name', 'fa-cloud-upload-alt', [
             [
                 'name' => 'name',
                 'label' => 'Name',
@@ -125,5 +141,6 @@ class CreateUploadsTable extends Migration
     public function down()
     {
 		Schema::dropIfExists('uploads');
+		Schema::dropIfExists('uploadables');
     }
 }

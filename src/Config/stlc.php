@@ -60,10 +60,10 @@ return [
     
     'restrictedModules' => [
         'menu' => [
-            'Users','Uploads',
+            'Users','Uploads','Uploadables',
         ],
         'routeAdmin' => [
-            'Users','Uploads','Roles',
+            'Users','Uploads','Uploadables','Roles',
         ]
     ],
 
@@ -211,16 +211,16 @@ return [
 		'updated'     => 'edit',
 		'deleted'     => 'minus-circle',
 		'remove'     => 'minus-circle',
-		'upload'     => 'cloud-upload',
-		'download'   => 'cloud-download',
+		'upload'     => 'cloud-upload-alt',
+		'download'   => 'cloud-download-alt',
 		'ban'        => 'ban',
-		'unban'      => 'circle-o',
-		'approve'    => 'ok-circle',
+		'unban'      => 'circle-notch',
+		'approve'    => 'check-circle',
 		'unapprove'  => 'ban',
-		'activate'   => 'ok-circle',
+		'activate'   => 'check-circle',
 		'deactivate' => 'ban',
-		'log_in'     => 'sign-in',
-		'log_out'    => 'sign-out',
+		'log_in'     => 'sign-in-alt',
+		'log_out'    => 'sign-out-alt',
 		'view'       => 'eye',
 		'open'       => 'eye',
 		'comment'    => 'comment',

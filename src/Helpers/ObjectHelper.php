@@ -136,7 +136,28 @@ class ObjectHelper
      *
      * @return [Eloquent Collection]
      */
-    public function setFields($fields)
+    public function setFields($fields,$only = [])
+    {
+        $this->fields = [];
+        if(isset($only) && (is_array($only) || is_object($only)) && count($only) > 0) {
+            foreach($only as $field_name) {
+                $value = collect($fields)->where('name',$field_name)->first();
+                if(!is_object($value)) {
+                    $value = (object) $value;
+                }
+                $this->fields[$value->name] = $value;
+            }
+        } else {
+            foreach ($fields as $key => $value) {
+                if(!is_object($value)) {
+                    $value = (object) $value;
+                }
+                $this->fields[$value->name] = $value;
+            }
+        }
+    }
+
+    public function addFields($fields)
     {
         foreach ($fields as $key => $value) {
             if(!is_object($value)) {
@@ -348,7 +369,7 @@ class ObjectHelper
 
     public function setColumnNames($table, $option="")
     {
-        $arr = collect($this->fields)->where('field_type.name','!=','Polymorphic_select')->where('field_type.name','!=','Polymorphic_multiple')->keys()->toArray();
+        $arr = collect($this->fields)->whereNotIn('field_type.name',['Polymorphic_select','Polymorphic_multiple','Files'])->keys()->toArray();
         if(isset($option) && $option == "All") {
             $this->column_names = $arr;
         } else if(is_array($option) && count($option)) {

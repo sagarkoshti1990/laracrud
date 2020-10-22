@@ -4,7 +4,7 @@
         $route = (isset($crud->row->id) && !isset($_GET['copy'])) ? $crud->route.'/'.$crud->row->id : $crud->route;
         $method = (isset($crud->row->id) && !isset($_GET['copy'])) ? 'put' : 'post';
         $form_id = (isset($crud->row->id) && !isset($_GET['copy'])) ? 'edit_form' : 'add_form';
-        $add_edit = (isset($crud->row->id) && !isset($_GET['copy'])) ? 'Edit' : 'Add';
+        $add_edit = (isset($crud->row->id) && !isset($_GET['copy'])) ? trans('stlc.edit') : trans('stlc.add');
     @endphp
     <section class="content-header">
         <h1>
@@ -15,7 +15,7 @@
             <small>{{ $add_edit }}</small>
         </h1>
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ url(config('stlc.route_prefix'), 'dashboard') }}">Dashboard</a></li>
+            <li class="breadcrumb-item"><a href="{{ url(config('stlc.route_prefix'), 'dashboard') }}">{{ trans('stlc.dashboard') }}</a></li>
             <li class="breadcrumb-item"><a href="{{ url($crud->route) }}" class="text-capitalize">{{ $crud->labelPlural }}</a></li>
             <li class="breadcrumb-item active">{{ $add_edit }}</li>
         </ol>

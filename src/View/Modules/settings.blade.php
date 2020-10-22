@@ -7,7 +7,7 @@
                 <h1>
                     <span class="fa {{ $crud->icon }}"></span>
                     <span class="text-capitalize">{{ $crud->labelPlural }}</span>
-                    <small>{{ trans('crud.all') }} <span>{{ $crud->labelPlural }}</span> {{ trans('crud.in_the_database') }}.</small>
+                    <small>{{ trans('stlc.all') }} <span>{{ $crud->labelPlural }}</span> {{ trans('stlc.in_the_database') }}.</small>
                 </h1>
             </div>
             <div class="col-md-6"></div>
@@ -32,7 +32,7 @@
                                 @endforeach
 
                                 @if ($crud->buttons->where('stack', 'line')->count() )
-                                <th style="width: 100px;">{{ trans('crud.actions') }}</th>
+                                <th style="width: 100px;">{{ trans('stlc.actions') }}</th>
                                 @endif
                             </tr>
                         </thead>
@@ -63,7 +63,7 @@
             <div class="modal-content">
                 {!! Form::open(array('url' => $crud->route, 'method' => 'post', 'id' => 'add_form', "autocomplete"=>"off")) !!}
                     <div class="modal-header">
-                        <h5 class="modal-title">{{ trans('crud.add_a_new') }} {{ $crud->label }}</h5>
+                        <h5 class="modal-title">{{ trans('stlc.add_a_new') }} {{ $crud->label }}</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>

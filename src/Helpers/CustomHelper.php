@@ -9,6 +9,8 @@ use Sagartakle\Laracrud\Models\Menu;
 use Sagartakle\Laracrud\Models\Page;
 use Sagartakle\Laracrud\Models\Module;
 use Sagartakle\Laracrud\Models\Upload;
+use GuzzleHttp\Client;
+use Jenssegers\Date\Date;
 use Illuminate\Support\Str;
 use Illuminate\Support\Carbon;
 use Collective\Html\FormFacade;
@@ -235,16 +237,22 @@ class CustomHelper
      * @param $upload_id upload id of image / file
      * @return string file / image url
      */
-    public static function img($upload_id, $size = "")
+    public static function img($upload, $size = "",$default = null)
     {
-        $upload = Upload::find($upload_id);
+        if(!isset($upload->id)) {
+            $upload = Upload::find($upload);
+        }
         if(isset($size) && $size != "") {
             $size = "?s=".$size;
         }
         if(isset($upload->id)) {
             return url("files/" .$upload->hash . "/" . $upload->name).$size;
         } else {
-            return asset("public/assets/images/no-image-available.jpg");
+            if(isset($default)) {
+                return $default;
+            } else {
+                return asset("public/img/logo.png");
+            }
         }
     }
     
@@ -284,22 +292,26 @@ class CustomHelper
         } else {
             return false;
         }
-        $old_image = $imgcreatefrom($filepath);
-        $new_image = imagecreatetruecolor($thumbnail_width, $thumbnail_height); // creates new image, but with a black background
-        // figuring out the color for the background
-        if(is_array($background) && count($background) === 3) {
-            list($red, $green, $blue) = $background;
-            $color = imagecolorallocate($new_image, $red, $green, $blue);
-            imagefill($new_image, 0, 0, $color);
-            // apply transparent background only if is a png image
-        } else if($background === 'transparent' && $original_type === 3) {
-            imagesavealpha($new_image, TRUE);
-            $color = imagecolorallocatealpha($new_image, 0, 0, 0, 127);
-            imagefill($new_image, 0, 0, $color);
+        try {
+            $old_image = $imgcreatefrom($filepath);
+            $new_image = imagecreatetruecolor($thumbnail_width, $thumbnail_height); // creates new image, but with a black background
+            // figuring out the color for the background
+            if(is_array($background) && count($background) === 3) {
+                list($red, $green, $blue) = $background;
+                $color = imagecolorallocate($new_image, $red, $green, $blue);
+                imagefill($new_image, 0, 0, $color);
+                // apply transparent background only if is a png image
+            } else if($background === 'transparent' && $original_type === 3) {
+                imagesavealpha($new_image, TRUE);
+                $color = imagecolorallocatealpha($new_image, 0, 0, 0, 127);
+                imagefill($new_image, 0, 0, $color);
+            }
+            imagecopyresampled($new_image, $old_image, $dest_x, $dest_y, 0, 0, $new_width, $new_height, $original_width, $original_height);
+            $imgt($new_image, $thumbpath);
+            return file_exists($thumbpath);
+        } catch (\Exception $ex) {
+            return response()->json(['status' => 'exception_error', 'message' => 'error', 'errors' => $ex->getMessage()]);
         }
-        imagecopyresampled($new_image, $old_image, $dest_x, $dest_y, 0, 0, $new_width, $new_height, $original_width, $original_height);
-        $imgt($new_image, $thumbpath);
-        return file_exists($thumbpath);
     }
     
     /**
@@ -435,7 +447,7 @@ class CustomHelper
             if($withTruncate == true) {
                 Menu::truncate();
             }
-            if(!isset($menus) || (is_array($menus) && count($menus) == 0)) {
+            if(!isset($menus) || (!isset($parent) && is_array($menus) && count($menus) == 0)) {
                 $menus = config('stlc.generateMenu',[]);
             }
             foreach($menus as $key => $menu) {
@@ -466,7 +478,7 @@ class CustomHelper
                         'name' => $menuData['name'],
                         'label' => $menuData['label'] ?? ucfirst(\Str::plural(preg_replace('/[A-Z]/', ' $0', $menuData['name']))),
                         'link' => $menuData['link'] ?? "#",
-                        'icon' => $menuData['icon'] ?? "fa-smile",
+                        'icon' => $menuData['icon'] ?? "fa fa-smile",
                         'type' => $menuData['type'] ?? 'module',
                         'rank' => $menuData['rank'] ?? $key,
                         'parent' => $parent,
@@ -780,12 +792,38 @@ class CustomHelper
             $response = (new Client)->get($url,['query'=>$arr]);
             if ($response->getBody()) {
                 return $response->getBody();
+                return ['response' => $response->getBody(),'data' => $arr,'url' => $url];
                 // JSON string: { ... }
             } else {
                 return $response->getBody();
+                return ['status'=>"400",'response' => $response->getBody(),'data' => $arr,'url' => $url];
             }
         }
         return 'env sms_status false';
+    }
+
+    /**
+     * send sms
+     * CustomHelper::sendMail($data);
+     * @param $data as array
+     * @return response
+     */
+    public static function sendMail($data = [])
+    {   
+        if(config('lara.base.mail_status',false)) {
+            $data['authkey'] = $data['authkey'] ?? "";
+            $data['template_id'] = $data['template_id'] ?? "";
+            $data['to'] = $data['to'] ?? "";
+            $data['from'] = config('lara.base.mail_to_support');
+            $url = "https://api.msg91.com/api/v5/email";//.http_build_query($data);
+            $response = (new Client)->request("POST", $url, [ 'json' => $data ]);
+            if ($response->getBody()) {
+                return ['status'=>"200",'response' => json_decode((string) $response->getBody(), true),'data' => $data,'url' => $url];
+            } else {
+                return ['status'=>"400",'response' => $response->getBody(),'data' => $data,'url' => $url];
+            }
+        }
+        return 'env mail_status false';
     }
 
     public static function execInBackground($cmd) {
@@ -865,6 +903,9 @@ class CustomHelper
         }
     }
 
+    /**
+     * please check env APP_URL
+     */
     public static function checkRemoteFile($url)
     {
         $ch = curl_init($url);
@@ -886,6 +927,7 @@ class CustomHelper
      * 
      * \CustomHelper::save_file_by_url($url);
      *
+     * please check env APP_URL
      */
     public static function save_file_by_url($url,$dir = null,$date_append = null)
     {
@@ -929,4 +971,3 @@ class CustomHelper
         return self::checkRemoteFile($url);
     }
 }
-

@@ -55,12 +55,17 @@ class Module extends Model
             
             if(isset($data->setModel) || isset($data['setModel'])) {
                 $crud->setModel(($data->setModel ?? $data['setModel']));
+            } else {
+                $crud->setModule($module);
             }
             if(isset($data['allowAccess']) && count($data['allowAccess']) > 0) {
                 $crud->allowAccess($data['allowAccess']);
             }
             if(isset($data['setColumnsOnly']) && count($data['setColumnsOnly']) > 0) {
                 $crud->setColumns($crud->fields,$data['setColumnsOnly']);
+            }
+            if(isset($data['setFieldsOnly']) && count($data['setFieldsOnly']) > 0) {
+                $crud->setFields($crud->fields,$data['setFieldsOnly']);
             }
             if(isset($data['removeFields']) && count($data['removeFields']) > 0) {
                 foreach($data['removeFields'] as $field) {
@@ -93,7 +98,6 @@ class Module extends Model
                     $crud->setViewPath(($data->setViewPath ?? $data['setViewPath']));
                 }
             }
-            $crud->setModule($module);
             
             return $crud;
 		} else {
@@ -117,7 +121,11 @@ class Module extends Model
     public static function access_modules($accessible)
     {
         $modules = self::whereNotIn('name', ['Users','Tests','Uploads'])->get();
-        $pages = [];//Page::all();
+        if(Schema::hasTable('pages')) {
+            $pages = Page::all();
+        } else {
+            $pages = [];
+        }
         $modules_access = array();
         foreach ($modules as $module_obj) {
             $module_obj->accesses = $accessible->access_modules()
@@ -1118,26 +1126,7 @@ class Module extends Model
                 }
                 break;
             case 'Files':
-                if($update) {
-                    if($field->required && $nullable_required) {
-                        $var = $table->string($field->name, 256)->change();
-                    } else {
-                        $var = $table->string($field->name, 256)->nullable()->change();
-                    }
-                } else {
-                    if($field->required && $nullable_required) {
-                        $var = $table->string($field->name, 256);
-                    } else {
-                        $var = $table->string($field->name, 256)->nullable();
-                    }
-                }
-                if(is_string($field->defaultvalue) && \Str::startsWith($field->defaultvalue, "[")) {
-                    $var->default($field->defaultvalue);
-                } else if(is_array($field->defaultvalue)) {
-                    $var->default(json_encode($field->defaultvalue));
-                } else {
-                    $var->default("[]");
-                }
+
                 break;
             case 'Float':
                 if($update) {
@@ -1855,7 +1844,7 @@ class Module extends Model
      * @param bool $isEdit Is this a Update or Store Request
      * @return array Returns Array to validate given Request
      */
-    public static function validateRules($crud, $request, $isEdit = false)
+    public static function validateRules($crud, $request, $isEdit = false,$segment = null)
     {
         if(!isset($crud->module->id)) {
             $crud = self::make($crud);
@@ -1896,11 +1885,11 @@ class Module extends Model
                             $col .= "max:" . $field['maxlength'] . "|";
                         }
                     }
-                    if(in_array($ftypes[$field['field_type']["id"]], ["Datetime_picker"])) {
-                        $col .= 'date_format:"Y-m-d H:i:s"';
+                    if(in_array($ftypes[$field['field_type']["id"]], ['Datetime_picker'])) {
+                        $col .= 'date|date_format:"Y-m-d H:i:s"';
                     }
-                    if(in_array($ftypes[$field['field_type']["id"]], ["Date_picker"])) {
-                        $col .= 'date_format:"Y-m-d"';
+                    if(in_array($ftypes[$field['field_type']["id"]], ['Date_picker'])) {
+                        $col .= 'date|date_format:"Y-m-d"';
                     }
 
                     if(in_array($ftypes[$field['field_type']["id"]], array("Email"))) {
@@ -1910,7 +1899,7 @@ class Module extends Model
                         $filed_unique_value = isset($request->{$field['name']})? ','.$request->{$field['name']}:"";
                         $col .= "unique:" . $crud->table_name.','.$field['name'].$filed_unique_value;
                     } else if($isEdit && $field['unique']) {
-                        $col .= "unique:" . $crud->table_name.','.$field['name'].','.$request->segment(3);
+                        $col .= "unique:" . $crud->table_name.','.$field['name'].','.($segment ?? $request->segment(3));
                     }
                     if(\Str::startsWith($field->json_values, "@") && (isset($request->{$field['name']}) || (is_array($request) && isset($request[$field['name']])))) {
                         $foreign_table_name = \Str::plural(ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', str_replace("@", "", $field->json_values))), '_'));
@@ -1919,7 +1908,9 @@ class Module extends Model
                         $col .= "in:" . implode(',',$json_arrya);
                     }
                     
-                    
+                    if(in_array($ftypes[$field['field_type']["id"]], ['Date','Date_range','Datetime'])) {
+                        $col .= "date";
+                    }
                     // 'name' => 'required|unique|min:5|max:256',
                     // 'author' => 'required|max:50',
                     // 'price' => 'decimal',
@@ -1940,7 +1931,7 @@ class Module extends Model
                         $ps_type = $field['name'].'_type';
                         $ps_id = $field['name'].'_id';
                         $rules[$ps_type] = trim(($req)."exists:modules,model", "|");
-                        if(isset($request[$ps_type]) && $request[$ps_type] != "") {
+                        if(isset($request[$ps_type]) && class_exists($request[$ps_type])) {
                             $object = (new $request[$ps_type])->getTable();
                             $rules[$ps_id] = trim(($req)."exists:".$object.",id", "|");
                         }

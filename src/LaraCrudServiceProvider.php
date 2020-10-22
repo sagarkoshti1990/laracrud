@@ -79,6 +79,7 @@ class LaraCrudServiceProvider extends ServiceProvider
             // Model
             __DIR__.DIRECTORY_SEPARATOR.'Console'.DIRECTORY_SEPARATOR.'stubs'.DIRECTORY_SEPARATOR.'user.stub' => base_path('app'.DIRECTORY_SEPARATOR.'User.php'),
             // 
+            __DIR__.DIRECTORY_SEPARATOR.'Lang'.DIRECTORY_SEPARATOR.'stlc.php' => resource_path('lang'.DIRECTORY_SEPARATOR.'en'.DIRECTORY_SEPARATOR.'stlc.php'),
             __DIR__.DIRECTORY_SEPARATOR.'package.json' => base_path('package.json'),
             __DIR__.DIRECTORY_SEPARATOR.'public' => base_path('public'),
         ]);

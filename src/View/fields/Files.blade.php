@@ -9,7 +9,7 @@
         $values = old($field['name']) ? old($field['name']) : (isset($field['value']) ? $field['value'] : (isset($field['default']) ? $field['default'] : '' ));
         $img = "";
         if(isset($values) && is_array($values) && count($values)) {
-            $uploads = App\Models\Upload::whereIn('id',$values)->get();
+            $uploads = \Sagartakle\Laracrud\Models\Upload::whereIn('id',$values)->get();
             $img = "<div class='uploaded_files'>";
             foreach ($uploads as $key => $upload) {
                 if(isset($upload->id)) {
@@ -83,7 +83,7 @@
             @if(isset($field['file_type']))
                 extension="{{ $field['file_type'] }}"
             @endif
-            selecter="{{ $field['name'] }}"><span class="btn-label"><i class='fa fa-cloud-upload'></i></span>Upload</a>
+            selecter="{{ $field['name'] }}"><span class="btn-label"><i class='fa fa-cloud-upload-alt'></i></span>Upload</a>
         <?php
             echo $img;
         ?>

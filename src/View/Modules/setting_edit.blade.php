@@ -7,14 +7,14 @@
                     <a href="{{ url($crud->route) }}">
                         <span class="fa {{ $crud->icon }} mr-1"></span><span>{{ $crud->label }}</span>
                     </a>
-                    <small><i class="fa fa-angle-right"></i> {{ trans('crud.edit') }}</small>
+                    <small><i class="fa fa-angle-right"></i> {{ trans('stlc.edit') }}</small>
                 </h1>
             </div>
             <div class="col-md-6">
                 <ol class="breadcrumb float-right">
-                    <li class="breadcrumb-item"><a href="{{ url(config('lara.base.route_prefix'), 'dashboard') }}">{{ trans('crud.admin') }}</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url(config('lara.base.route_prefix'), 'dashboard') }}">{{ trans('stlc.admin') }}</a></li>
                     <li class="breadcrumb-item"><a href="{{ url($crud->route) }}" class="text-capitalize">{{ $crud->labelPlural }}</a></li>
-                    <li class="breadcrumb-item active">{{ trans('crud.edit') }}</li>
+                    <li class="breadcrumb-item active">{{ trans('stlc.edit') }}</li>
                 </ol>
             </div>
         </div>
@@ -27,7 +27,7 @@
             {!! Form::open(array('url' => $crud->route.'/'.$setting->id, 'method' => 'put', 'id' => 'edit_form', "autocomplete"=>"off")) !!}
                 <div class="box">
                     {{-- <div class="box-header with-border">
-                        <h4 class="box-title">{{ trans('crud.edit') }}</h4>
+                        <h4 class="box-title">{{ trans('stlc.edit') }}</h4>
                     </div> --}}
                     <div class="box-body">
                         @if(isset($src))
