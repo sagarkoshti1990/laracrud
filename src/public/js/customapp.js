@@ -19,6 +19,7 @@ if(window.location.hash != "") {
 
 $.ajaxSetup({
     headers: {
+        Accept: "application/json; charset=utf-8",
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
     }
 });

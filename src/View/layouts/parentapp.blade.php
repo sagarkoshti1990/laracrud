@@ -21,6 +21,7 @@
     @stack('p_before_scripts')    
     <script src="{{ asset('node_modules/admin-lte/bower_components/jquery/dist/jquery.min.js') }}"></script>
     <script src="{{ asset('node_modules/admin-lte/bower_components/jquery-ui/jquery-ui.min.js') }}"></script>
+    <script src="{{ asset('node_modules/popper.js/dist/umd/popper.js') }}"></script>
     <script src="{{ asset('node_modules/bootstrap/dist/js/bootstrap.min.js') }}"></script>
     <script src="{{ asset('node_modules/admin-lte/bower_components/morris.js/morris.min.js') }}"></script>
     <script src="{{ asset('node_modules/admin-lte/bower_components/jquery-slimscroll/jquery.slimscroll.min.js') }}"></script>

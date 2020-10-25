@@ -26,17 +26,10 @@ trait Update
     public function update($id, $data,$transaction = true)
     {
         $data = $this->decodeJsonCastedAttributes($data);
-        $old_item = $this->model->findOrFail($id);
-        $item = $this->model->findOrFail($id);
+        $old_item = $this->model->find($id);
+        $item = $this->model->find($id);
         $column_names_ralationaldata = collect($this->fields)->where('type','relationalDataFields')->pluck('name');
         $polymorphic_multiple_fields = collect($this->fields)->whereIn('field_type.name',['Polymorphic_multiple',"Files"]);
-        // $this->syncPivot($item, $data, 'update');
-        // echo "<pre>";
-        // echo json_encode($data, JSON_PRETTY_PRINT);
-        // echo "<br><br><br><br>";
-        // echo json_encode(collect($data)->only($this->column_names)->toArray(), JSON_PRETTY_PRINT);
-        // echo "</pre>";
-        // return ;
         if(isset($transaction) && $transaction == true) {
             \DB::beginTransaction();
         }
@@ -69,7 +62,7 @@ trait Update
             if(isset($transaction) && $transaction == true) {
                 \DB::rollback();
             }
-            if(isset($data->src_ajax) && $data->src_ajax) {
+            if(($data instanceof \Illuminate\Http\Request && $data->wantsJson()) || isset($data->src_ajax) && $data->src_ajax || isset($data['src_ajax']) && $data['src_ajax']) {
                 return response()->json(['status' => 'exception_error', 'message' => 'error', 'errors' => $ex->getMessage()]);
             } else {
                 return redirect()->back()->withErrors($ex->getMessage())->withInput();
@@ -79,46 +72,4 @@ trait Update
         return $item;
     }
 
-    /**
-     * Get all fields needed for the EDIT ENTRY form.
-     *
-     * @param  [integer] The id of the entry that is being edited.
-     * @param int $id
-     *
-     * @return [array] The fields with attributes, fake attributes and values.
-     */
-    public function getUpdateFields($id)
-    {
-        $fields = $this->update_fields;
-        $entry = $this->getEntry($id);
-        
-        foreach ($fields as $k => $field) {
-            // set the value
-            if (! isset($fields[$k]['value'])) {
-                if (isset($field['subfields'])) {
-                    $fields[$k]['value'] = [];
-                    foreach ($field['subfields'] as $key => $subfield) {
-                        $fields[$k]['value'][] = $entry->{$subfield['name']};
-                    }
-                } else {
-                    if(isset($field['name'])) {
-                        $fields[$k]['value'] = $entry->{$field['name']};
-                    } else {
-                        $fields[$k]['value'] = $entry->{$field['name']};
-                    }
-                }
-            }
-        }
-
-        // always have a hidden input for the entry id
-        if (! array_key_exists('id', $fields)) {
-            $fields['id'] = [
-                'name'  => $entry->getKeyName(),
-                'value' => $entry->getKey(),
-                'type'  => 'hidden',
-            ];
-        }
-
-        return $fields;
-    }
 }

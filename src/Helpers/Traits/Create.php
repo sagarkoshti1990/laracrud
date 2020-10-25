@@ -27,15 +27,10 @@ trait Create
         $data = $this->decodeJsonCastedAttributes($data);
         $column_names_ralationaldata = collect($this->fields)->where('type','relationalDataFields')->pluck('name');
         $polymorphic_multiple_fields = collect($this->fields)->whereIn('field_type.name',['Polymorphic_multiple',"Files"]);
-        // $data = $this->compactFakeFields($data, 'create');
         if(\Auth::check()) {
             $data['created_by'] = \Auth::id();
         }
         // \CustomHelper::ajprint($polymorphic_multiple_fields);
-        // echo "<br><br><br><br>";
-        // \CustomHelper::ajprint(collect($data)->only($this->column_names)->toArray());
-        // ommit the n-n relationships when updating the eloquent item
-        // $nn_relationships = array_pluck($this->getRelationFieldsWithPivot('create'), 'name');
         if(isset($transaction) && $transaction == true) {
             \DB::beginTransaction();
         }
@@ -44,9 +39,6 @@ trait Create
             if($polymorphic_multiple_fields->count() > 0) {
                 foreach($polymorphic_multiple_fields as $pm_field) {
                     $pm_value = $data->{$pm_field->name} ?? $data[$pm_field->name] ?? [];
-                    // if($pm_field->name == 'attribute_id') {
-                        // \CustomHelper::ajprint($pm_value,false);
-                    // }
                     if(isset($pm_value)) {
                         $item->polymorphic_save($pm_field->name,$pm_value);
                     }
@@ -78,7 +70,7 @@ trait Create
             if(isset($transaction) && $transaction == true) {
                 \DB::rollback();
             }
-            if((isset($data->src_ajax) && $data->src_ajax) || isset($data['src_ajax']) && $data['src_ajax'] ) {
+            if(($data instanceof \Illuminate\Http\Request && $data->wantsJson()) || (isset($data->src_ajax) && $data->src_ajax) || isset($data['src_ajax']) && $data['src_ajax']) {
                 return response()->json(['status' => 'exception_error', 'message' => 'error', 'errors' => $ex->getMessage()]);
             } else {
                 return redirect()->back()->withErrors($ex->getMessage())->withInput();

@@ -21,8 +21,8 @@ trait Show
                 $crud->datatable = true;
                 $crud->row = $item;
             
-                if(isset($request->get_data_ajax) && $request->get_data_ajax) {
-                    return response()->json(['status' => 'success', 'message' => 'updated', 'item' => $item]);
+                if($request->wantsJson()) {
+                    return response()->json(['status' => '200', 'message' => 'updated', 'item' => $item],200);
                 } else {
                     return view($crud->view_path['show'], [
                         'crud' => $crud,
@@ -32,15 +32,15 @@ trait Show
                     ]);
                 }
             } else {
-                if(isset($request->get_data_ajax) && $request->get_data_ajax) {
-                    return response()->json(['status' => 'failed', 'message' => trans('stlc.data_not_found')]);
+                if($request->wantsJson()) {
+                    return response()->json(['status' => '404', 'message' => trans('stlc.data_not_found')],404);
                 } else {
                     abort(404, $crud->name);
                 }
             }
         } else {
-            if(isset($request->get_data_ajax) && $request->get_data_ajax) {
-                return response()->json(['status' => 'failed', 'message' => trans('stlc.unauthorized_access')]);
+            if($request->wantsJson()) {
+                return response()->json(['status' => '403', 'message' => trans('stlc.unauthorized_access')],403);
             } else {
                 abort(403, trans('stlc.unauthorized_access'));
             }

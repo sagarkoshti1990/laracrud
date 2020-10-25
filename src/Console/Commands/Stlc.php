@@ -110,10 +110,6 @@ class Stlc extends Command
             // Create the CRUD Request and show output
             Artisan::call('stlc:migrate', ['name' => $name]);
             echo Artisan::output();
-            
-            // Create the CRUD Request and show output
-            Artisan::call('migrate');
-            echo Artisan::output();
 
             // // Create the CRUD Model and show output
             Artisan::call('stlc:model', ['name' => $name]);
@@ -141,8 +137,5 @@ class Stlc extends Command
                 echo Artisan::output();
             }
         }
-        // Create the CRUD log_config
-        // Artisan::call('stlc:log_config');
-        // echo Artisan::output();
     }
 }

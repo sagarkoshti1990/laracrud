@@ -200,15 +200,15 @@ class ObjectHelper
         $this->buttons = collect();
 
         // line stack
-        $this->addButton('line', 'preview', 'view', 'stlc::buttons.preview', 'end');
-        // $this->addButton('line', 'clone', 'view', 'stlc::buttons.clone', 'end');
+        // $this->addButton('line', 'preview', 'view', 'stlc::buttons.preview', 'end');
+        $this->addButton('line', 'clone', 'view', 'stlc::buttons.clone', 'end');
         $this->addButton('line', 'update', 'view', 'stlc::buttons.update', 'end');
         $this->addButton('line', 'delete', 'view', 'stlc::buttons.delete', 'end');
         $this->addButton('line', 'restore', 'view', 'stlc::buttons.restore', 'end');
+        $this->addButton('line', 'restore', 'view', 'stlc::buttons.permanently_delete', 'end');
 
         // top stack
         $this->addButton('top', 'create', 'view', 'stlc::buttons.create');
-        // $this->addButton('top', 'deleted_data', 'view', 'stlc::buttons.deleted_data');
     }
 
     /**

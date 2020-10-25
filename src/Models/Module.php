@@ -2312,6 +2312,26 @@ class Module extends Model
         return self::select('fields.name as name')->where('modules.name',$name)
                 ->join('fields','fields.module_id','=','modules.id')->pluck('name');
     }
+
+    public function dependency_fields()
+    {
+        return Field::where('json_values','@'.$this->name)->with(['module','field_type'])->get();
+    }
+
+    public function delete_dependency($item_id)
+    {
+        $fields = $this->dependency_fields();
+        $data = [];
+        foreach($fields as $key => $field) {
+            if(isset($field->field_type->name) && !in_array($field->field_type->name,['Polymorphic_multiple'])) {
+                $items = $field->module->model::where($field->name,$item_id)->withTrashed()->get();
+                if($items->count() > 0) {
+                    $data[$key] = ["key" => $field->module->label,"value" => $items->count()];
+                }
+            }
+        }
+        return collect($data)->values();
+    }
     /*
     |--------------------------------------------------------------------------
     | SCOPES

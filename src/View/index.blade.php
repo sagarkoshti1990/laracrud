@@ -40,19 +40,20 @@
         </div>
     </div>
     <div id="add_modal" class="modal fade" role="dialog">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-xl">
             <!-- Modal content-->
             <div class="modal-content">
                 {!! Form::open(array('url' => $crud->route, 'method' => 'post', 'id' => 'add_form')) !!}
                     <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
                         <h4 class="box-title">{{ trans('stlc.add') }} {{ $crud->label }}</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
                     </div>
+
                     <div class="modal-body pb5">
                         @if(isset($src))
                             {{ Form::hidden('src', $src) }}
                         @endif
-                        @form($crud, [], ["class" => "col-md-6"])
+                        @form($crud, [], ["class" => "col-md-6"],'input',true)
                     </div>
                     <div class="modal-footer">
                         @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.form_save_buttons',['model_close' => 'add_modal'])
@@ -91,6 +92,13 @@
                 "ajax": {
                     "url": "{!! url($crud->route.'/datatable') !!}",
                     "type": "POST",
+                    "data": function(data){
+                        data.filter = [['deleted_at', null]];
+                        var deleted = "{{ $_GET['__deleted__'] ?? 'false' }}";
+                        if(deleted == 'true') {
+                            data.filter = [['deleted_at','!=',null]];
+                        }
+                    }
                 },
                 dom: "<'row'<'col-sm-8'i><'col-sm-4'f>><'mb-3'tr><'row'<'col-sm-3'l><'col-sm-9'p><'col-sm-1'>>",
             });

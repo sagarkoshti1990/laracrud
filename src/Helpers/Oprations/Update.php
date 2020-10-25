@@ -66,21 +66,29 @@ trait Update
                 }
                 $this->afterUpdate($request,$item);
                 // show a success message
-                if(!$request->src_ajax) {
+                if(!$request->wantsJson()) {
                     \Alert::success($this->crud->label." ".trans('stlc.update_success'))->flash();
                 }
-                if(isset($request->src_ajax) && $request->src_ajax) {
-                    return response()->json(['status' => 'success', 'message' => $this->crud->label." ".trans('stlc.update_success'), 'item' => $item]);
+                if($request->wantsJson()) {
+                    return response()->json(['status' => 'success', 'message' => $this->crud->label." ".trans('stlc.update_success'), 'item' => $item],200);
                 } else if(isset($request->src)) {
                     return redirect($request->src);
                 } else {
                     return redirect($this->crud->route);
                 }
             } else {
-                abort(403, trans('stlc.data_not_found'));
+                if($request->wantsJson()) {
+                    return response()->json(['status' => '404', 'message' => trans('stlc.data_not_found')],404);
+                } else {
+                    abort(404, trans('stlc.data_not_found'));
+                }
             }
         } else {
-            abort(403, trans('stlc.unauthorized_access'));
+            if($request->wantsJson()) {
+                return response()->json(['status' => '403', 'message' => trans('stlc.unauthorized_access')],403);
+            } else {
+                abort(403, trans('stlc.unauthorized_access'));
+            }
         }
     }
 }

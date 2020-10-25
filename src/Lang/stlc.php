@@ -21,6 +21,7 @@ return [
 
     // Create form
     'add'                 => 'Add',
+    'quick_add'           => 'Quick Add',
     'back_to_all'         => 'Back to all ',
     'cancel'              => 'Cancel',
     'add_a_new'           => 'Add a New ',
@@ -54,6 +55,10 @@ return [
     'actions'                   => 'Actions',
     'preview'                   => 'Preview',
     'delete'                    => 'Delete',
+    'deleted'                   => 'Deleted',
+    'permanently_delete'        => 'Permanently Deleted',
+    'restore'                   => 'Restore',
+    'restored'                  => 'Restored',
     'admin'                     => 'Admin',
     'logs'                      => 'Logs',
     'details'                   => 'Details',
@@ -62,13 +67,16 @@ return [
     'details_row_loading_error' => 'There was an error loading the details. Please retry.',
 
     // Confirmation messages and bubbles
-    'delete_confirm'                              => 'Are you sure you want to delete?',
-    'delete_confirmation_title'                   => 'Item Deleted',
-    'delete_confirmation_message'                 => 'The item has been deleted successfully.',
-    'delete_confirmation_not_title'               => 'Not deleted',
-    'delete_confirmation_not_message'             => "There's been an error. Your item might not have been deleted.",
-    'delete_confirmation_not_deleted_title'       => 'Not deleted',
-    'delete_confirmation_not_deleted_message'     => 'Nothing happened. Your item is safe.',
+    'delete_confirm'       => 'Delete Confirmation?',
+    'delete_confirm_text'  => 'Are you sure you want to delete?',
+
+    'restore_confirm'      => 'Restore Confirmation?',
+    'restore_confirm_text' => 'Are you sure you want to restore?',
+
+    'permanently_delete_confirm'      => 'Permanently delete Confirmation?',
+    'permanently_delete_confirm_text' => 'Are you sure you want to Permanently delete?',
+
+    'nothing_happened'     => 'Nothing happened.',
 
     // DataTables translation
     'emptyTable'     => 'No data available in table',
@@ -100,6 +108,9 @@ return [
     // global crud - success / error notification bubbles
     'insert_success' => 'The item has been added successfully.',
     'update_success' => 'The item has been modified successfully.',
+    'delete_success' => 'The item has been deleted successfully.',
+    'restore_success' => 'The item has been restored successfully.',
+    'delete_dependency_success' => 'Dependency delete first.',
 
     // CRUD reorder view
     'reorder'                      => 'Reorder',

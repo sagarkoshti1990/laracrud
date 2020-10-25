@@ -21,17 +21,21 @@ trait Index
     {
 		if($this->crud->hasAccess('view')) {
             $crud = $this->crud;
-            if(isset($request->get_data_ajax) && $request->get_data_ajax) {
+            if($request->wantsJson()) {
                 $query = $crud->model;
                 if(isset($request->q)) {
                     $query = $query->where($crud->represent_attr,'LIKE',"%".$request->q."%");
                 }
-                return response()->json(['status' => 'success', 'message' => 'updated', 'item' => $query->paginate(10)]);
+                return response()->json(['status' => '200', 'message' => 'success', 'item' => $query->paginate(10)]);
             } else {
                 return view($crud->view_path['index'], ['crud' => $crud]);
             }
         } else {
-            abort(403, trans('stlc.unauthorized_access'));
+            if($request->wantsJson()) {
+                return response()->json(['status' => '403', 'message' => trans('stlc.unauthorized_access')],403);
+            } else {
+                abort(403, trans('stlc.unauthorized_access'));
+            }
         }
     }
 
@@ -45,7 +49,7 @@ trait Index
     {
         $crud = $this->crud;
         $listing_cols = Module::getListingColumns($crud);
-        $values = DB::table($crud->table_name)->select($listing_cols)->whereNull('deleted_at')->latest();
+        $values = DB::table($crud->table_name)->select($listing_cols)->latest();
         if(isset($request->filter)) {
 			$values->where($request->filter);
 		}
@@ -60,13 +64,13 @@ trait Index
             $listing_cols = $collectuser->keys()->all();
             $data->data[$i] = $collectuser->values()->all();
             // \CustomHelper::ajprint($collectuser);
-            $crud->row = $item = $crud->model->find($data->data[$i][0]);
+            $crud->row = $item = $crud->model->withTrashed()->find($data->data[$i][0]);
             // array_splice($data->data[$i], 2, 0, true);
             for($j = 0; $j < count($listing_cols); $j++) {
                 $col = $listing_cols[$j];
                 $data->data[$i][$j] = FormBuilder::get_field_value($crud, $col);
                 if(isset($data->data[$i][$j]) && $col == $crud->module->represent_attr && !isset($item->deleted_at)) {
-                    $data->data[$i][$j] = '<a href="' . url($crud->route .'/'. $item->id) . '">' . $data->data[$i][$j] . '</a>';
+                    $data->data[$i][$j] = '<a href="' . url($crud->route .'/'. $item->id) . '"><i class="fa fa-eye mr-1"></i>' . $data->data[$i][$j] . '</a>';
                 }
             }
             

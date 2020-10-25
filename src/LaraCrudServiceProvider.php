@@ -31,7 +31,6 @@ class LaraCrudServiceProvider extends ServiceProvider
         */
         
         $this->commands([
-            \Sagartakle\Laracrud\Console\Commands\ConfigActivityLogs::class,
             \Sagartakle\Laracrud\Console\Commands\Stlc::class,
             \Sagartakle\Laracrud\Console\Commands\Controller::class,
             \Sagartakle\Laracrud\Console\Commands\Migrate::class,
@@ -82,7 +81,7 @@ class LaraCrudServiceProvider extends ServiceProvider
             __DIR__.DIRECTORY_SEPARATOR.'Lang'.DIRECTORY_SEPARATOR.'stlc.php' => resource_path('lang'.DIRECTORY_SEPARATOR.'en'.DIRECTORY_SEPARATOR.'stlc.php'),
             __DIR__.DIRECTORY_SEPARATOR.'package.json' => base_path('package.json'),
             __DIR__.DIRECTORY_SEPARATOR.'public' => base_path('public'),
-        ]);
+        ],'default');
 
         $this->publishes([
             // stlc auth

@@ -1055,6 +1055,7 @@ class FormBuilder
     public static function form($crud, $field_names = [], $input_attr = [], $fuction = 'input', $only_required_field = false)
     {
         if($only_required_field) {
+            $fields = collect($crud->fields);
             foreach($fields as $field) {
                 if($field->required) {
                     $field_names[] = $field->name;

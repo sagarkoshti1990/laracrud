@@ -27,6 +27,11 @@ class RouteHelper
             'as' => 'crud.'.$this->name.'.restore',
             'uses' => $this->controller.'@restore',
         ]);
+        
+        Route::Post($this->name.'/{id}/permanently_delete', [
+            'as' => 'crud.'.$this->name.'.permanently_delete',
+            'uses' => $this->controller.'@permanently_delete',
+        ]);
     }
 
     /**

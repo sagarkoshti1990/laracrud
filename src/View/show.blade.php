@@ -10,7 +10,7 @@
                             <h3 class="widget-user-username">{{ $item->$represent_attr }}</h3>
                         </div>
                         <div class="col-md-6 text-right pr30">
-                            @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.button_stack', ['stack' => 'line', 'src' => $crud->route.'/'.$item->id, 'name' => ['update','delete'], 'crud' => $crud, 'entry' => $item])
+                            @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.button_stack', ['stack' => 'line', 'src' => $crud->route.'/'.$item->id, 'name' => ['update','delete'], 'crud' => $crud])
                         </div>
                     </div>
                 </div>

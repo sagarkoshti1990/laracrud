@@ -41,7 +41,6 @@
     <link href="{{ asset('node_modules/datatables.net-bs4/css/dataTables.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link href="{{ asset('node_modules/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="{{ asset('node_modules/sweetalert2/dist/sweetalert2.css') }}">
-
     @stack('crud_list_styles')
     @stack('crud_fields_styles')
     @stack('after_styles')
@@ -60,8 +59,6 @@
     @stack('crud_list_scripts')
     @stack('crud_fields_scripts')
     <script src="{{ asset('public/js/customapp.js') }}"></script>
-    
-    {{-- @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.restore') --}}
-    @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.delete')
+    @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.datatable_ajax')
     @stack('after_scripts')
 @endpush
