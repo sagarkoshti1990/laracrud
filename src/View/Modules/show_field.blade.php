@@ -11,7 +11,7 @@
                             {{--  <h5 class="widget-user-desc">Founder &amp; CEO</h5>  --}}
                         </div>
                         <div class="col-md-6 text-right">
-                            @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.button_stack', ['stack' => 'line', 'src' => $crud->route.'/'.$field->id, 'name' => ['update','delete'], 'crud' => $crud, 'entry' => $field])
+                            @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.button_stack', ['stack' => 'line', 'src' => $crud->route.'/'.$field->id, 'name' => ['update','delete'], 'crud' => $crud, 'item' => $field])
                         </div>
                     </div>
                 </div>

@@ -16,13 +16,13 @@
             @else
                 @php $selec_list = $field['model']::get(); @endphp
             @endif
-            @foreach ($selec_list as $connected_entity_entry)
+            @foreach ($selec_list as $connected_entity_item)
                 @php
                     $option_text = "";
                     if(is_array($field['attribute'])) {
                         $attributes = collect($field['attribute'])->except(['implode'])->all();
                         foreach($attributes as $key => $value) {
-                            $option_text .= $connected_entity_entry->{$value};
+                            $option_text .= $connected_entity_item->{$value};
                             if(($key != count($attributes)-1)) {
                                 if(isset($field['attribute']['implode'])) {
                                     $option_text .= $field['attribute']['implode'];
@@ -33,11 +33,11 @@
                         }
                         $option_text = trim($option_text);
                     } else {
-                        $option_text = $connected_entity_entry->{$field['attribute']};
+                        $option_text = $connected_entity_item->{$field['attribute']};
                     }
                 @endphp
-                <option value="{{ $connected_entity_entry->getKey() }}"
-                    @if( (isset($field['value'])) && in_array($connected_entity_entry->getKey(), collect(json_decode($field['value']))->toArray()) || ( old( $field["name"]) && is_array(old( $field["name"])) && in_array($connected_entity_entry->getKey(), old( $field["name"])) ) )
+                <option value="{{ $connected_entity_item->getKey() }}"
+                    @if( (isset($field['value'])) && in_array($connected_entity_item->getKey(), collect(json_decode($field['value']))->toArray()) || ( old( $field["name"]) && is_array(old( $field["name"])) && in_array($connected_entity_item->getKey(), old( $field["name"])) ) )
                         selected
                     @endif
                 >{{ $option_text }}</option>

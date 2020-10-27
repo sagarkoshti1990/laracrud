@@ -1,5 +1,5 @@
 @php
-	$item = $crud->row ?? null;
+	$item = $item ?? $crud->row ?? [];
 	if(isset($name) && is_array($name) && count($name) && !isset($item->deleted_at)) {
 		$buttons = $crud->buttons->where('stack', $stack)->whereIn('name', $name);
 	} else if(isset($item->deleted_at) && $crud->module->name == "SpecificationMasters" && count($item->childs)){

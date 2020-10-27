@@ -1,6 +1,6 @@
-@if ($crud->hasAccess('permanently-delete'))
+@if ($crud->hasAccess('permanently-delete') && isset($item->id))
 	<a
-		href="{{ url($crud->route.'/'.$entry->getKey().'/permanently_delete') }}"
+		href="{{ url($crud->route.'/'.$item->getKey().'/permanently_delete') }}"
 		src="@if(isset($src)){{ $src }}@else{{ $crud->route }}@endif"
 		@if(!isset($text) || (isset($text) && $text != true))
 			class="btn @if(isset($class_btn)){{ $class_btn }}@else btn-flat btn-sm mb-2 @endif btn-danger"

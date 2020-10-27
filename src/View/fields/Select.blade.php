@@ -14,13 +14,13 @@
         @endif
 
         @if (isset($field['model']))
-            @foreach ($field['model']::all() as $connected_entity_entry)
+            @foreach ($field['model']::all() as $connected_entity_item)
                 @php
                     $option_text = "";
                     if(is_array($field['attribute'])) {
                         $attributes = collect($field['attribute'])->except(['implode'])->all();
                         foreach($attributes as $key => $value) {
-                            $option_text .= $connected_entity_entry->{$value};
+                            $option_text .= $connected_entity_item->{$value};
                             if(($key != count($attributes)-1)) {
                                 if(isset($field['attribute']['implode'])) {
                                     $option_text .= $field['attribute']['implode'];
@@ -31,11 +31,11 @@
                         }
                         $option_text = trim($option_text);
                     } else {
-                        $option_text = $connected_entity_entry->{$field['attribute']};
+                        $option_text = $connected_entity_item->{$field['attribute']};
                     }
                 @endphp
-                <option value="{{ $connected_entity_entry->getKey() }}"
-                    @if ( ( old($field['name']) && old($field['name']) == $connected_entity_entry->getKey() ) || (isset($field['value']) && $connected_entity_entry->getKey()==$field['value']))
+                <option value="{{ $connected_entity_item->getKey() }}"
+                    @if ( ( old($field['name']) && old($field['name']) == $connected_entity_item->getKey() ) || (isset($field['value']) && $connected_entity_item->getKey()==$field['value']))
                         selected
                     @endif
                 >{{ $option_text }}</option>

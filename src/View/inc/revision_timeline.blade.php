@@ -27,7 +27,7 @@
         </div>
         <div class="timeline-footer p-t-0">
           {!! Form::open(array('url' => \Request::url().'/'.$history->id.'/restore', 'method' => 'post')) !!}
-          <button type="submit" class="btn btn-primary btn-sm restore-btn" data-entry-id="{{ $entry->id }}" data-revision-id="{{ $history->id }}" onclick="onRestoreClick(event)">
+          <button type="submit" class="btn btn-primary btn-sm restore-btn" data-item-id="{{ $item->id }}" data-revision-id="{{ $history->id }}" onclick="onRestoreClick(event)">
             <i class="fa fa-undo"></i> {{ trans('stlc.undo') }}</button>
           {!! Form::close() !!}
         </div>
@@ -49,7 +49,7 @@
     });
     function onRestoreClick(e) {
       e.preventDefault();
-      var entryId = $(e.target).attr('data-entry-id');
+      var itemId = $(e.target).attr('data-item-id');
       var revisionId = $(e.target).attr('data-revision-id');
       $.ajax('{{ \Request::url().'/' }}' +  revisionId + '/restore', {
         method: 'POST',

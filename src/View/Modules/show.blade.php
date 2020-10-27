@@ -90,7 +90,7 @@
                                                     <td>{{ $field->json_values ?? "" }}</td>
                                                     @if ( $crud->buttons->where('stack', 'line')->count() )
                                                         <td>
-                                                            @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.button_stack', ['stack' => 'line', 'src' => $crud->route.'/'.$module->id, 'crud' => $crud_filed, 'entry' => $field])
+                                                            @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.button_stack', ['stack' => 'line', 'src' => $crud->route.'/'.$module->id, 'crud' => $crud_filed, 'item' => $field])
                                                         </td>
                                                     @endif
                                                 </tr>

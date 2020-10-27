@@ -15,12 +15,12 @@
 		@endif
 
         @if (isset($field['model']))
-            @foreach ($field['model']::all() as $connected_entity_entry)
-                <option value="{{ $connected_entity_entry->getKey() }}"
-                    @if ( (isset($field['value']) && in_array($connected_entity_entry->getKey(), $field['value']->pluck($connected_entity_entry->getKeyName(), $connected_entity_entry->getKeyName())->toArray())) || ( old( $field["name"] ) && in_array($connected_entity_entry->getKey(), old( $field["name"])) ) )
+            @foreach ($field['model']::all() as $connected_entity_item)
+                <option value="{{ $connected_entity_item->getKey() }}"
+                    @if ( (isset($field['value']) && in_array($connected_entity_item->getKey(), $field['value']->pluck($connected_entity_item->getKeyName(), $connected_entity_item->getKeyName())->toArray())) || ( old( $field["name"] ) && in_array($connected_entity_item->getKey(), old( $field["name"])) ) )
                         selected
                     @endif
-                >{{ $connected_entity_entry->{$field['attribute']} }}</option>
+                >{{ $connected_entity_item->{$field['attribute']} }}</option>
             @endforeach
         @elseif (isset($field['options']) && is_array($field['options']) && count($field['options']))
             @foreach ($field['options'] as $key => $value)

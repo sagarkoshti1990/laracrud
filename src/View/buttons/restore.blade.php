@@ -1,6 +1,6 @@
-@if ($crud->hasAccess('deleted'))
+@if ($crud->hasAccess('deleted') && isset($item->id))
 	<a
-		href="{{ url($crud->route.'/'.$entry->getKey().'/restore') }}"
+		href="{{ url($crud->route.'/'.$item->getKey().'/restore') }}"
 		src="@if(isset($src)){{ $src }}@else{{ $crud->route }}@endif"
 		@if(!isset($text) || (isset($text) && $text != true))
 			class="btn @if(isset($class_btn)){{ $class_btn }}@else btn-flat btn-sm mb-2 @endif bg-purple"

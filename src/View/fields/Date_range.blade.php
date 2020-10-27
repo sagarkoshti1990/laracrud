@@ -5,8 +5,8 @@
         $field['value'] = $field['value']->format( 'Y-m-d H:i:s' );
     }
     //Do the same as the above but for the range end field
-    if ( isset($entry) && ($entry->{$field['end_name']} instanceof \Carbon\Carbon || $entry->{$field['end_name']} instanceof \Jenssegers\Date\Date) ) {
-        $end_name = $entry->{$field['end_name']}->format( 'Y-m-d H:i:s' );
+    if ( isset($item) && ($item->{$field['end_name']} instanceof \Carbon\Carbon || $item->{$field['end_name']} instanceof \Jenssegers\Date\Date) ) {
+        $end_name = $item->{$field['end_name']}->format( 'Y-m-d H:i:s' );
     } else {
         $end_name = null;
     }

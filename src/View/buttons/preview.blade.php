@@ -1,5 +1,5 @@
-@if ($crud->hasAccess('view'))
-	<a href="{{ url($crud->route.'/'.$entry->getKey()) }}@if(isset($src))?src={{ $src }}@endif"
+@if ($crud->hasAccess('view') && isset($item->id))
+	<a href="{{ url($crud->route.'/'.$item->getKey()) }}@if(isset($src))?src={{ $src }}@endif"
 		@if(!isset($text) || (isset($text) && $text != true))
 			class="btn @if(isset($class_btn)){{ $class_btn }}@else btn-flat btn-sm mb-2 @endif bg-purple"
 		@endif

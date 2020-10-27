@@ -50,7 +50,7 @@
                                     <td><span class="fa {{ $module->icon }}"></span></td>
                                     @if ( $crud->buttons->where('stack', 'line')->count() )
                                         <td>
-                                            @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.button_stack', ['stack' => 'line', 'crud' => $crud, 'entry' => $module])
+                                            @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.button_stack', ['stack' => 'line', 'crud' => $crud, 'item' => $module])
                                         </td>
                                     @endif
                                 </tr>
