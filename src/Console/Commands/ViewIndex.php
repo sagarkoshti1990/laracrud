@@ -60,7 +60,7 @@ class ViewIndex extends GeneratorCommand
     protected function replaceNameStrings(&$stub)
     {
         $name = $this->getNameInput();
-        $modul = Module::where('name', $name)->first();
+        $modul = config('stlc.module_model')::where('name', $name)->first();
         $out = "";
         if(isset($modul) && $modul->id) {
             $out .= "\t\t\t\t\t\t\t<div class='row'>\n";

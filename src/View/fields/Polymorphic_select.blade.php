@@ -6,16 +6,16 @@
     } else {
         $json_values = json_decode($field['json_values']);
     }
-    $modules = \Module::whereIn('name',$json_values ?? [])->get();
+    $modules = config('stlc.module_model')::whereIn('name',$json_values ?? [])->get();
     $name_type = $field['name'].'_type';
     $name_id = $field['name'].'_id';
-    $value_type = $crud->row->{$name_type} ?? ""; 
-    $value_id = $crud->row->{$name_id} ?? "";
+    $value_type = old($name_type) ?? $crud->row->{$name_type} ?? ""; 
+    $value_id = old($name_id) ?? $crud->row->{$name_id} ?? "";
+    $field['attributes']['class'] = ($errors->has($name_type) || $errors->has($name_id)) ? $field['attributes']['class'].' is-invalid' : $field['attributes']['class'];
 @endphp
 <div @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_wrapper_attributes',['field_name' => $field['name']]) >
     @if((isset($field['attributes']['label']) && $field['attributes']['label']) || !isset($field['attributes']['label']))
         <label for="{{ $field['name'] }}" class="control-label">{!! $field['label'] !!}</label>
-        @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_translatable_icon')
     @endif
     <div class="input-group">
         @if(isset($field['prefix'])) <div class="input-group-prepend"><span class="input-group-text">{!! $field['prefix'] !!}<span></div> @endif
@@ -28,7 +28,7 @@
             @endif
             @foreach ($modules as $module)
                 <option value="{{ $module->model }}"
-                    @if ( ( old($field['name']) && old($field['name']) == $module->model ) || (isset($value_type) && $module->model==$value_type))
+                    @if (isset($value_type) && $module->model==$value_type)
                         selected
                     @endif
                 >{{ $module->name }}</option>
@@ -44,11 +44,12 @@
         </select>
         @if(isset($field['suffix'])) <div class="input-group-append"><span class="input-group-text">{!! $field['suffix'] !!}<span></div> @endif
     </div>
-    @if ($errors->has($field['name']))
-        <span class="help-block">{{ $errors->first($field['name']) }}</span>
+    @if ($errors->has($name_type) || $errors->has($name_id))
+        <div class="is-invalid"></div>
+        <span class="invalid-feedback">{{ $errors->first($name_type) }} {{ $errors->first($name_id)  }}</span>
     @endif
     @if (isset($field['hint'])){{-- HINT --}}
-        <p class="help-block">{!! $field['hint'] !!}</p>
+        <p class="form-text">{!! $field['hint'] !!}</p>
     @endif
 </div>
 
@@ -83,7 +84,7 @@
                 });
             });
 
-            @if($value_type != "") 
+            @if($value_type != "")
                 $(':input[name="{{$name_type}}"]').trigger('change');
             @endif
         });

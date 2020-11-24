@@ -15,7 +15,7 @@ class CreateUsersTable extends Migration
      */
     public function up()
     {
-        Module::generate('Users', 'users', 'last_name', 'fa-group', [
+        Module::generate('Users', 'users', 'last_name', 'fa fa-users', [
             [
 				'name' => 'title',
 				'label' => 'Title',
@@ -82,7 +82,7 @@ class CreateUsersTable extends Migration
         ]);
         
         /*
-        Module::generate('Users' 'users', 'last_name', 'fa-group', [
+        Module::generate('Users' 'users', 'last_name', 'fa fa-users', [
             [
                 'name' => 'name',
                 'label' => 'Name',
@@ -101,11 +101,10 @@ class CreateUsersTable extends Migration
         field type [
             Address,
 			Checkbox,
-			CKEditor,
+			Ckeditor,
 			Currency,
 			Date,
 			Date_picker,
-			Date_range,
 			Datetime,
 			Datetime_picker,
 			Email,

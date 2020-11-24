@@ -21,6 +21,7 @@ return [
 
     // Create form
     'add'                 => 'Add',
+    'public'              => 'Public',
     'quick_add'           => 'Quick Add',
     'back_to_all'         => 'Back to all ',
     'cancel'              => 'Cancel',

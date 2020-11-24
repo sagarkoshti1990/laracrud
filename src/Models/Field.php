@@ -63,9 +63,9 @@ class Field extends Model
     public function getJsonModule()
     {
         if(isset($this->field_type_id) && $this->field_type->name == "Files") {
-            return Module::where('name',"Uploadables")->first();
+            return config('stlc.module_model')::where('name',"Uploadables")->first();
         } else {
-            return Module::where('name', str_replace("@", "", $this->json_values))->first();
+            return config('stlc.module_model')::where('name', str_replace("@", "", $this->json_values))->first();
         }
     }
 
@@ -77,9 +77,9 @@ class Field extends Model
      */
     public static function getFields($moduleName)
     {
-        $module = Module::where('name', $moduleName)->first();
+        $module = config('stlc.module_model')::where('name', $moduleName)->first();
         $fields = \DB::table('fields')->where('module_id', $module->id)->get();
-        $ftypes = FieldType::getFTypes();
+        $ftypes = config('stlc.field_type_model')::getFTypes();
         
         $fields_popup = array();
         $fields_popup['id'] = null;
@@ -103,7 +103,7 @@ class Field extends Model
     public static function getFieldValue($field, $value_id)
     {
         $external_table_name = substr($field->json_values, 1);
-        $module = Module::where('name', $external_table_name)->first();
+        $module = config('stlc.module_model')::where('name', $external_table_name)->first();
         if(\Schema::hasTable($module->table_name)) {
             $external_value = DB::table($module->table_name)->where('id', $value_id)->first();
             if(isset($external_value->id)) {

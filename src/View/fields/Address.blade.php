@@ -6,7 +6,6 @@ if (isset($field['value']) && (is_array($field['value']) || is_object($field['va
 @endphp
 <div @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_wrapper_attributes',['field_name' => $field['name']]) >
     <label>{!! $field['label'] !!}</label>
-    @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_translatable_icon')
     <input type="hidden" value="{{ old($field['name']) ? old($field['name']) : (isset($field['value']) ? $field['value'] : (isset($field['default']) ? $field['default'] : '' )) }}" name="{{ $field['name'] }}">
     @if(isset($field['prefix']) || isset($field['suffix'])) <div class="input-group"> @endif
         @if(isset($field['prefix'])) <div class="input-group-prepend"><span class="input-group-text">{!! $field['prefix'] !!}<span></div> @endif
@@ -28,10 +27,10 @@ if (isset($field['value']) && (is_array($field['value']) || is_object($field['va
         @if(isset($field['suffix'])) <div class="input-group-append"><span class="input-group-text">{!! $field['suffix'] !!}<span></div> @endif
     @if(isset($field['prefix']) || isset($field['suffix'])) </div> @endif
     @if ($errors->has($field['name']))
-        <span class="help-block">{{ $errors->first($field['name']) }}</span>
+        <div class="is-invalid"></div><span class="invalid-feedback">{{ $errors->first($field['name']) }}</span>
     @endif
     @if (isset($field['hint'])){{-- HINT --}}
-        <p class="help-block">{!! $field['hint'] !!}</p>
+        <p class="form-text">{!! $field['hint'] !!}</p>
     @endif
 </div>
 {{-- FIELD CSS - will be loaded in the after_styles section --}}

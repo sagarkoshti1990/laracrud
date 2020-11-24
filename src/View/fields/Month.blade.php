@@ -7,7 +7,6 @@
 <div @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_wrapper_attributes',['field_name' => $field['name']]) >
     @if((isset($field['attributes']['label']) && $field['attributes']['label']) || !isset($field['attributes']['label']))
         <label for="{{ $field['name'] }}" class="control-label">{!! $field['label'] !!}</label>
-        @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_translatable_icon')
     @endif
     <input
         type="text"
@@ -19,31 +18,16 @@
         data-width = "49%";
     >
     @if ($errors->has($field['name']))
-        <span class="help-block">{{ $errors->first($field['name']) }}</span>
+        <div class="is-invalid"></div><span class="invalid-feedback">{{ $errors->first($field['name']) }}</span>
     @endif
     @if (isset($field['hint'])){{-- HINT --}}
-        <p class="help-block">{!! $field['hint'] !!}</p>
+        <p class="form-text">{!! $field['hint'] !!}</p>
     @endif
 </div>
 @pushonce('crud_fields_styles')
 <style>
-    .combodate{
-        display: block;
-    }
-    .combodate select{
-        display: inline-block;
-        padding: 6px 12px;
-        font-size: 14px;
-        line-height: 1.42857143;
-        background-color: #fff;
-        border: 1px solid rgba(33, 33, 33, 0.12);
-        border-color: #d2d6de;
-        border-radius: 0;
-        box-shadow: none;
-        color: #212121;
-        height: 34px;
-        background-image: none;
-    }
+    .combodate{display: block;}
+    .combodate select{display: inline-block;}
 </style>
 @endpushonce
 {{-- FIELD JS - will be loaded in the after_scripts section --}}
@@ -52,6 +36,7 @@
     <script>
         jQuery(document).ready(function($){
             $('.month_combodate').combodate({
+                customClass:'{{ $errors->has($field['name']) ? "form-control is-invalid" : "form-control" }}',
                 minYear: 1970,
                 maxYear: 2100
             });

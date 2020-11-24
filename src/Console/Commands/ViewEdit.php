@@ -61,7 +61,7 @@ class ViewEdit extends GeneratorCommand
     {
         $name = $this->getNameInput();
         $table = \Str::plural(ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', str_replace($this->getNamespace($name).'\\', '', \Str::plural($name)))), '_'));
-        $modul = Module::where('name', $name)->first();
+        $modul = config('stlc.module_model')::where('name', $name)->first();
         $out = "";
         if(isset($modul) && $modul->id) {
             foreach ($modul->fields as $key => $field) {

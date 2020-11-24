@@ -15,7 +15,7 @@ class CreateUploadsTable extends Migration
      */
     public function up()
     {
-        Module::generate('Uploads', 'uploads', 'name', 'fa-cloud-upload-alt', [
+        Module::generate('Uploads', 'uploads', 'name', 'fa fa-cloud-upload-alt', [
             [
 				'name' => 'name',
 				'label' => 'Name',
@@ -55,9 +55,12 @@ class CreateUploadsTable extends Migration
 				'field_type' => 'Checkbox',
 				'show_index' => true
 			]
-			],['model' => \Sagartakle\Laracrud\Models\Upload::class]);
+        ],[
+            'model' => config('stlc.upload_model'),
+            'controller' => \Sagartakle\Laracrud\Controllers\UploadsController::class
+        ]);
 		
-		Module::generate('Uploadables', 'uploadables', 'upload_id', 'fa-scissors', [
+		Module::generate('Uploadables', 'uploadables', 'upload_id', 'fa fa-scissors', [
             [
                 'name' => 'upload_id',
                 'label' => 'Upload',
@@ -71,10 +74,15 @@ class CreateUploadsTable extends Migration
                 'field_type' => 'Polymorphic_select',
                 'required' => true,
                 'show_index' => true,
-			]
+			],[
+                'name' => 'attribute',
+                'label' => 'Attribute',
+                'field_type' => 'Text',
+                'required' => true
+            ]
 		]);
         /*
-        Module::generate('Uploads' 'uploads', 'name', 'fa-cloud-upload-alt', [
+        Module::generate('Uploads' 'uploads', 'name', 'fa fa-cloud-upload-alt', [
             [
                 'name' => 'name',
                 'label' => 'Name',
@@ -93,11 +101,10 @@ class CreateUploadsTable extends Migration
         field type [
             Address,
 			Checkbox,
-			CKEditor,
+			Ckeditor,
 			Currency,
 			Date,
 			Date_picker,
-			Date_range,
 			Datetime,
 			Datetime_picker,
 			Email,

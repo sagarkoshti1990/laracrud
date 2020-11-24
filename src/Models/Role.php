@@ -47,7 +47,7 @@ class Role extends Model
      */
     public Static function get_module()
     {
-        return Module::where('name', 'Roles')->first();
+        return config('stlc.module_model')::where('name', 'Roles')->first();
     }
 
     /**

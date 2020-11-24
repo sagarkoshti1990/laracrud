@@ -37,7 +37,7 @@ trait Access
         if (in_array($permission, $this->access)) {
             return true;
         } else if(isset($this->module->name)) {
-            return Module::hasAccess($this, $permission);
+            return config('stlc.module_model')::hasAccess($this, $permission);
         } else {
             return false;
         }
@@ -65,7 +65,7 @@ trait Access
     {
         $page = Page::where('name',$page_name)->first();
         if(isset($page->name) && $page->name == $page_name) {
-            return Module::hasAccess($page, $permission);
+            return config('stlc.module_model')::hasAccess($page, $permission);
         } else {
             return false;
         }
@@ -81,7 +81,7 @@ trait Access
     {
         foreach ($permission_array as $key => $permission) {
             if(isset($this->module->name)) {
-                return \Module::hasAccess($this, $permission);
+                return config('stlc.module_model')::hasAccess($this, $permission);
             } else if (in_array($permission, $this->access)) {
                 return true;
             }
@@ -101,7 +101,7 @@ trait Access
     {
         foreach ($permission_array as $key => $permission) {
             if(isset($this->module->name)) {
-                return \Module::hasAccess($this, $permission);
+                return config('stlc.module_model')::hasAccess($this, $permission);
             } else if (! in_array($permission, $this->access)) {
                 return false;
             }
@@ -121,7 +121,7 @@ trait Access
     public function hasAccessOrFail($permission)
     {
         if(isset($this->module->name)) {
-            return \Module::hasAccess($this, $permission);
+            return config('stlc.module_model')::hasAccess($this, $permission);
         } else if(! in_array($permission, $this->access)) {
             abort(403, trans('stlc.unauthorized_access'));
         }

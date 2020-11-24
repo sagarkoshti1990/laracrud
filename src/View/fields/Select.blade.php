@@ -3,14 +3,13 @@
 <div @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_wrapper_attributes',['field_name' => $field['name']]) >
     @if((isset($field['attributes']['label']) && $field['attributes']['label']) || !isset($field['attributes']['label']))
         <label for="{{ $field['name'] }}" class="control-label">{!! $field['label'] !!}</label>
-        @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_translatable_icon')
     @endif
     <select
         name="{{ $field['name'] }}"
         @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_attributes')
         >
-        @if (isset($field['allows_null']) && $field['allows_null']==true)
-            <option value="">None</option>
+        @if(!(isset($field['attributes']['allows_null'])) || (isset($field['attributes']['allows_null']) && ($field['attributes']['allows_null'])))
+            <option value="">{{ (isset($field['attributes']['select_option']) && $field['attributes']['select_option'] == false) ? '' : "Select" }} {{ str_replace('*','',strip_tags($field['label'])) }}</option>
         @endif
 
         @if (isset($field['model']))
@@ -52,9 +51,9 @@
         @endif
     </select>
     @if ($errors->has($field['name']))
-        <span class="help-block">{{ $errors->first($field['name']) }}</span>
+        <div class="is-invalid"></div><span class="invalid-feedback">{{ $errors->first($field['name']) }}</span>
     @endif
     @if (isset($field['hint'])){{-- HINT --}}
-        <p class="help-block">{!! $field['hint'] !!}</p>
+        <p class="form-text">{!! $field['hint'] !!}</p>
     @endif
 </div>

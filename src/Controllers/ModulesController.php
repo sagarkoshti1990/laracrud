@@ -32,7 +32,7 @@ class ModulesController extends StlcController
         $module->controller = self::class;
         $module->represent_attr = "label";
         $module->icon = "fa fa-briefcase";
-        $module->model = Module::class;
+        $module->model = config('stlc.module_model');
 
         $module->fields = [
             [
@@ -84,7 +84,7 @@ class ModulesController extends StlcController
         $module->controller = "ModulesController";
         $module->represent_attr = "label";
         $module->icon = "fa fa-list";
-        $module->model = Field::class;
+        $module->model = config('stlc.field_model');
 
         $module->fields = [
             [
@@ -107,13 +107,13 @@ class ModulesController extends StlcController
 				'label' => 'Module',
 				'field_type' => 'Select2',
 				'required' => true,
-                'json_values' => '@'.(Module::class).'|name'
+                'json_values' => '@'.(config('stlc.module_model')).'|name'
 			],[
 				'name' => 'field_type_id',
 				'label' => 'Field Type',
 				'field_type' => 'Select2',
 				'required' => true,
-                'json_values' => '@'.(FieldType::class).'|name'
+                'json_values' => '@'.(config('stlc.field_type_model')).'|name'
 			],[
 				'name' => 'unique',
 				'label' => 'Unique',
@@ -210,9 +210,9 @@ class ModulesController extends StlcController
             $crud = $this->crud;
             $crud->removeButton('deleted_data');
             if(isset($request->src_ajax) && $request->src_ajax) {
-                $modules = Module::custome_all_modules();
+                $modules = config('stlc.module_model')::custome_all_modules();
             } else {
-                $modules = Module::all();
+                $modules = config('stlc.module_model')::all();
             }
             
             $crud->datatable = true;
@@ -242,7 +242,7 @@ class ModulesController extends StlcController
      */
     public function select2(Request $request)
     {
-        $modules = Module::custome_all_modules();
+        $modules = config('stlc.module_model')::custome_all_modules();
         
         if(isset($request->searchTerm)) {
             $fetchData = $modules->where('name', 'like', '%'.$request->searchTerm.'%')->get();
@@ -259,11 +259,15 @@ class ModulesController extends StlcController
 
     public function getModuleData(Request $request)
     {
-        $module = Module::where('model',$request->model)->first();
+        $module = config('stlc.module_model')::where('model',$request->model)->first();
         if(isset($module->name) && in_array($module,['MasterUsers','Employees','PartnerUsers'])) {
             $data = (new $module->model)->get();
+        } else if(isset($module->name) && in_array($module->name,['Users'])) {
+            $data = (new $module->model)
+                ->select(DB::raw("concat_ws(' ', CONCAT(UCASE(LEFT(users.title, 1)),LCASE(SUBSTRING(users.title, 2))), CONCAT(UCASE(LEFT(users.`first_name`, 1)),LCASE(SUBSTRING(users.`first_name`, 2))), CONCAT(UCASE(LEFT(users.`last_name`, 1)),LCASE(SUBSTRING(users.`last_name`, 2)))) as text, id as value"))
+                ->get();
         } else {
-            $data = (new $module->model)->select(['id',$module->represent_attr])->get();
+            $data = (new $module->model)->select(DB::raw($module->represent_attr.' as text, id as value'))->get();
         }
         return response()->json(['statusCode' => '200','message' => 'success','data' => $data]);
     }
@@ -305,7 +309,7 @@ class ModulesController extends StlcController
                 $request = \Request::instance();
             }
             
-            $rules = Module::validateRules("Modules", $request);
+            $rules = config('stlc.module_model')::validateRules("Modules", $request);
             $validator = Validator::make($request->all(), $rules);
             
             if ($validator->fails()) {
@@ -360,7 +364,7 @@ class ModulesController extends StlcController
                 $src = Null;
             }
 
-            $module = Module::where('id',$id)->first();
+            $module = config('stlc.module_model')::where('id',$id)->first();
             if ((isset($module->id) && !(isset($module->deleted_at) && $module->deleted_at)) || (isset($module->deleted_at) && $module->deleted_at && \Auth::user()->isAdmin())) {
 
                 $crud = $this->crud;
@@ -378,7 +382,7 @@ class ModulesController extends StlcController
                         'module' => $module,
                         'src' => $src,
                         'represent_attr' => $crud->module->represent_attr,
-                        'fieldTypes' => $fieldTypes = FieldType::all()
+                        'fieldTypes' => $fieldTypes = config('stlc.field_type_model')::all()
                     ]);
                 }
             } else {
@@ -415,7 +419,7 @@ class ModulesController extends StlcController
                 $src = Null;
             }
             
-            $module = Module::find($id);
+            $module = config('stlc.module_model')::find($id);
             if(isset($module->id)) {
                 
                 $crud = $this->crud;
@@ -448,13 +452,13 @@ class ModulesController extends StlcController
     {
         if(Auth::user()->isSuperAdmin()) {
             // old data
-            $old_item = Module::find($id);
+            $old_item = config('stlc.module_model')::find($id);
             if(isset($old_item->id)) {
                 if (is_null($request)) {
                     $request = \Request::instance();
                 }
 
-                $rules = Module::validateRules("Modules", $request, true);
+                $rules = config('stlc.module_model')::validateRules("Modules", $request, true);
                 $validator = Validator::make($request->all(), $rules);
                 
                 if ($validator->fails()) {
@@ -504,7 +508,7 @@ class ModulesController extends StlcController
     {
 		if(Auth::user()->isSuperAdmin()) {
             $crud = $this->crud;
-            $modules = Module::onlyTrashed()->get();
+            $modules = config('stlc.module_model')::onlyTrashed()->get();
             $crud->onlyButton('restore');
             $crud->labelPlural = trans('stlc.delete')." ".$crud->labelPlural;
             $crud->datatable = true;
@@ -528,9 +532,9 @@ class ModulesController extends StlcController
     {
         if(Auth::user()->isSuperAdmin()) {
             // old data
-            $old_item = Module::find($id);
+            $old_item = config('stlc.module_model')::find($id);
             if(isset($old_item->id)) {
-                $module = Module::find($id)->delete();
+                $module = config('stlc.module_model')::find($id)->delete();
 
                 // add activity log
                 // \Activity::log(config('activity_log.context.DELETED'), $this->crud, ['old' => $old_item]);
@@ -571,9 +575,9 @@ class ModulesController extends StlcController
     {
         if(Auth::user()->isSuperAdmin()) {
             // old data
-            $old_item = Module::onlyTrashed()->find($id);
+            $old_item = config('stlc.module_model')::onlyTrashed()->find($id);
             if(isset($old_item->id)) {
-                $module = Module::onlyTrashed()->find($id)->restore();
+                $module = config('stlc.module_model')::onlyTrashed()->find($id)->restore();
 
                 // add activity log
                 // \Activity::log(config('activity_log.context.restore'), $this->crud, ['old' => $old_item]);
@@ -611,7 +615,7 @@ class ModulesController extends StlcController
     public function datatable(Request $request)
     {
         $crud = $this->crud;
-        $listing_cols = Module::getListingColumns('Modules');
+        $listing_cols = config('stlc.module_model')::getListingColumns('Modules');
         
         if(isset($request->filter)) {
 			$values = DB::table('modules')->select($listing_cols)->whereNull('deleted_at')->where($request->filter);
@@ -622,13 +626,13 @@ class ModulesController extends StlcController
         $out = Datatables::of($values)->make();
         $data = $out->getData();
         
-        $fields_popup = Field::getFields('Modules');
+        $fields_popup = config('stlc.field_model')::getFields('Modules');
         
         // array_splice($listing_cols, 2, 0, "index_name");
         
         for($i = 0; $i < count($data->data); $i++) {
             $data->data[$i] = collect($data->data[$i])->values()->all();
-            $crud->row = $item = Module::find($data->data[$i][0]);
+            $crud->row = $item = config('stlc.module_model')::find($data->data[$i][0]);
             // array_splice($data->data[$i], 2, 0, true);
             for($j = 0; $j < count($listing_cols); $j++) {
                 $col = $listing_cols[$j];
@@ -661,7 +665,7 @@ class ModulesController extends StlcController
                 $request = \Request::instance();
             }
             
-            $rules = Module::validateRules("Modules", $request);
+            $rules = config('stlc.module_model')::validateRules("Modules", $request);
 			$validator = Validator::make($request->all(), $rules);
 			
 			if ($validator->fails()) {
@@ -728,7 +732,7 @@ class ModulesController extends StlcController
                 $src = Null;
             }
             
-            $field = Field::find($id);
+            $field = config('stlc.field_model')::find($id);
             if(isset($field->id)) {
                 
                 $crud = $this->crud_filed;
@@ -765,7 +769,7 @@ class ModulesController extends StlcController
                 $src = Null;
             }
 
-            $field = Field::find($id);
+            $field = config('stlc.field_model')::find($id);
             if (isset($field->id)) {
 
                 $crud = $this->crud_filed;
@@ -780,7 +784,7 @@ class ModulesController extends StlcController
                         'field' => $field,
                         'src' => $src,
                         'represent_attr' => $crud->module->represent_attr,
-                        'fieldTypes' => $fieldTypes = FieldType::all()
+                        'fieldTypes' => $fieldTypes = config('stlc.field_type_model')::all()
                     ]);
                 }
             } else {
@@ -806,13 +810,13 @@ class ModulesController extends StlcController
     {
         if(Auth::user()->isSuperAdmin()) {
             // old data
-            $old_item = Field::find($id);
+            $old_item = config('stlc.field_model')::find($id);
             if(isset($old_item->id)) {
                 if (is_null($request)) {
                     $request = \Request::instance();
                 }
 
-                $rules = Module::validateRules($this->crud_filed->name, $request, true);
+                $rules = config('stlc.module_model')::validateRules($this->crud_filed->name, $request, true);
                 $validator = Validator::make($request->all(), $rules);
                 
                 if ($validator->fails()) {
@@ -880,9 +884,9 @@ class ModulesController extends StlcController
     {
         if(Auth::user()->isSuperAdmin()) {
             // old data
-            $old_item = Field::find($id);
+            $old_item = config('stlc.field_model')::find($id);
             if(isset($old_item->id)) {
-                $field = Field::find($id)->delete();
+                $field = config('stlc.field_model')::find($id)->delete();
 
                 // add activity log
                 // \Activity::log(config('activity_log.context.DELETED'), $this->crud, ['old' => $old_item]);
@@ -1125,7 +1129,7 @@ class ModulesController extends StlcController
                 $comment = $old_item->comment($request->comment);
                 $crud_comment = (object)['model'=>(new \App\Models\Comment),'action' => 'Created','description' => 'Comment Created'];
                 // add activity log
-                \Activity::log('Created', $crud_comment, ['new' => $comment]);
+                config('stlc.activity_model')::log('Created', $crud_comment, ['new' => $comment]);
                 return response()->json(['status' => 'success', 'message' => 'updated', 'item' => $comment]);
             } else {
                 return response()->json(['status' => 'failed', 'message' => trans('stlc.data_not_found'), 'item'=> $old_item]);
@@ -1184,13 +1188,13 @@ class ModulesController extends StlcController
         }
 
         if($request->assessor == 'user') {
-            $assessor = User::find($id);
+            $assessor = config('stlc.user_model')::find($id);
         } else if($request->assessor == 'role') {
-            $assessor = Role::find($id);
+            $assessor = config('stlc.role_model')::find($id);
         }
 		if(\Auth::user()->isAdmin() && isset($assessor->id)) {
             
-            $modules_access = Module::access_modules($assessor);
+            $modules_access = config('stlc.module_model')::access_modules($assessor);
             
 			foreach($modules_access as $module) {
                 $module_name = $module->name;
@@ -1199,7 +1203,7 @@ class ModulesController extends StlcController
                 // 1. Set Module Access
                 foreach($access_arr as $access) {
                     if(isset($request->$module_name) && in_array($access, $request->$module_name)) {
-                        AccessModule::withTrashed()->updateOrCreate([
+                        config('stlc.access_module_model')::withTrashed()->updateOrCreate([
                             'assessor_id' => $assessor->id,
                             'assessor_type' => get_class($assessor),
                             'accessible_id' => $module->id,
@@ -1213,7 +1217,7 @@ class ModulesController extends StlcController
                         // echo 'delete';
                         // echo json_encode($access);
 
-                        AccessModule::where([
+                        config('stlc.access_module_model')::where([
                             ['assessor_id', $assessor->id],
                             ['assessor_type', get_class($assessor)],
                             ['accessible_id' , $module->id],
@@ -1248,7 +1252,7 @@ class ModulesController extends StlcController
             }
         }
         $data = $request->only(['add_btn','table_class','class']);
-        $data['crud'] = module::make($request->crud,['route_prefix' => $request->prefix]); 
+        $data['crud'] = config('stlc.module_model')::make($request->crud,['route_prefix' => $request->prefix]); 
         if(isset($request->src_ajax) && $request->src_ajax) {
             return response()->json([
                 'statusCode' => 200, 'message' => 'succeess',

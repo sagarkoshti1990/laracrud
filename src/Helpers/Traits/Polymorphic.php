@@ -24,7 +24,7 @@ trait Polymorphic
      */
     public function polymorphic_save($attr,$value)
     {
-        $module = Module::where('table_name',$this->getTable())->first();
+        $module = config('stlc.module_model')::where('table_name',$this->getTable())->first();
         $field = $module->fields->firstWhere('name',$attr);
         $polymorphic_module = $field->getJsonModule();
         if(isset($polymorphic_module->id)) {

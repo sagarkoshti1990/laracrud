@@ -48,8 +48,8 @@ class RegisterController extends Controller
      */
     protected function validator(array $data)
     {
-        $user_model_fqn = config('stlc.user_model_fqn');
-        $user = new $user_model_fqn();
+        $user_model = config('stlc.user_model');
+        $user = new $user_model();
         $users_table = $user->getTable();
 
         return Validator::make($data, [
@@ -73,15 +73,15 @@ class RegisterController extends Controller
         $user = [];
         $user = \DB::transaction(function() use ($data) {
             try{
-                $user_model_fqn = config('stlc.user_model_fqn');
-                $user = new $user_model_fqn();
+                $user_model = config('stlc.user_model');
+                $user = new $user_model();
                 $user->first_name = $data['first_name'];
                 $user->last_name = $data['last_name'];
                 $user->email = $data['email'];
                 $user->phone_no = $data['phone_no'];
                 $user->password = bcrypt($data['password']);
                 $user->save();
-                $user->roles()->attach(Role::where('name', 'Super_admin')->first()->id);
+                $user->roles()->attach(config('stlc.role_model')::where('name', 'Super_admin')->first()->id);
                 return $user;
             } catch (\Exception $e) {
                 \DB::rollback();

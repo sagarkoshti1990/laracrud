@@ -137,8 +137,8 @@ class User extends Authenticatable
     /**
      * A model may have multiple roles.
      */
-    public function roles(): BelongsToMany
+    public function roles()
     {
-        return $this->belongsToMany('Sagartakle\Laracrud\Models\Role', 'role_user');
+        return $this->morphToMany('Sagartakle\Laracrud\Models\Role', 'rollable');
     }
 }

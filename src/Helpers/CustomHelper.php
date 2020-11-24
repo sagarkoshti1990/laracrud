@@ -76,7 +76,7 @@ class CustomHelper
      */
     public static function getModuleNames($remove_modules = [])
     {
-        $modules = Module::all();
+        $modules = config('stlc.module_model')::all();
         
         $modules_out = array();
         foreach($modules as $module) {
@@ -240,7 +240,9 @@ class CustomHelper
     public static function img($upload, $size = "",$default = null)
     {
         if(!isset($upload->id)) {
-            $upload = Upload::find($upload);
+            if(class_exists(config('stlc.upload_model'))) {
+                $upload = config('stlc.upload_model')::find($upload);
+            }
         }
         if(isset($size) && $size != "") {
             $size = "?s=".$size;
@@ -256,6 +258,76 @@ class CustomHelper
         }
     }
     
+    /**
+     * Get url of image by using $upload_id
+     *
+     * CustomHelper::showHtml($upload_id);
+     *
+     * @param $upload_id upload id of image / file
+     * @return string file / image url
+     */
+    public static function showHtml($upload_id = null,$uploaded_file = 'uploaded_file')
+    {
+        if(class_exists(config('stlc.upload_model'))) {
+            $upload = config('stlc.upload_model')::find($upload_id);
+        }
+        if(isset($upload->id)) {
+            $url_file = url("files/" . $upload->hash . DIRECTORY_SEPARATOR . $upload->name);
+            $img = "<a title='$upload->name' class='".$uploaded_file." d-inline-block position-relative my-1 mr-2 align-top' upload_id='".$upload->id."' target='_blank' href='".$url_file."'>";
+
+            $image = '';
+            if(in_array($upload->extension, ["jpg", "JPG", "jpeg", "png", "gif", "bmp"])) {
+                $url_file .= "?s=100";
+                $image = '<img  width="100" src="'.$url_file.'" class="card-img-top">';
+            } else if(in_array($upload->extension, ["ogg",'wav','mp3'])) {
+                $image = '<i class="far fa-file-audio fa-7x text-warning"></i>';
+            } else if(in_array($upload->extension, ["mp4","WEBM","MPEG","AVI","WMV","MOV","FLV","SWF"])) {
+                $image = '<i class="far fa-file-video fa-7x text-success"></i>';
+            } else {
+                switch ($upload->extension) {
+                    case "pdf":
+                    $image = '<i class="far fa-file-pdf fa-7x text-danger"></i>';
+                    break;
+                case "xls":
+                    $image = '<i class="far fa-file-excel fa-7x text-success"></i>';
+                    break;
+                case "docx":
+                    $image = '<i class="far fa-file-word fa-7x"></i>';
+                    break;
+                case "xlsx":
+                    $image = '<i class="far fa-file-excel fa-7x text-success"></i>';
+                    break;
+                case "csv":
+                    $image += '<span class="fa-stack" style="color: #31A867 !important;">';
+                    $image += '<i class="far fa-file fa-stack-2x"></i>';
+                    $image += '<strong class="fa-stack-1x">CSV</strong>';
+                    $image += '</span>';
+                    break;
+                default:
+                    $image = '<i class="far fa-file-text fa-7x"></i>';
+                    break;
+                }
+            }
+            $str_name = substr($upload->name,0,10).(strlen($upload->name > 10) ? ".." : "");
+            $img .= '<div class="card text-center m-0" style="width: 100px;">
+                        '.$image.'
+                    <div class="card-body p-1">
+                        <p class="card-text">'.$str_name.'</p>
+                    </div>
+                </div>';
+            $img .= "<i title='Remove File' class='fa fa-times'></i>";
+            $img .= "</a>";
+            $hide = "d-none";
+        } else {
+            $img = "<a class='".$uploaded_file." d-none d-inline-block position-relative mt-1 mr-1' target='_blank'>";
+            $img .= "<span id='img_icon'></span>";
+            $img .= "<i title='Remove File' class='fa fa-times'></i>";
+            $img .= "</a>";
+            $hide = "";
+        }
+        return $img;
+    }
+
     /**
      * Get Thumbnail image path of Uploaded image
      *
@@ -334,42 +406,49 @@ class CustomHelper
         }
         $childrens = $menu->childrensMenu;
 
-        $treeview = "";
+        $treeview = " class=\"nav-item\"";
         $str = "";
         $subviewSign = "";
         if(count($childrens)) {
-            $treeview = " class=\"treeview\"";
-            $subviewSign = '<i class="fa fa-angle-left pull-right"></i>';
+            $treeview = " class=\"nav-item has-treeview\"";
+            $subviewSign = '<i class="right fas fa-angle-left"></i>';
         }
         
         if(count($childrens)) {
             foreach($childrens as $children) {
                 if($children->type == 'custom') {
                     if($menu->link == "#") {
-                        $str = '<li' . $treeview . '><a href="javascript:void(0)"><i class="' . $menu->icon . '"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
+                        $str = '<li' . $treeview . '><a href="javascript:void(0)"><i class="nav-icon ' . $menu->icon . '"></i> <p>' . $menu->label . '</p> ' . $subviewSign . '</a>';
                     } else {
-                        $str = '<li' . $treeview . '><a href="' . url($prefix_url . $menu->link) . '"><i class="' . $menu->icon . '"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
+                        $str = '<li' . $treeview . '><a class="nav-link" href="' . url($prefix_url . $menu->link) . '"><i class="nav-icon ' . $menu->icon . '"></i> <p>' . $menu->label . '</p> ' . $subviewSign . '</a>';
                     }
                 } else {
                     if($children->type == 'page') {
                         $module = Page::where('name',$children->name)->first();
                     } else if($children->type == 'module') {
-                        $mkmodule = Module::where('name',$children->name)->first();
+                        $mkmodule = config('stlc.module_model')::where('name',$children->name)->first();
                         if(isset($mkmodule) && $mkmodule->name == $children->name) {
-                            $module = $mkmodule;
+                            $module = $mkmodule->name;
+                        } else {
+                            $module = collect();
                         }
                     }
-                    if(isset($module) && (Module::hasAccess($module) || $checkAccess)) {
-                        $str = '<li' . $treeview . '><a href="' . url($prefix_url . $menu->link) . '"><i class="' . $menu->icon . '"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
+                    
+                    if(isset($module) && (config('stlc.module_model')::hasAccess($module) || $checkAccess)) {
+                        if($menu->link == "#") {
+                            $str = '<li' . $treeview . '><a class="nav-link" href="#"><i class="nav-icon ' . $menu->icon . '"></i> <p>' . $menu->label . '</p> ' . $subviewSign . '</a>';
+                        } else {
+                            $str = '<li' . $treeview . '><a class="nav-link" href="' . url($prefix_url . $menu->link) . '"><i class="nav-icon ' . $menu->icon . '"></i> <p>' . $menu->label . '</p> ' . $subviewSign . '</a>';
+                        }
                     }
                 }
             }
         } else {
-            $str = '<li' . $treeview . '><a href="' . url($prefix_url . $menu->link) . '"><i class="' . $menu->icon . '"></i> <span>' . $menu->label . '</span> ' . $subviewSign . '</a>';
+            $str = '<li' . $treeview . '><a class="nav-link" href="' . url($prefix_url . $menu->link) . '"><i class="nav-icon ' . $menu->icon . '"></i> <p>' . $menu->label . '</p> ' . $subviewSign . '</a>';
         }
         
         if(count($childrens)) {
-            $str .= '<ul class="treeview-menu">';
+            $str .= '<ul class="nav nav-treeview">';
             foreach($childrens as $children) {
                 if($children->type == 'custom') {
                     $str .= self::print_menu($children,$prefix,$checkAccess);
@@ -377,14 +456,14 @@ class CustomHelper
                     if($children->type == 'page') {
                         $module = Page::where('name',$children->name)->first();
                     } else if($children->type == 'module') {
-                        $mkmodule = Module::where('name',$children->name)->first();
+                        $mkmodule = config('stlc.module_model')::where('name',$children->name)->first();
                         if(isset($mkmodule) && $mkmodule->name == $children->name) {
                             $module = $mkmodule->name;
                         } else {
                             $module = collect();
                         }
                     }
-                    if(isset($module) && (Module::hasAccess($module) || $checkAccess)) {
+                    if(isset($module) && (config('stlc.module_model')::hasAccess($module) || $checkAccess)) {
                         $str .= self::print_menu($children,$prefix,$checkAccess);
                     }
                 }
@@ -407,7 +486,7 @@ class CustomHelper
      */
     public static function print_menu_topnav($menu, $active = false)
     {
-        $childrens = \App\Models\Menu::where("parent", $menu->id)->orderBy('hierarchy', 'asc')->get();
+        $childrens = config('stlc.menu_model')::where("parent", $menu->id)->orderBy('hierarchy', 'asc')->get();
         
         $treeview = "";
         $treeview2 = "";
@@ -445,7 +524,7 @@ class CustomHelper
         // Generating Module Menus
 		if(Schema::hasTable('menus')) {
             if($withTruncate == true) {
-                Menu::truncate();
+                config('stlc.menu_model')::truncate();
             }
             if(!isset($menus) || (!isset($parent) && is_array($menus) && count($menus) == 0)) {
                 $menus = config('stlc.generateMenu',[]);
@@ -453,7 +532,7 @@ class CustomHelper
             foreach($menus as $key => $menu) {
                 $menuData = [];
                 if(is_string($menu)) {
-                    $module = Module::where('name',$menu)->first();
+                    $module = config('stlc.module_model')::where('name',$menu)->first();
                     if(isset($module->id)) {
                         $menuData['name'] = $module->name;
                         $menuData['label'] = $module->label;
@@ -462,7 +541,7 @@ class CustomHelper
                     }
                 } else if(isset($menu) && is_array($menu) && isset($menu['name'])){
                     if(isset($menu['name'])) {
-                        $module = Module::where('name',$menu['name'])->first();
+                        $module = config('stlc.module_model')::where('name',$menu['name'])->first();
                     }
                     if(isset($module->id)) {
                         $menuData['name'] = $module->name;
@@ -474,7 +553,7 @@ class CustomHelper
                     }
                 }
                 if(isset($menuData['name'])) {
-                    $storeMenu = Menu::create([
+                    $storeMenu = config('stlc.menu_model')::create([
                         'name' => $menuData['name'],
                         'label' => $menuData['label'] ?? ucfirst(\Str::plural(preg_replace('/[A-Z]/', ' $0', $menuData['name']))),
                         'link' => $menuData['link'] ?? "#",
@@ -493,11 +572,11 @@ class CustomHelper
                 }
             }
             if(Schema::hasTable('modules') && $generateModule == true) {
-                $modules = Module::whereNotIn('name',config('stlc.restrictedModules.menu',['Users','Uploads']))
-                            ->whereNotIn('name',Menu::select('name')->pluck('name'))->get();
+                $modules = config('stlc.module_model')::whereNotIn('name',config('stlc.restrictedModules.menu',['Users','Uploads']))
+                            ->whereNotIn('name',config('stlc.menu_model')::select('name')->pluck('name'))->get();
                 foreach ($modules as $module) {
                     if(Schema::hasTable('menus')) {
-                        Menu::create([
+                        config('stlc.menu_model')::create([
                             "name" => $module->name,
                             "label" => $module->label,
                             "link" => $module->table_name,
@@ -858,7 +937,7 @@ class CustomHelper
         }
         // return json_encode(((isset($upload_success) && $upload_success == true) || (isset($success['filename']) && !in_array($success['filename'],['female.png','male.png']))));
         if((isset($upload_success) && $upload_success == true) || (isset($success['filename']) && !in_array($success['filename'],['female.png','male.png','others.png']))) {
-            $upload = Upload::create([
+            $upload = config('stlc.upload_model')::create([
                 "name" => $filename,
                 "path" => $folder.DIRECTORY_SEPARATOR.$date_append.$filename,
                 "extension" => $extension,
@@ -870,13 +949,13 @@ class CustomHelper
             // apply unique random hash to file
             while(true) {
                 $hash = strtolower(\Str::random(20));
-                if(!Upload::where("hash", $hash)->count()) {
+                if(!config('stlc.upload_model')::where("hash", $hash)->count()) {
                     $upload->hash = $hash;
                     break;
                 }
             }
             if(isset($delete_file_id)) {
-                $old_upload = Upload::find($delete_file_id);
+                $old_upload = config('stlc.upload_model')::find($delete_file_id);
                 if(isset($old_upload->id)) {
                     if(file_exists($old_upload->path)){
                         unlink($old_upload->path);

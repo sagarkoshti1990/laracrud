@@ -10,9 +10,19 @@ return [
     | Make it yours.
     |
     */
-    // The AdminLTE skin. Affects menu color and primary/secondary colors used throughout the application.
-    'skin' => 'skin-purple',
-    // Options: skin-black, skin-blue, skin-purple, skin-red, skin-yellow, skin-green, skin-blue-light, skin-black-light, skin-purple-light, skin-green-light, skin-red-light, skin-yellow-light
+	// The AdminLTE skin. Affects menu color and primary/secondary colors used throughout the application.
+	'navbar' => 'navbar-dark navbar-indigo',
+	'sidebar' => 'sidebar-light-indigo',
+	'text_color' => 'accent-indigo text-sm',
+	'brand_logo' => 'navbar-indigo text-center text-white',
+	/*
+		navbar : navbar-light navbar-[color], navbar-dark navbar-[color]
+		sidebar : sidebar-light-[color], sidebar-dark-[color]
+		text_color : accent-[color]
+		brand_logo : navbar-[color]
+		color : primary, warning, info, danger, success, indigo, lightblue, navy, purple, fuchsia, pink,
+				maroon, orange, lime, teal, olive
+	*/
 
     /*
     |--------------------------------------------------------------------------
@@ -60,10 +70,10 @@ return [
     
     'restrictedModules' => [
         'menu' => [
-            'Users','Uploads','Uploadables',
+            'Uploadables',
         ],
         'routeAdmin' => [
-            'Users','Uploads','Uploadables','Roles',
+            'Uploadables','Roles',
         ]
     ],
 
@@ -80,7 +90,15 @@ return [
     |--------------------------------------------------------------------------
     */
     // Fully qualified namespace of the User model
-    'user_model_fqn' => '\App\User',
+	'user_model' => '\App\User',
+	'access_module_model' => '\Sagartakle\Laracrud\Models\AccessModule',
+	'activity_model' => '\Sagartakle\Laracrud\Models\Activity',
+	'field_model' => '\Sagartakle\Laracrud\Models\Field',
+	'field_type_model' => '\Sagartakle\Laracrud\Models\FieldType',
+	'menu_model' => '\Sagartakle\Laracrud\Models\Menu',
+	'module_model' => '\Sagartakle\Laracrud\Models\Module',
+	'role_model' => '\Sagartakle\Laracrud\Models\Role',
+	'upload_model' => '\Sagartakle\Laracrud\Models\Upload',
 
     /*
     |--------------------------------------------------------------------------
@@ -100,6 +118,8 @@ return [
     // File manager
     // size in mb
     'file_upload_size' => '512',
+    'file_manager_modal' => true,
+    'file_modal_paginate_count' => 16,
 	/*
 	|--------------------------------------------------------------------------
 	| Auto Set User ID

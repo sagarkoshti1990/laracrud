@@ -34,9 +34,8 @@ class CreateModulesTable extends Migration
         FieldType::insert([
             ["name" => "Address"],
             ["name" => "Checkbox"],
-            ["name" => "CKEditor"],
+            ["name" => "Ckeditor"],
             ["name" => "Date_picker"],
-            ["name" => "Date_range"],
             ["name" => "Date"],
             ["name" => "Datetime_picker"],
             ["name" => "Datetime"],

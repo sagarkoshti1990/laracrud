@@ -24,7 +24,7 @@ class MyAccountController extends Controller
     {
         $this->data['title'] = trans('base.my_account');
         $this->data['user'] = $this->guard()->user();
-        $this->data['crud'] = Module::make('Users');
+        $this->data['crud'] = config('stlc.module_model')::make('Users');
         $this->data['crud']->datatable = true;
         if(isset(Auth::user()->id) && isset(Auth::user()->context()->id)) {
             $this->data['crud']->row = Auth::user()->context();

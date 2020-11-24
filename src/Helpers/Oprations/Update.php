@@ -34,8 +34,20 @@ trait Update
         }
     }
 
+    public function beforeValidationUpdate(Request $request,$item){}
     public function beforeUpdate(Request $request,$item){}
-    public function afterUpdate(Request $request,$item){}
+    public function afterUpdate(Request $request,$item){
+        if(!$request->wantsJson()) {
+            Alert::success($this->crud->label." ".trans('stlc.update_success'))->flash();
+        }
+        if($request->wantsJson()) {
+            return response()->json(['status' => 'success', 'message' => $this->crud->label." ".trans('stlc.update_success'), 'item' => $item],200);
+        } else if(isset($request->src)) {
+            return redirect($request->src);
+        } else {
+            return redirect($this->crud->route);
+        }
+    }
     /**
      * Update the specified resource in storage.
      *
@@ -50,7 +62,8 @@ trait Update
             // old data
             $old_item = $crud->model->find($id);
             if(isset($old_item->id)) {
-                $request->validate(Module::validateRules($crud->name, $request,true));
+                $this->beforeValidationUpdate($request, $old_item);
+                $request->validate(config('stlc.module_model')::validateRules($crud->name, $request,true));
                 
                 // replace empty values with NULL, so that it will work with MySQL strict mode on
                 foreach ($request->input() as $key => $value) {
@@ -64,18 +77,7 @@ trait Update
                 if (($item instanceof \Illuminate\Http\RedirectResponse) || ($item instanceof \Illuminate\Http\JsonResponse)) {
                     return $item;
                 }
-                $this->afterUpdate($request,$item);
-                // show a success message
-                if(!$request->wantsJson()) {
-                    \Alert::success($this->crud->label." ".trans('stlc.update_success'))->flash();
-                }
-                if($request->wantsJson()) {
-                    return response()->json(['status' => 'success', 'message' => $this->crud->label." ".trans('stlc.update_success'), 'item' => $item],200);
-                } else if(isset($request->src)) {
-                    return redirect($request->src);
-                } else {
-                    return redirect($this->crud->route);
-                }
+                return $this->afterUpdate($request,$item);
             } else {
                 if($request->wantsJson()) {
                     return response()->json(['status' => '404', 'message' => trans('stlc.data_not_found')],404);

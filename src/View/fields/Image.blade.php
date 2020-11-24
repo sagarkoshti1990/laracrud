@@ -1,10 +1,12 @@
+@php
+    $value = old($field['name']) ? old($field['name']) : (isset($field['value']) ? $field['value'] : (isset($field['default']) ? $field['default'] : '' ));
+	$errorClass = $errors->has($field['name']) ? 'form-control is-invalid' : "";
+@endphp
 <div @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_wrapper_attributes',['field_name' => $field['name']]) >
     @if(isset($field['attributes']['profile_pic']) && $field['attributes']['profile_pic'])
         @php
-            if(isset($field['value']) && is_numeric($field['value']) && $field['value']) {
-                $url_img = str_replace('\\','/', CustomHelper::img($field['value']));
-            } elseif(isset($field['default']) && is_numeric($field['default']) && $field['default']) {
-                $url_img = str_replace('\\','/',CustomHelper::img($field['default']));
+            if(isset($value) && is_numeric($value) && $value) {
+                $url_img = str_replace('\\','/', CustomHelper::img($value));
             } else {
                 $url_img = asset('public/base/img/male_profile.jpg');
             }
@@ -13,7 +15,7 @@
         <input
             type="hidden"
             name="{{ $field['name'] }}"
-            value="{{ old($field['name']) ? old($field['name']) : (isset($field['value']) ? $field['value'] : (isset($field['default']) ? $field['default'] : '' )) }}"
+            value="{{ $value ?? "" }}"
             @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_attributes')
         >
         <a class="profile-pic" file_type='image' selecter="{{ $field['name'] }}" ratio={{ $field['attributes']['ratio'] ?? $field['ratio'] ?? '' }}>
@@ -28,41 +30,28 @@
             </div>
         @endif
         @php
-            $img = "";
-            if(isset($field['value']) && is_numeric($field['value']) && $field['value']) {
-                $url_img = CustomHelper::img($field['value']).'?s=100';
-                $img = "<div class='uploaded_image'>";
-                $img .= "<img width='100' src='$url_img'>";
-                $img .= "<i title='Remove Image' class='fa fa-times'></i>";
-                $img .= "</div>";
-                $hide = "hide";
-            } elseif(isset($field['default']) && is_numeric($field['default']) && $field['default']) {
-                $url_img = CustomHelper::img($field['default']).'?s=100';
-                $img = "<div class='uploaded_image'>";
-                $img .= "<img width='100' src='$url_img'>";
-                $img .= "<i title='Remove Image' class='fa fa-times'></i>";
-                $img .= "</div>";
-                $hide = "hide";
-            } else {
-                $img = "<div class='uploaded_image hide'>";
-                $img .= "<img src=''>";
-                $img .= "<i title='Remove Image' class='fa fa-times'></i>";
-                $img .= "</div>";
-                $hide = "";
+            $img = $hide = "";
+            if(isset($value) && is_numeric($value) && $value) {
+                $img = CustomHelper::showHtml($value);
+                $hide = "d-none";
             }
         @endphp
         <div class="btn-group">
             <input
                 type="hidden"
                 name="{{ $field['name'] }}"
-                value="{{ old($field['name']) ? old($field['name']) : (isset($field['value']) ? $field['value'] : (isset($field['default']) ? $field['default'] : '' )) }}"
+                value="{{ $value ?? "" }}"
                 @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_attributes')
             >
-            <a class="btn btn-default btn_upload_image btn-labeled {{ $hide }}" file_type='image' selecter="{{ $field['name'] }}" ratio={{ $field['attributes']['ratio'] ?? $field['ratio'] ?? '' }}>
+            <a class="btn btn-default btn_upload_file btn-labeled {{ $hide }} {{ $errorClass }}" file_type='image' selecter="{{ $field['name'] }}" ratio={{ $field['attributes']['ratio'] ?? $field['ratio'] ?? '' }}>
                 <span class="btn-label"><i class='fa fa-cloud-upload-alt'></i></span>Upload</a>
             <?php
                 echo $img;
             ?>
         </div>
+    @endif
+    @if ($errors->has($field['name']))
+        <div class="is-invalid"></div>
+        <span class="invalid-feedback">{{ $errors->first($field['name']) }}</span>
     @endif
 </div>

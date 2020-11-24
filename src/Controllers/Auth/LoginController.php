@@ -57,7 +57,7 @@ class LoginController extends Controller
     {
         $this->data['title'] = 'Login'; // set the page title
 
-        if(User::all()->count()) {
+        if(config('stlc.user_model')::all()->count()) {
             return view(config('stlc.stlc_modules_folder_name','stlc::').'auth.login', $this->data);
         } else {
             return redirect()->guest(config('stlc.route_prefix', 'admin').'/register');

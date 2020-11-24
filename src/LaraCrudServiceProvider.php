@@ -81,7 +81,7 @@ class LaraCrudServiceProvider extends ServiceProvider
             __DIR__.DIRECTORY_SEPARATOR.'Lang'.DIRECTORY_SEPARATOR.'stlc.php' => resource_path('lang'.DIRECTORY_SEPARATOR.'en'.DIRECTORY_SEPARATOR.'stlc.php'),
             __DIR__.DIRECTORY_SEPARATOR.'package.json' => base_path('package.json'),
             __DIR__.DIRECTORY_SEPARATOR.'public' => base_path('public'),
-        ],'default');
+        ],'public');
 
         $this->publishes([
             // stlc auth

@@ -8,8 +8,23 @@ use Prologue\Alerts\Facades\Alert;
 
 trait Store
 {
+    public function beforeValidationStore(Request $request){}
     public function beforeStore(Request $request){}
-    public function afterStore(Request $request,$item){}
+    public function afterStore(Request $request,$item){
+        if(!$request->wantsJson()) {
+            Alert::success($this->crud->label." ".trans('stlc.insert_success'))->flash();
+        }
+
+        if($request->wantsJson()) {
+            return response()->json(['status' => 'success', 'message' => $this->crud->label." ".trans('stlc.insert_success'), 'item' => $item],200);
+        } else if(isset($request->go_view) && $request->go_view) {
+            return redirect($this->crud->route.'/'.$item->id);
+        } else  if(isset($request->src)) {
+            return redirect($request->src);
+        } else {
+            return redirect($this->crud->route);
+        }
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -43,7 +58,8 @@ trait Store
     public function store(Request $request)
     {
         if($this->crud->hasAccess('create')) {
-            $request->validate(Module::validateRules($this->crud->name, $request));
+            $this->beforeValidationStore($request);
+            $request->validate(config('stlc.module_model')::validateRules($this->crud->name, $request));
 
             // replace empty values with NULL, so that it will work with MySQL strict mode on
             foreach ($request->input() as $key => $value) {
@@ -58,21 +74,7 @@ trait Store
             if (($item instanceof \Illuminate\Http\RedirectResponse) || ($item instanceof \Illuminate\Http\JsonResponse)) {
                 return $item;
             }
-            $this->afterStore($request,$item);
-            // show a success message
-            if(!$request->wantsJson()) {
-                Alert::success($this->crud->label." ".trans('stlc.insert_success'))->flash();
-            }
-
-            if($request->wantsJson()) {
-                return response()->json(['status' => 'success', 'message' => $this->crud->label." ".trans('stlc.insert_success'), 'item' => $item],200);
-            } else if(isset($request->go_view) && $request->go_view) {
-                return redirect($this->crud->route.'/'.$item->id);
-            } else  if(isset($request->src)) {
-                return redirect($request->src);
-            } else {
-                return redirect($this->crud->route);
-            }
+            return $this->afterStore($request,$item);
         } else {
             if($request->wantsJson()) {
                 return response()->json(['status' => '403', 'message' => trans('stlc.unauthorized_access')],403);

@@ -15,10 +15,10 @@ Route::get('files/{hash}/{name}', '\Sagartakle\Laracrud\Controllers\UploadsContr
 Route::group([
     'prefix'     => config('stlc.route_prefix', 'admin'),
     'middleware' => ['web',config('stlc.route_group_middleware_all', 'auth')],
-    'namespace'  => config('stlc.route_group_namespace', '\App\Http\Controllers\Admin'),
+    'namespace'  => '\\',
 ], function () {
     if(Schema::hasTable('modules')) {
-        $modules = \Sagartakle\Laracrud\Models\Module::whereNotIn('name',config('stlc.restrictedModules.routeAdmin',['Users','Uploads','Roles']))->get();
+        $modules = config('stlc.module_model')::whereNotIn('name',config('stlc.restrictedModules.routeAdmin',['Users','Uploads','Roles']))->get();
         if(isset($modules) && count($modules)) {
             foreach ($modules as $key => $module) {
                 Crud::resource($module->table_name, $module->controller);

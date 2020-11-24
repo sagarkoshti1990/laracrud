@@ -1,23 +1,20 @@
-<!-- CKeditor -->
+<!-- Ckeditor -->
 @php
-    $ck_count= \FormBuilder::$count['CKEditor'];
+    $ck_count= \FormBuilder::$count['Ckeditor'];
     $field['attributes']['id'] = $field['attributes']['id'].++$ck_count;
 @endphp
 <div @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_wrapper_attributes',['field_name' => $field['name']])>
     @if((isset($field['attributes']['label']) && $field['attributes']['label']) || !isset($field['attributes']['label']))
         <label for="{{ $field['name'] }}" class="control-label">{!! $field['label'] !!}</label>
-        @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_translatable_icon')
     @endif
     <textarea name="{{ $field['name'] }}" @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_attributes')>
         {{ old($field['name']) ? old($field['name']) : (isset($field['value']) ? $field['value'] : (isset($field['default']) ? $field['default'] : '' )) }}
     </textarea>
     @if ($errors->has($field['name']))
-        <span class="help-block">
-            <strong>{{ $errors->first($field['name']) }}</strong>
-        </span>
+        <div class="is-invalid"></div><span class="invalid-feedback">{{ $errors->first($field['name']) }}</span>
     @endif
     @if (isset($field['hint'])){{-- HINT --}}
-        <p class="help-block">{!! $field['hint'] !!}</p>
+        <p class="form-text">{!! $field['hint'] !!}</p>
     @endif
 </div>
 @php
@@ -41,8 +38,8 @@
 @endpushonce
 {{-- FIELD JS - will be loaded in the after_scripts section --}}
 @pushonce('crud_fields_scripts')
-    <script src="{{ asset('node_modules/admin-lte/bower_components/ckeditor/ckeditor.js') }}"></script>
-    <script src="{{ asset('node_modules/admin-lte/bower_components/ckeditor/adapters/jquery.js') }}"></script>
+    <script src="{{ asset('node_modules/ckeditor-full/ckeditor.js') }}"></script>
+    {{-- <script src="{{ asset('node_modules/admin-lte/bower_components/ckeditor/adapters/jquery.js') }}"></script> --}}
 @endpushonce
 @push('crud_fields_scripts')
 <script>
@@ -62,13 +59,10 @@
         //     { name: 'styles', items: [ 'Styles', 'Format', 'Font', 'FontSize' ] },
         //     { name: 'document', groups: [ 'mode', 'document', 'doctools' ], items: [ 'Source', '-', 'Save', 'NewPage', 'Preview', 'Print', '-', 'Templates' ] },
         // ]; --}}
-        arr.height="70px";
-        arr.extraPlugins='autogrow';
-        arr.autoGrow_minHeight="{{ $field['attributes']['minHeight'] ?? '70' }}";
-        arr.autoGrow_maxHeight="{{ $field['attributes']['maxHeight'] ?? '300' }}";
+        arr.height="100px";
+        // arr.maxHeight="300px";
         arr.removePlugins= 'elementspath';
         arr.resize_enabled=false;
-        arr.plugins = 'mentions,emoji,basicstyles,undo,link,wysiwygarea,toolbar,sourcearea,maximize,colorbutton,colordialog,font';
         arr.toolbar = [{
                 name: 'document',
                 items: ['Undo', 'Redo','Source','Maximize']
@@ -78,11 +72,24 @@
                 name: 'basicstyles',
                 items: ['Bold', 'Italic', 'Strike']
             },{
+                name: 'insert',
+                items: ['Smiley']
+            },{
                 name: 'links',
-                items: ['EmojiPanel', 'Link', 'Unlink']
+                items: ['Link', 'Unlink']
             }
         ];
+
+        arr.on = {instanceReady: function(e) {
+            @if ($errors->has($field['name']))
+                e.editor.container.addClass('form-control');
+                e.editor.container.addClass('is-invalid');
+            @endif
+        }}
         CKEDITOR.replace("{{ $field['attributes']['id'] }}", arr);
+        CKEDITOR.instances["{{ $field['attributes']['id'] }}"].on('change',function(){
+            $('[name="{{ $field['name'] }}"]').valid();
+        });
     });
 </script>
 @endpush

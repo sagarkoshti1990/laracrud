@@ -38,13 +38,16 @@ trait Update
             if($polymorphic_multiple_fields->count() > 0) {
                 foreach($polymorphic_multiple_fields as $pm_field) {
                     if(!isset($data->xeditable) || (isset($data->xeditable) && $data->xeditable != "Yes")) {
-                        $item->polymorphic_save($pm_field->name,$data->{$pm_field->name});
+                        $pm_value = $data->{$pm_field->name} ?? $data[$pm_field->name] ?? [];
+                        if(isset($pm_value) && is_array($pm_value)) {
+                            $item->polymorphic_save($pm_field->name,$pm_value);
+                        }
                     }
                 }
             }
             if(isset($column_names_ralationaldata) && count($column_names_ralationaldata) > 0) {
                 $update_data = collect($data)->only($column_names_ralationaldata)->toArray();
-                $ftypes = FieldType::getFTypes();
+                $ftypes = config('stlc.field_type_model')::getFTypes();
                 foreach($update_data as $key => $value) {
                     $r_datas['field_type_id'] = $ftypes[$this->fields['feats']->field_type];
                     RelationalDataTable::updateOrCreate(
@@ -53,7 +56,7 @@ trait Update
                     );
                 }
             }
-            \Activity::log(config('App.activity_log.UPDATED'), $this, ['new' => $item, 'old' => $old_item]);
+            config('stlc.activity_model')::log(config('App.activity_log.UPDATED'), $this, ['new' => $item, 'old' => $old_item]);
             if(isset($transaction) && $transaction == true) {
                 \DB::commit();
             }

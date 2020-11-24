@@ -55,8 +55,6 @@ class Module extends Model
             
             if(isset($data->setModel) || isset($data['setModel'])) {
                 $crud->setModel(($data->setModel ?? $data['setModel']));
-            } else {
-                $crud->setModule($module);
             }
             if(isset($data['allowAccess']) && count($data['allowAccess']) > 0) {
                 $crud->allowAccess($data['allowAccess']);
@@ -98,6 +96,7 @@ class Module extends Model
                     $crud->setViewPath(($data->setViewPath ?? $data['setViewPath']));
                 }
             }
+            $crud->setModule($module);
             
             return $crud;
 		} else {
@@ -126,7 +125,7 @@ class Module extends Model
         } else {
             $pages = [];
         }
-        $modules_access = array();
+        $modules_access = [];
         foreach ($modules as $module_obj) {
             $module_obj->accesses = $accessible->access_modules()
                     ->where([
@@ -222,7 +221,7 @@ class Module extends Model
                 $module = [];
             }
             if(Schema::hasTable('field_types')) {
-                $ftypes = FieldType::getFTypes();
+                $ftypes = config('stlc.field_type_model')::getFTypes();
             } else {
                 $ftypes = [];
             }
@@ -231,7 +230,7 @@ class Module extends Model
                 Schema::table($table_name, function (Blueprint $table) use ($fields, $module, $ftypes) {
                     foreach($fields as $key => $field) {
                         if(Schema::hasTable('fields') && isset($module->id)) {
-                            $mod = Field::where('module_id', $module->id)->where('name', $field->name)->first();
+                            $mod = config('stlc.field_model')::where('module_id', $module->id)->where('name', $field->name)->first();
                         }
                         if(isset($mod->id)) {
                             $field->id = $mod->id;
@@ -245,7 +244,7 @@ class Module extends Model
                         } else {
                             // Create Module field Metadata / Context
                             if(Schema::hasTable('fields')) {
-                                $field_obj = Field::create([
+                                $field_obj = config('stlc.field_model')::create([
                                     'name' => $field->name,
                                     'label' => $field->label,
                                     'rank' => $field->rank ?? ($key * 5),
@@ -279,10 +278,10 @@ class Module extends Model
                     $table->bigIncrements('id');
                     foreach($fields as $key => $field) {
                         if(Schema::hasTable('fields') && isset($module->id)) {
-                            $mod = Field::where('module_id', $module->id)->where('name', $field->name)->first();
+                            $mod = config('stlc.field_model')::where('module_id', $module->id)->where('name', $field->name)->first();
                             if(!isset($mod->id)) {
                                 // Create Module field Metadata / Context
-                                $field_obj = Field::create([
+                                $field_obj = config('stlc.field_model')::create([
                                     'name' => $field->name,
                                     'label' => $field->label,
                                     'rank' => $field->rank ?? ($key * 5),
@@ -329,7 +328,7 @@ class Module extends Model
     public static function create_field_schema($table, $field, $nullable_required = true, $update = false, $isFieldTypeChange = false)
     {
         if(is_numeric($field->field_type)) {
-            $ftypes = FieldType::getFTypes();
+            $ftypes = config('stlc.field_type_model')::getFTypes();
             $field->field_type = array_search($field->field_type, $ftypes);
         }
         if(!is_string($field->defaultvalue)) {
@@ -395,7 +394,7 @@ class Module extends Model
                     $var->default("[]");
                 }
                 break;
-            case 'CKEditor':
+            case 'Ckeditor':
                 $var = null;
                 if($field->maxlength == 0) {
                     if($update) {
@@ -606,31 +605,6 @@ class Module extends Model
                     $var->default("1970-01-01 01:01:01");
                 } else {
                     $var->default($field->defaultvalue);
-                }
-                break;
-            case 'Date_range':
-                if($update) {
-                    // Timestamp Edit Not working - http://stackoverflow.com/questions/34774628/how-do-i-make-doctrine-support-timestamp-columns
-                    // Error Unknown column type "timestamp" requested. Any Doctrine type that you use has to be registered with \Doctrine\DBAL\Types\Type::addType()
-                    // $var = $table->timestamp($field->name)->change();
-                } else {
-                    if($field->required && $nullable_required) {
-                        $var = $table->string($field->name);
-                    } else {
-                        $var = $table->string($field->name)->nullable();
-                    }
-                }
-                // $table->timestamp('created_at')->useCurrent();
-                if(isset($var)) {
-                    if($field->defaultvalue == NULL || $field->defaultvalue == "" || $field->defaultvalue == "NULL") {
-                        $var->default(NULL);
-                    } else if($field->defaultvalue == "now()") {
-                        $var->default(DB::raw('CURRENT_TIMESTAMP'));
-                    } else if($field->required) {
-                        $var->default("1970-01-01 01:01:01");
-                    } else {
-                        $var->default($field->defaultvalue);
-                    }
                 }
                 break;
             case 'Decimal':
@@ -1719,7 +1693,7 @@ class Module extends Model
      */
     public static function format_fields($module_name, $fields)
     {
-        $out = array();
+        $out = [];
         foreach($fields as $field) {
             // Check if field format is New
             if(CustomHelper::is_assoc_array($field)) {
@@ -1782,7 +1756,7 @@ class Module extends Model
                 $out[] = $obj;
             } else {
                 // Handle Old field format - Sequential Array
-                $obj = (Object)array();
+                $obj = (Object)[];
                 $obj->name = $field[0];
                 $obj->label = $field[1];
                 $obj->field_type = $field[2];
@@ -1852,11 +1826,11 @@ class Module extends Model
         
         $rules = [];
         if(isset($crud->module->id)) {
-            $ftypes = FieldType::getFTypes2();
+            $ftypes = config('stlc.field_type_model')::getFTypes2();
             $add_from = true;
 
             foreach($crud->fields as $field) {
-                if($isEdit && !isset($request->{$field['name']})) {
+                if($isEdit && !(isset($request->{$field['name']}) || isset($request[$field['name']])) ) {
                     $add_from = false;
                 } else {
                     $add_from = true;
@@ -1874,7 +1848,7 @@ class Module extends Model
                     } else {
                         $col .= "nullable|";
                     }
-                    if(in_array($ftypes[$field['field_type']["id"]], array("Currency", "Decimal"))) {
+                    if(in_array($ftypes[$field['field_type']["id"]], ["Currency", "Decimal"])) {
                     
                         // No min + max length
                     } else {
@@ -1892,33 +1866,31 @@ class Module extends Model
                         $col .= 'date|date_format:"Y-m-d"';
                     }
 
-                    if(in_array($ftypes[$field['field_type']["id"]], array("Email"))) {
+                    if(in_array($ftypes[$field['field_type']["id"]], ["Email"])) {
                         $col .= "regex:/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/|";
                     }
                     if($field['unique'] && !$isEdit) {
                         $filed_unique_value = isset($request->{$field['name']})? ','.$request->{$field['name']}:"";
                         $col .= "unique:" . $crud->table_name.','.$field['name'].$filed_unique_value;
                     } else if($isEdit && $field['unique']) {
-                        $col .= "unique:" . $crud->table_name.','.$field['name'].','.($segment ?? $request->segment(3));
+                        $col .= "unique:" . $crud->table_name.','.$field['name'].','.($segment ? $segment : !is_array($request) ? $request->segment(3) : "");
                     }
                     if(\Str::startsWith($field->json_values, "@") && (isset($request->{$field['name']}) || (is_array($request) && isset($request[$field['name']])))) {
                         $foreign_table_name = \Str::plural(ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', str_replace("@", "", $field->json_values))), '_'));
                         $col .= "exists:" . $foreign_table_name .',id';
-                    } else if(isset($field->json_values) && is_array($json_arrya = json_decode($field->json_values)) && count($json_arrya) > 0) {
+                    } else if(isset($field->json_values) && is_array($json_arrya = json_decode($field->json_values)) && count($json_arrya) > 0 && !in_array($ftypes[$field['field_type']["id"]], ["Table"])) {
                         $col .= "in:" . implode(',',$json_arrya);
                     }
                     
-                    if(in_array($ftypes[$field['field_type']["id"]], ['Date','Date_range','Datetime'])) {
+                    if(in_array($ftypes[$field['field_type']["id"]], ['Date','Datetime'])) {
                         $col .= "date";
                     }
-                    // 'name' => 'required|unique|min:5|max:256',
-                    // 'author' => 'required|max:50',
-                    // 'price' => 'decimal',
-                    // 'pages' => 'integer|max:5',
-                    // 'genre' => 'max:500',
-                    // 'description' => 'max:1000'
                     if($col != "") {
-                        $rules[$field['name']] = trim($col, "|");
+                        if(in_array($ftypes[$field['field_type']["id"]], ['Checkbox','Multiselect','Select2_multiple','Select2_multiple_tags'])) {
+                            $rules[$field['name'].'.*'] = trim($col, "|");
+                        } else {
+                            $rules[$field['name']] = trim($col, "|");
+                        }
                     }
                     if($ftypes[$field['field_type']["id"]] == 'Polymorphic_select') {
                         unset($rules[$field['name']]);
@@ -1944,11 +1916,11 @@ class Module extends Model
                         }
                         $json_values = $field->json_values;
                         if(isset($json_values) && !empty($json_values) && is_string($json_values) && \Str::startsWith($json_values, "@")) {
-                            $pm_module = Module::where('name', str_replace("@", "", $json_values))->first();
+                            $pm_module = config('stlc.module_model')::where('name', str_replace("@", "", $json_values))->first();
                             if(isset($pm_module->represent_attr) && isset(($pm_field = $pm_module->fields->firstWhere('name',$pm_module->represent_attr))->json_values)) {
                                 $json_values = $pm_field->json_values;
                                 if(isset($json_values) && !empty($json_values) && is_string($json_values) && \Str::startsWith($json_values, "@")) {
-                                    $pm_module = Module::where('name', str_replace("@", "", $json_values))->first();
+                                    $pm_module = config('stlc.module_model')::where('name', str_replace("@", "", $json_values))->first();
                                 }
                                 $req .= "exists:" . $pm_module->table_name .',id';
                             }
@@ -1984,8 +1956,7 @@ class Module extends Model
             return true;
         }
 
-        $roles = array();
-        
+        $roles = [];
         if($crud instanceof Page) {
             $module = $crud;
         } else if(is_string($crud) && !isset($crud->module->id)) {
@@ -1995,7 +1966,7 @@ class Module extends Model
         }
         
         if($role_id) {
-            $role = \Sagartakle\Laracrud\Models\Role::find($role_id);
+            $role = config('stlc.role_model')::find($role_id);
             if(isset($role->id)) {
                 $roles = $role->roles();
             }
@@ -2033,17 +2004,16 @@ class Module extends Model
         $module = self::make($module->name);
         
         if($specific_role) {
-            $roles_arr = Role::where('id', $specific_role)->get();
+            $roles_arr = config('stlc.role_model')::where('id', $specific_role)->get();
         } else {
-            $roles_arr = Role::all();
+            $roles_arr = config('stlc.role_model')::all();
         }
-        $roles = array();
-        
-        $arr_field_access = array(
+        $roles = [];
+        $arr_field_access = [
             'invisible' => 0,
             'readonly' => 1,
             'write' => 2
-        );
+        ];
         
         foreach($roles_arr as $role) {
             // get Current Module permissions for this role
@@ -2064,7 +2034,7 @@ class Module extends Model
 
             // get Current Module Fields permissions for this role
             
-            $role->fields = array();
+            $role->fields = [];
             foreach($module->module->fields as $field) {
                 // find role field permission
                 // $field_perm = DB::table('role_module_fields')->where('role_id', $role->id)->where('field_id', $field['id'])->first();
@@ -2098,8 +2068,7 @@ class Module extends Model
             return true;
         }
 
-        $users = array();
-
+        $users = [];
         if($crud instanceof Page) {
             $module = $crud;
         } else if(is_string($crud) && !isset($crud->module->id)) {
@@ -2115,7 +2084,7 @@ class Module extends Model
         }
 
         if($user_id) {
-            $user = \App\User::find($user_id);
+            $user = config('stlc.user_model')::find($user_id);
             if(isset($user->id)) {
                 $user = $user;
             } else {
@@ -2154,17 +2123,17 @@ class Module extends Model
         $module = self::make($module->name);
         
         if($specific_user) {
-            $users_arr = User::where('id', $specific_user)->get();
+            $users_arr = config('stlc.user_model')::where('id', $specific_user)->get();
         } else {
-            $users_arr = User::all();
+            $users_arr = config('stlc.user_model')::all();
         }
-        $users = array();
+        $users = [];
         
-        $arr_field_access = array(
+        $arr_field_access = [
             'invisible' => 0,
             'readonly' => 1,
             'write' => 2
-        );
+        ];
         
         foreach($users_arr as $user) {
             // get Current Module permissions for this user
@@ -2203,21 +2172,21 @@ class Module extends Model
         $module = null;
         if(is_int($module_id_name)) {
             $module = self::make($module_id_name)->module;
-            $show_indexs = Field::where('module_id', $module->id)->where('show_index', 1)->get()->toArray();
+            $show_indexs = config('stlc.field_model')::where('module_id', $module->id)->where('show_index', 1)->get()->toArray();
         } else if(is_string($module_id_name)) {
             $module = self::where('name', $module_id_name)->first();
-            $show_indexs = Field::where('module_id', $module->id)->where('show_index', 1)->get()->toArray();
+            $show_indexs = config('stlc.field_model')::where('module_id', $module->id)->where('show_index', 1)->get()->toArray();
         } else if(isset($module_id_name->module)){
             $module = $module_id_name->module;
             $show_indexs = collect($module_id_name->fields)->where('show_index', 1)->toArray();
         }
         
         if($isObjects) {
-            $id_col = array('label' => $module->table_name.'.id', 'name' => $module->table_name.'.id');
+            $id_col = ['label' => $module->table_name.'.id', 'name' => $module->table_name.'.id'];
         } else {
             $id_col = $module->table_name.'.id';
         }
-        $show_indexs_temp = array($id_col);
+        $show_indexs_temp = [$id_col];
         foreach($show_indexs as $col) {
             // if(self::hasFieldAccess($module->id, $col['id'])) {
                 if($isObjects) {
@@ -2232,7 +2201,7 @@ class Module extends Model
                     }
                 } else {
                     if(isset($col['field_type']['name']) && $col['field_type']['name'] == 'Polymorphic_multiple') {
-                        continue;
+                        $show_indexs_temp[] = $module->table_name.'.id as '.$col['name'];
                     } else if(isset($col['field_type']['name']) && $col['field_type']['name'] == 'Polymorphic_select' && $module->fields->contains('name',$col['name'])) {
                         $show_indexs_temp[] = $module->table_name.'.'.$col['name'].'_id';
                     } else if($module->fields->contains('name',$col['name'])) {
@@ -2270,7 +2239,7 @@ class Module extends Model
         }
         // 1. Set Module Access
         foreach($access_arr as $access) {
-            AccessModule::withTrashed()->updateOrCreate([
+            config('stlc.access_module_model')::withTrashed()->updateOrCreate([
                 'assessor_id' => $assessor->id,
                 'assessor_type' => get_class($assessor),
                 'accessible_id' => $accessible->id,
@@ -2315,7 +2284,7 @@ class Module extends Model
 
     public function dependency_fields()
     {
-        return Field::where('json_values','@'.$this->name)->with(['module','field_type'])->get();
+        return config('stlc.field_model')::where('json_values','@'.$this->name)->with(['module','field_type'])->get();
     }
 
     public function delete_dependency($item_id)

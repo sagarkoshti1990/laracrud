@@ -25,7 +25,7 @@ class ActivitiesController extends StlcController
         $module->controller = "ActivitiesController";
         $module->represent_attr = "user_id";
         $module->icon = "fa-history";
-        $module->model = Activity::class;
+        $module->model = config('stlc.activity_model');
 
         $module->fields = [
             [
@@ -69,7 +69,7 @@ class ActivitiesController extends StlcController
     {
         $crud = $this->crud;
 		if(\Auth::user()->isSuperAdmin()) {
-            $activities = Activity::all();
+            $activities = config('stlc.activity_model')::all();
             $this->data['crud'] = $crud;
             $this->data['title'] = ucfirst($crud->labelPlural);
             return view('stlc::Activities.index', $this->data);
@@ -109,14 +109,14 @@ class ActivitiesController extends StlcController
      */
     public function get_data(Request $request, $id)
     {
-        if(Module::hasAccess("Activities", "view")) {
+        if(config('stlc.module_model')::hasAccess("Activities", "view")) {
             if(isset($request->src)) {
                 $src = url($request->src);
             } else {
                 $src = Null;
             }
 
-            $activity = Activity::find($id);
+            $activity = config('stlc.activity_model')::find($id);
             if(isset($activity->id)) {
                 
                 return response()->json([

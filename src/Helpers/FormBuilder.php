@@ -74,7 +74,7 @@ class FormBuilder
         if(isset($params['wrapperAttributes'])) {
             $field['wrapperAttributes'] = $params['wrapperAttributes'];
             unset($params['wrapperAttributes']);
-        } else if($field['type'] == 'Radio'){
+        } else if($field['type'] == 'Radio') {
             $field['wrapperAttributes']['radio_inline'] = true;
         }
         
@@ -126,12 +126,17 @@ class FormBuilder
         }
 
         if(isset($json_values) && !empty($json_values) && is_string($json_values) && \Str::startsWith($json_values, "@")) {
-            $module = Module::where('name', str_replace("@", "", $json_values))->first();
+            $module = config('stlc.module_model')::where('name', str_replace("@", "", $json_values))->first();
             if(!isset($module->model)) {
-                $json_values_arr = explode('|',$json_values);
+                $json_values_arr = explode('|',$fields[$field_name]->json_values);
                 $module = (object)[];
-                $module->name = $module->model = collect(str_replace("@", "", $json_values_arr))->first();
-                $module->represent_attr = collect(str_replace("|", "", $json_values_arr))->last();
+                $module->model = collect(str_replace("@", "", $json_values_arr))->first();
+                if(class_exists($module->model)) {
+                    $module->table_name = (new $module->model)->getTable();
+                    $module->represent_attr = collect(str_replace("|", "", $json_values_arr))->last();
+                } else {
+                    $module = null;
+                }
             }
         }
         
@@ -217,7 +222,7 @@ class FormBuilder
                 }
                 break;
             case 'Checkbox':
-                $class = "";
+                $class = "form-check-input";
                 $field['inline'] = 1;
                 if(!\Str::startsWith($json_values, "@") && is_array(json_decode($json_values))) {
                     $arr = [];
@@ -230,11 +235,11 @@ class FormBuilder
                     $field['options'] = ['Yes', 'No'];
                 }
                 break;
-            case 'CKEditor':
-                if(isset(self::$count['CKEditor'])) {
-                    self::$count['CKEditor']++;
+            case 'Ckeditor':
+                if(isset(self::$count['Ckeditor'])) {
+                    self::$count['Ckeditor']++;
                 } else {
-                    self::$count['CKEditor'] = 0;
+                    self::$count['Ckeditor'] = 0;
                 }
                 if(isset($params['only_button']) && is_array($params['only_button'])) {
                     $field['attribute'] = $params['only_button'];
@@ -298,7 +303,6 @@ class FormBuilder
                     foreach ($collection as $key => $value) {
                         $arr[$value] = $value;
                     }
-                    $class = "form-control select2_multiple";
                     $field['options'] = $arr;
                 }
                 
@@ -680,7 +684,7 @@ class FormBuilder
                 $value = $data;
 
                 break;
-            case 'CKEditor':
+            case 'Ckeditor':
                 $value = html_entity_decode($value);
                 
                 break;
@@ -692,11 +696,6 @@ class FormBuilder
                 $value = \CustomHelper::date_format($value);
 
                 break;
-            case 'Date_range':
-                if(isset($value) && is_array(json_decode($value))) {
-                    $value = \CustomHelper::date_format(json_decode($value)->start).' - '.\CustomHelper::date_format(json_decode($value)->end);
-                }
-                break;
             case 'Datetime':
                 $value = \CustomHelper::date_format($value, 'field_show_with_time');
 
@@ -706,59 +705,16 @@ class FormBuilder
 
                 break;
             case 'Email':
-        
                 $value = '<a href="mailto:'.$value.'">'.$value.'</a>';
 
                 break;
             case 'File':
                 $img = "";
                 if((isset($value) && $value)) {
-                    $upload = Upload::find($value);
+                    $upload = config('stlc.upload_model')::find($value);
                     if(isset($upload->id)) {
-                        $img = "<div class='uploaded_files'>";
                         $url_file = url("files/" . $upload->hash . DIRECTORY_SEPARATOR . $upload->name);
-                        $img .= "<a class='uploaded_file2 view' title='".$upload->name."' upload_id='".$upload->id."' target='_blank' href='".$url_file."'>";
-                        
-                        $image = '';
-                        if(in_array($upload->extension, ["jpg", "JPG", "jpeg", "png", "gif", "bmp"])) {
-                            $url_file .= "?s=30";
-                            $image = '<img src="'.$url_file.'">';
-                        } else if(in_array($upload->extension, ["ogg",'wav','mp3'])) {
-                            $image = '<audio controls playsinline>
-                                    <source src="'.$url_file.'" type="audio/'.$upload->extension.'">
-                                    Your browser does not support the audio element.
-                                </audio>';
-                        } else if(in_array($upload->extension, ["mp4","WEBM","MPEG","AVI","WMV","MOV","FLV","SWF"])) {
-                            $image = '<i class="fa fa-file-video"></i>';
-                        } else {
-                            switch ($upload->extension) {
-                                case "pdf":
-                                $image = '<i class="fa fa-file-pdf"></i>';
-                                break;
-                            case "xls":
-                                $image = '<i class="fa fa-file-excel"></i>';
-                                break;
-                            case "docx":
-                                $image = '<i class="fa fa-file-word"></i>';
-                                break;
-                            case "xlsx":
-                                $image = '<i class="fa fa-file-excel"></i>';
-                                break;
-                            case "csv":
-                                $image += '<span class="fa-stack" style="color: #31A867 !important;">';
-                                $image += '<i class="fa fa-file-alt fa-stack-2x"></i>';
-                                $image += '<strong class="fa-stack-1x">CSV</strong>';
-                                $image += '</span>';
-                                break;
-                            default:
-                                $image = '<i class="fa fa-file-text"></i>'.$upload->extension;
-                                break;
-                            }
-                        }
-                        
-                        $img .= "<span id='img_icon'>$image</span>";
-                        $img .= "</a>";
-                        $img .= "</div>";
+                        $img = CustomHelper::showHtml($value);
                     }
                 }
                 if(isset($html) && $html == true) {
@@ -779,50 +735,14 @@ class FormBuilder
                         if(isset($item) && $item instanceof \Illuminate\Database\Eloquent\Model) {
                             $uploads = $item->morphToMany($polymorphic_module->model, $polymorphic_field->name,$module->table_name)->where('attribute',$field_name)->get();
                             $img = "<div class='uploaded_files'>";
+                            $url_file = [];
                             foreach ($uploads as $key => $upload) {
                                 if(isset($upload->id)) {
-                                    $url_file = url("files/" . $upload->hash . DIRECTORY_SEPARATOR . $upload->name);
-                                    $img .= "<a class='uploaded_file2 view' title='".$upload->name."' upload_id='".$upload->id."' target='_blank' href='".$url_file."'>";
-                    
-                                    $image = '';
-                                    if(in_array($upload->extension, ["jpg", "JPG", "jpeg", "png", "gif", "bmp"])) {
-                                        $url_file .= "?s=30";
-                                        $image = '<img src="'.$url_file.'">';
-                                    } else if(in_array($upload->extension, ["ogg",'wav','mp3'])) {
-                                        $image = '<audio controls>
-                                                <source src="'.$url_file.'" type="audio/'.$upload->extension.'">
-                                                Your browser does not support the audio element.
-                                            </audio>';
-                                    } else if(in_array($upload->extension, ["mp4","WEBM","MPEG","AVI","WMV","MOV","FLV","SWF"])) {
-                                        $image = '<i class="fa fa-file-video"></i>';
+                                    if(isset($html) && $html == "value") {
+                                        $url_file[] = url("files/" . $upload->hash . DIRECTORY_SEPARATOR . $upload->name);
                                     } else {
-                                        switch ($upload->extension) {
-                                            case "pdf":
-                                            $image = '<i class="fa fa-file-pdf"></i>';
-                                            break;
-                                        case "xls":
-                                            $image = '<i class="fa fa-file-excel"></i>';
-                                            break;
-                                        case "docx":
-                                            $image = '<i class="fa fa-file-word"></i>';
-                                            break;
-                                        case "xlsx":
-                                            $image = '<i class="fa fa-file-excel"></i>';
-                                            break;
-                                        case "csv":
-                                            $image += '<span class="fa-stack" style="color: #31A867 !important;">';
-                                            $image += '<i class="fa fa-file-alt fa-stack-2x"></i>';
-                                            $image += '<strong class="fa-stack-1x">CSV</strong>';
-                                            $image += '</span>';
-                                            break;
-                                        default:
-                                            $image = '<i class="fa fa-file-text"></i>';
-                                            break;
-                                        }
+                                        $img .= CustomHelper::showHtml($value,'uploaded_file2');
                                     }
-                                    
-                                    $img .= "<span id='img_icon'>$image</span>";
-                                    $img .= "</a>";
                                 }
                             }
                             $img .= "</div>";
@@ -838,7 +758,7 @@ class FormBuilder
                 break;
             case 'Hidden':
                 if(\Str::startsWith($fields[$field_name]->json_values, "@")) {
-                    $module = Module::where('name',substr($fields[$field_name]->json_values, 1))->first();
+                    $module = config('stlc.module_model')::where('name',substr($fields[$field_name]->json_values, 1))->first();
                     if(!isset($module->model)) {
                         $json_values_arr = explode('|',$fields[$field_name]->json_values);
                         $module = (object)[];
@@ -869,12 +789,12 @@ class FormBuilder
                 break;
             case 'Image':
                 if($value != 0 && $value != "0") {
-                    $upload = Upload::find($value);
+                    $upload = config('stlc.upload_model')::find($value);
                     if(isset($upload->id)) {
                         if(isset($html) && $html == "value") {
                             $value = url("files/" . $upload->hash . DIRECTORY_SEPARATOR . $upload->name);
                         } else {
-                            $value = '<a class="preview" title="'.$upload->name.'" target="_blank" href="' . url("files/" . $upload->hash . DIRECTORY_SEPARATOR . $upload->name) . '"><img width="50" src="' . url("files/" . $upload->hash . DIRECTORY_SEPARATOR . $upload->name) . '?s=50"></a>';
+                            $value = CustomHelper::showHtml($value);
                         }
                     } else {
                         $value = 'Uploaded image not found.';
@@ -921,7 +841,7 @@ class FormBuilder
                     $ps_type = $item->{$field_name.'_type'};
                 }
                 if(isset($ps_type)) {
-                    $ps_module = Module::where('model',$item->{$field_name.'_type'})->first();
+                    $ps_module = config('stlc.module_model')::where('model',$item->{$field_name.'_type'})->first();
                     $ps_item = (new $item->{$field_name.'_type'})->find(($item->{$field_name.'_id'} ?? ""));
                     if(isset($ps_item->id) && isset($ps_module->id)) {
                         if(isset($ps_module->name) && in_array($ps_module->name,['MasterUsers','Employees','PartnerUsers'])) {
@@ -956,7 +876,7 @@ class FormBuilder
             case 'Select2':
             case 'Select2_from_ajax':
                 if(\Str::startsWith($fields[$field_name]->json_values, "@")) {
-                    $module = Module::where('name',substr($fields[$field_name]->json_values, 1))->first();
+                    $module = config('stlc.module_model')::where('name',substr($fields[$field_name]->json_values, 1))->first();
                     if(!isset($module->model)) {
                         $json_values_arr = explode('|',$fields[$field_name]->json_values);
                         $module = (object)[];
@@ -980,7 +900,7 @@ class FormBuilder
                 if(\Str::startsWith($fields[$field_name]->json_values, "@")) {
                     if(isset($value) && is_array(json_decode($value))) {
                         foreach(json_decode($value) as $val) {
-                            $module = Module::where('name',substr($fields[$field_name]->json_values, 1))->first();
+                            $module = config('stlc.module_model')::where('name',substr($fields[$field_name]->json_values, 1))->first();
                             if(!isset($module->model)) {
                                 $json_values_arr = explode('|',$fields[$field_name]->json_values);
                                 $module = (object)[];
@@ -1019,9 +939,29 @@ class FormBuilder
                 }
                 $value = $data;
                 break;
-            case 'Text':
-            
+            case 'Table':
+                $data = '<table class="table">';
+                if(isset($value) && is_array(json_decode($value))) {
+                    $json_values = json_decode($fields[$field_name]->json_values);
+                    if(is_array($json_values)) {
+                        $data .= "<thead><tr>";
+                        foreach($json_values as $prop ) {
+                            $data .= '<th style="font-weight: 600!important;">'.$prop.'</th>';
+                        }
+                        $data .= "<th></th></tr></thead>";
+                        foreach(json_decode($value) as $key => $val) {
+                            $data .= "<tr class='array-row'>";
+                                foreach( $json_values as $prop => $label) {
+                                    $data .= "<td>".$val->{$label} ?? ""."</td>";
+                                }
+                            $data .= "</tr>";
+                        }
+                    }
+                }
+                $data .= "</table>";
+                $value = $data;
                 break;
+            case 'Text':
             case 'Textarea':
             
                 break;
@@ -1099,7 +1039,7 @@ class FormBuilder
             $out .= "<div class='row'>";
             foreach($field_parent as $key => $field) {
                 if(isset($crud->fields[$field]->id)) {
-                    $field_type_name = Field::find($crud->fields[$field]->id)->field_type->name;
+                    $field_type_name = config('stlc.field_model')::find($crud->fields[$field]->id)->field_type->name;
                 } else if(isset($crud->fields[$field]->field_type)){
                     if(is_object($crud->fields[$field])) {
                         $field_type_name = $crud->fields[$field]->field_type;
@@ -1144,7 +1084,7 @@ class FormBuilder
     public static function access($crud_id, $access_type = "view", $user_id = 0)
     {
         // Check Module access by hasAccess method
-        return Module::hasAccess($crud_id, $access_type, $user_id);
+        return config('stlc.module_model')::hasAccess($crud_id, $access_type, $user_id);
     }
     
     /**
@@ -1161,7 +1101,7 @@ class FormBuilder
         // Check Module access by hasAccess method
         if(!class_exists(\App\Models\Page::class)) {
             $page = Page::where('name',$page_name)->first();
-            return Module::hasAccess($page, $access_type, $user_id);
+            return config('stlc.module_model')::hasAccess($page, $access_type, $user_id);
         } else {
             return true;
         }
@@ -1180,6 +1120,6 @@ class FormBuilder
     public static function field_access($crud_id, $field_id, $access_type = "view", $user_id = 0)
     {
         // Check Module Field access by hasFieldAccess method
-        return Module::hasFieldAccess($crud_id, $field_id, $access_type, $user_id);
+        return config('stlc.module_model')::hasFieldAccess($crud_id, $field_id, $access_type, $user_id);
     }
 }

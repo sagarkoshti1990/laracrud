@@ -1,15 +1,15 @@
-<!-- select2 multiple -->
+@php 
+    $value = old($field['name']) ? old($field['name']) : (isset($field['value']) ? $field['value'] : (isset($field['default']) ? $field['default'] : '' ));
+@endphp
 <div @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_wrapper_attributes',['field_name' => $field['name']]) >
     @if((isset($field['attributes']['label']) && $field['attributes']['label']) || !isset($field['attributes']['label']))
         <label for="{{ $field['name'] }}" class="control-label">{!! $field['label'] !!}</label>
-        @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_translatable_icon')
     @endif
     <select
         name="{{ $field['name'] }}[]"
         style="width: 100%"
         @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_attributes')
         multiple>
-
         @if (isset($field['model']))
             @if(isset($field['model']) && is_object($field['model']))
                 @php $selec_list = $field['model']->get(); @endphp
@@ -37,61 +37,35 @@
                     }
                 @endphp
                 <option value="{{ $connected_entity_item->getKey() }}"
-                    @if( (isset($field['value'])) && in_array($connected_entity_item->getKey(), collect(json_decode($field['value']))->toArray()) || ( old( $field["name"]) && is_array(old( $field["name"])) && in_array($connected_entity_item->getKey(), old( $field["name"])) ) )
+                    @if( (isset($value)) && (is_array($value) && in_array($connected_entity_item->getKey(), $value)) || (is_string($value) && in_array($connected_entity_item->getKey(), collect(json_decode($value))->toArray())) ) )
                         selected
                     @endif
                 >{{ $option_text }}</option>
             @endforeach
         @elseif (isset($field['options']) && is_array($field['options']) && count($field['options']))
-            @foreach ($field['options'] as $key => $value)
+            @foreach ($field['options'] as $key => $optionValue)
                 <option value="{{ $key }}"
-                    @if (isset($field['value']) && (is_array(json_decode($field['value'])) && in_array($key, json_decode($field['value'])))
-                        || ( ! is_null( old($field['name']) ) && old($field['name']) == $key))
+                @if( (isset($value)) && (is_array($value) && in_array($key, $value)) || (is_string($value) && in_array($key, collect(json_decode($value))->toArray())) ) )
                         selected
                     @endif
-                >{{ $value }}</option>
+                >{{ $optionValue }}</option>
             @endforeach
         @endif
     </select>
     @if ($errors->has($field['name']))
-        <span class="help-block">{{ $errors->first($field['name']) }}</span>
+        <div class="is-invalid"></div><span class="invalid-feedback">{{ $errors->first($field['name']) }}</span>
     @endif
     @if (isset($field['hint'])){{-- HINT --}}
-        <p class="help-block">{!! $field['hint'] !!}</p>
+        <p class="form-text">{!! $field['hint'] !!}</p>
     @endif
 </div>
-{{-- FIELD CSS - will be loaded in the after_styles section --}}
 @pushonce('crud_fields_styles')
-    <!-- include select2 css-->
-    <link href="{{ asset('node_modules/admin-lte/bower_components/select2/dist/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
-    {{-- <link href="{{ asset('public/vendor/select2/css/select2-bootstrap.css') }}" rel="stylesheet" type="text/css" /> --}}
-    <style>
-        .select2-results__options[aria-multiselectable="true"] .select2-results__option[aria-selected=true] {
-            display: none;
-        }
-        .select2-container--default .select2-selection--single{
-            display: block;width: 100%;height: calc(1.5em + 0.75rem + 2px);
-            padding: 0.375rem 0.75rem;border: 1px solid #ced4da;border-radius: 0;
-        }
-        .select2-container--default .select2-selection--single .select2-selection__rendered{line-height:2;padding:0}
-        .select2-container--default .select2-selection--single .select2-selection__arrow{height:36px}
-        select[readonly].select2 + .select2-container {
-            pointer-events: none;touch-action: none;
-            .select2-selection {background: #eee;box-shadow: none;}
-            .select2-selection__arrow,.select2-selection__clear {display: none;}
-        }
-        .disabled-select {background-color:#e5e9ed;opacity:0.5;border-radius:3px;cursor:not-allowed;
-            position:absolute;top:0;bottom:0;right:0;left:0;
-        }
-        .has-error .select2-dropdown, .has-error .select2-selection{
-            border-color: #f55753 !important;
-        }
-    </style>
+    <link href="{{ asset('node_modules/admin-lte/plugins/select2/css/select2.min.css') }}" rel="stylesheet" type="text/css" />
+    <link href="{{ asset('node_modules/admin-lte/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css') }}" rel="stylesheet" type="text/css" />
 @endpushonce
-{{-- FIELD JS - will be loaded in the after_scripts section --}}
 @pushonce('crud_fields_scripts')
     <!-- include select2 js-->
-    <script src="{{ asset('node_modules/admin-lte/bower_components/select2/dist/js/select2.min.js') }}"></script>
+    <script src="{{ asset('node_modules/admin-lte/plugins/select2/js/select2.full.min.js') }}"></script>
     <script>
         jQuery(document).ready(function($) {
             // trigger select2 for each untriggered select2_multiple box
@@ -99,6 +73,7 @@
                 if (!$(obj).hasClass("select2-hidden-accessible"))
                 {
                     $(obj).select2({
+                        theme:"bootstrap4",
                         placeholder: $(this).attr('placeholder')
                     });
                 }

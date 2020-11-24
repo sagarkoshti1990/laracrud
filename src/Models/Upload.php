@@ -45,7 +45,7 @@ class Upload extends Model
      */
     public Static function get_module()
     {
-        return Module::where('name', 'Uploads')->first();
+        return config('stlc.module_model')::where('name', 'Uploads')->first();
     }
 
     public function path()
@@ -61,10 +61,11 @@ class Upload extends Model
 	/**
      * Get the user that owns upload.
      */
-    public function user()
+    public function context()
     {
-        return $this->belongsTo('App\User');
+        return $this->morphTo();
     }
+    
     /*
     |--------------------------------------------------------------------------
     | RELATIONS

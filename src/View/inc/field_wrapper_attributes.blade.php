@@ -1,13 +1,12 @@
-@if (isset($field['wrapperAttributes']))
-    @foreach ($field['wrapperAttributes'] as $attribute => $value)
-    	@if (is_string($attribute))
-        {{ $attribute }}="{{ $value }}"
-        @endif
-    @endforeach
 
-    @if (!isset($field['wrapperAttributes']['class']))
-		class="form-group @if(isset($field_name)){{ $errors->has($field_name) ? ' has-error' : '' }}@endif"
-    @endif
+@if (isset($field['wrapperAttributes']))
+    @php
+      $field['wrapperAttributes']['class'] = $errors->has($field['name']) ? ($field['wrapperAttributes']['class'] ?? "").' is-invalid' : (isset($field['wrapperAttributes']['class']) ? $field['wrapperAttributes']['class'] : "form-group");
+    @endphp
+    @foreach ($field['wrapperAttributes'] as $attribute => $value)
+      @if (is_string($attribute)) {{ $attribute }}="{{ $value }}" @endif
+    @endforeach
+    @if (!isset($field['wrapperAttributes']['class'])) @if($errors->has($field['name'])) class="form-group is-invalid" @else class="form-group" @endif @endif
 @else
-	class="form-group @if(isset($field_name)){{ $errors->has($field_name) ? ' has-error' : '' }}@endif"
+  @if($errors->has($field['name'])) class="form-group is-invalid" @else class="form-group" @endif
 @endif

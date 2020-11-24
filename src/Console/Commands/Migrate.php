@@ -77,7 +77,7 @@ class Migrate extends GeneratorCommand
     protected function replaceNameStrings(&$stub)
     {
         $name = $this->getNameInput();
-        $modul = Module::where('name', $name)->first();
+        $modul = config('stlc.module_model')::where('name', $name)->first();
         $out = "";
         if(isset($modul) && $modul->id) {
             foreach ($modul->fields as $key => $field) {
@@ -156,7 +156,7 @@ class Migrate extends GeneratorCommand
                 $string_attr = ",['model'=>'".$arr['model']."','controller'=>'".$arr['controller']."','label'=>'".$arr['label']."']";
             }
             // update attribute and icon from module
-            $stub = str_replace('__attribute__', $modul->attribute, $stub);
+            $stub = str_replace('__attribute__', $modul->represent_attr, $stub);
             $stub = str_replace('__Custom_attr__', $string_attr, $stub);
             $stub = str_replace('__icon__', $modul->icon, $stub);
         } else {
@@ -186,7 +186,7 @@ class Migrate extends GeneratorCommand
         
         $field_types = "";
         $tabspace = "";
-        foreach (FieldType::all() as $key => $field_type) {
+        foreach (config('stlc.field_type_model')::all() as $key => $field_type) {
             $field_types .= $tabspace.$field_type->name.','."\n";
             $tabspace = "\t\t\t";
         }

@@ -18,7 +18,7 @@ use Pion\Laravel\ChunkUpload\Exceptions\UploadMissingFileException;
 class UploadsController extends StlcController
 {
     function __construct() {
-        $this->crud = Module::make('Uploads',['setModel' => Upload::class,'route_prefix' => config('stlc.stlc_route_prefix', 'developer')]);
+        $this->crud = config('stlc.module_model')::make('Uploads',['setModel' => config('stlc.upload_model'),'route_prefix' => config('stlc.stlc_route_prefix', 'developer')]);
     }
 	
 	/**
@@ -28,7 +28,7 @@ class UploadsController extends StlcController
 	 */
 	public function get_file(Request $request, $hash, $name)
 	{
-		$upload = Upload::where("hash", $hash)->first();
+		$upload = config('stlc.upload_model')::where("hash", $hash)->first();
 		
 		// Validate Upload Hash & Filename
 		if(!isset($upload->id) || $upload->name != $name) {
@@ -114,7 +114,7 @@ class UploadsController extends StlcController
 	 */
 	public function upload_files(Request $request)
 	{
-		if(Module::hasAccess("Uploads", "create") || true) {
+		if(config('stlc.module_model')::hasAccess("Uploads", "create") || true) {
 			$input = $request->all();
 			
 			if($request->hasFile('file')) {
@@ -216,7 +216,7 @@ class UploadsController extends StlcController
 				$public = true;
 			}
 
-			$upload = Upload::create([
+			$upload = config('stlc.upload_model')::create([
 				"name" => $filename,
 				"path" => $folder.DIRECTORY_SEPARATOR.$date_append.$filename,
 				"extension" => pathinfo($filename, PATHINFO_EXTENSION),
@@ -229,7 +229,7 @@ class UploadsController extends StlcController
 			// apply unique random hash to file
 			while(true) {
 				$hash = strtolower(\Str::random(20));
-				if(!Upload::where("hash", $hash)->count()) {
+				if(!config('stlc.upload_model')::where("hash", $hash)->count()) {
 					$upload->hash = $hash;
 					break;
 				}
@@ -255,40 +255,21 @@ class UploadsController extends StlcController
 	 */
 	public function uploaded_files(Request $response)
 	{
-		if(Module::hasAccess("Uploads", "view")) {
-
+		if(config('stlc.module_model')::hasAccess("Uploads", "view")) {
+			$select = ['id','name','extension','hash','public','caption'];
 			if(isset($response->file_type) && $response->file_type == "image") {
-				$uploads = Upload::whereIn('extension',["jpg", "jpeg", "png", "gif", "bmp"])->get();
+				$uploads = config('stlc.upload_model')::select($select)->whereIn('extension',["jpg", "jpeg", "png", "gif", "bmp"])->paginate(config('stlc.file_modal_paginate_count',18));
 			} else if(isset($response->file_type) && in_array($response->file_type, ['file','files'])){
-				$uploads = Upload::all();
+				$uploads = config('stlc.upload_model')::select($select)->paginate(config('stlc.file_modal_paginate_count',18));
 			} else if(isset($response->file_type)){
-				$uploads = Upload::where('extension',$response->file_type)->get();
+				$uploads = config('stlc.upload_model')::select($select)->where('extension',$response->file_type)->paginate(config('stlc.file_modal_paginate_count',18));
 			} else {
-				$uploads = Upload::all();
+				$uploads = config('stlc.upload_model')::select($select)->paginate(config('stlc.file_modal_paginate_count',18));
 			}
-			
-			$uploads2 = array();
-			foreach ($uploads as $upload) {
-				$u = (object) array();
-				$u->id = $upload->id;
-				$u->name = $upload->name;
-				$u->extension = $upload->extension;
-				$u->hash = $upload->hash;
-				$u->public = $upload->public;
-				$u->caption = $upload->caption;
-				$u->user = $upload->user->name;
-				
-				$uploads2[] = $u;
-			}
-			
-			// $folder = storage_path('/uploads');
-			// if(file_exists($folder)) {
-			//     $filesArr = File::allFiles($folder);
-			//     foreach ($filesArr as $file) {
-			//         $uploads2[] = $file->getfilename();
-			//     }
-			// }
-			return response()->json(['uploads' => $uploads2]);
+			return response()->json([
+				'uploads' => $uploads,
+				'link' => (string)$uploads->links()
+			]);
 		} else {
 			return response()->json([
 				'status' => "failure",
@@ -304,11 +285,11 @@ class UploadsController extends StlcController
 	 */
 	public function update_caption()
 	{
-		if(Module::hasAccess("Uploads", "edit")) {
+		if(config('stlc.module_model')::hasAccess("Uploads", "edit")) {
 			$file_id = $request->get('file_id');
 			$caption = $request->get('caption');
 			
-			$upload = Upload::find($file_id);
+			$upload = config('stlc.upload_model')::find($file_id);
 			if(isset($upload->id)) {
 				// if($upload->user_id == Auth::user()->id || Entrust::hasRole('SUPER_ADMIN')) {
 	
@@ -347,11 +328,11 @@ class UploadsController extends StlcController
 	 */
 	public function update_filename()
 	{
-		if(Module::hasAccess("Uploads", "edit")) {
+		if(config('stlc.module_model')::hasAccess("Uploads", "edit")) {
 			$file_id = $request->get('file_id');
 			$filename = $request->get('filename');
 			
-			$upload = Upload::find($file_id);
+			$upload = config('stlc.upload_model')::find($file_id);
 			if(isset($upload->id)) {
 				// if($upload->user_id == Auth::user()->id || Entrust::hasRole('SUPER_ADMIN')) {
 	
@@ -390,7 +371,7 @@ class UploadsController extends StlcController
 	 */
 	public function update_public()
 	{
-		if(Module::hasAccess("Uploads", "edit")) {
+		if(config('stlc.module_model')::hasAccess("Uploads", "edit")) {
 			$file_id = $request->get('file_id');
 			$public = $request->get('public');
 			if(isset($public)) {
@@ -399,7 +380,7 @@ class UploadsController extends StlcController
 				$public = false;
 			}
 			
-			$upload = Upload::find($file_id);
+			$upload = config('stlc.upload_model')::find($file_id);
 			if(isset($upload->id)) {
 				// if($upload->user_id == Auth::user()->id || Entrust::hasRole('SUPER_ADMIN')) {
 	
@@ -438,10 +419,10 @@ class UploadsController extends StlcController
 	 */
 	public function delete_file()
 	{
-		if(Module::hasAccess("Uploads", "delete")) {
+		if(config('stlc.module_model')::hasAccess("Uploads", "delete")) {
 			$file_id = $request->get('file_id');
 			
-			$upload = Upload::find($file_id);
+			$upload = config('stlc.upload_model')::find($file_id);
 			if(isset($upload->id)) {
 				// if($upload->user_id == Auth::user()->id || Entrust::hasRole('SUPER_ADMIN')) {
 	

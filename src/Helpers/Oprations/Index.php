@@ -48,7 +48,7 @@ trait Index
     public function datatable(Request $request)
     {
         $crud = $this->crud;
-        $listing_cols = Module::getListingColumns($crud);
+        $listing_cols = config('stlc.module_model')::getListingColumns($crud);
         $values = DB::table($crud->table_name)->select($listing_cols)->latest();
         if(isset($request->filter)) {
 			$values->where($request->filter);
@@ -56,7 +56,7 @@ trait Index
         
         $out = Datatables::of($values)->make();
         $data = $out->getData();
-        $fields_popup = Field::getFields($crud->name);
+        $fields_popup = config('stlc.field_model')::getFields($crud->name);
         // array_splice($listing_cols, 2, 0, "index_name");
         
         for($i = 0; $i < count($data->data); $i++) {

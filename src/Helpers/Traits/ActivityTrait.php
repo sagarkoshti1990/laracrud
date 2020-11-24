@@ -12,7 +12,7 @@ trait ActivityTrait
      */
     public function activities()
     {
-        return $this->morphMany(Activity::class, 'context');
+        return $this->morphMany(config('stlc.activity_model'), 'context');
     }
 
     /**

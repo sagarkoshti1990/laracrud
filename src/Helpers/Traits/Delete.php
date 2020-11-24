@@ -25,7 +25,7 @@ trait Delete
     {
         $old_item = $this->model->findOrFail($id);
         $item = $this->model->find($id)->delete();
-        Activity::log(config('App.activity_log.DELETED'), $this, ['old' => $old_item]);
+        config('stlc.activity_model')::log(config('App.activity_log.DELETED'), $this, ['old' => $old_item]);
         return $item;
     }
 }

@@ -28,7 +28,7 @@ trait Create
         $column_names_ralationaldata = collect($this->fields)->where('type','relationalDataFields')->pluck('name');
         $polymorphic_multiple_fields = collect($this->fields)->whereIn('field_type.name',['Polymorphic_multiple',"Files"]);
         if(\Auth::check()) {
-            $data['created_by'] = \Auth::id();
+            $data['created_by'] = $data['created_by'] ?? \Auth::id();
         }
         // \CustomHelper::ajprint($polymorphic_multiple_fields);
         if(isset($transaction) && $transaction == true) {
@@ -39,7 +39,7 @@ trait Create
             if($polymorphic_multiple_fields->count() > 0) {
                 foreach($polymorphic_multiple_fields as $pm_field) {
                     $pm_value = $data->{$pm_field->name} ?? $data[$pm_field->name] ?? [];
-                    if(isset($pm_value)) {
+                    if(isset($pm_value) && is_array($pm_value)) {
                         $item->polymorphic_save($pm_field->name,$pm_value);
                     }
                 }
@@ -47,7 +47,7 @@ trait Create
             if(isset($column_names_ralationaldata) && count($column_names_ralationaldata) > 0) {
                 $update_data = collect($data)->only($column_names_ralationaldata)->toArray();
                 $i = 0;
-                $ftypes = FieldType::getFTypes();
+                $ftypes = config('stlc.field_type_model')::getFTypes();
                 foreach($update_data as $key => $r_data) {
                     $r_datas[$i]['context_id'] = $item->id ?? null;;
                     $r_datas[$i]['context_type'] = get_class($this->model);
@@ -61,7 +61,7 @@ trait Create
                 }
                 RelationalDataTable::insert($r_datas);
             }
-            \Activity::log(config('App.activity_log.CREATED','Created'), $this, ['new' => $item]);
+            config('stlc.activity_model')::log(config('App.activity_log.CREATED','Created'), $this, ['new' => $item]);
             if(isset($transaction) && $transaction == true) {
                 \DB::commit();
             }

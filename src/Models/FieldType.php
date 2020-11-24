@@ -34,7 +34,7 @@ class FieldType extends Model
     // FieldType::getFTypes()
     public static function getFTypes()
     {
-        $fields = FieldType::all();
+        $fields = config('stlc.field_type_model')::all();
         $fields2 = array();
         foreach($fields as $field) {
             $fields2[$field['name']] = $field['id'];
@@ -45,7 +45,7 @@ class FieldType extends Model
     // FieldType::getFTypes2()
     public static function getFTypes2()
     {
-        $fields = FieldType::all();
+        $fields = config('stlc.field_type_model')::all();
         $fields2 = array();
         foreach($fields as $field) {
             $fields2[$field['id']] = $field['name'];

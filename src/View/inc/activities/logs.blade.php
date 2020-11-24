@@ -28,7 +28,7 @@
                         if(last_page > current_page) {
                             $(html).find('button.crm-load-more').attr('page-number',(current_page+1));
                         } else {
-                            $(html).find('button.crm-load-more').addClass('hide');
+                            $(html).find('button.crm-load-more').addClass('d-none');
                         }
                         if(page == 1) {
                             $('#ul_timeline_activies').html(html);

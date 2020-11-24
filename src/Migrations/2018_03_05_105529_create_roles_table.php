@@ -45,7 +45,10 @@ class CreateRolesTable extends Migration
 				'show_index' => true,
 				'json_values' => '@Roles'
 			]
-        ],['model' => \Sagartakle\Laracrud\Models\Role::class]);
+        ],[
+            'model' => config('stlc.role_model'),
+            'controller' => \Sagartakle\Laracrud\Controllers\RolesController::class
+        ]);
 		
         Schema::create('rollables', function (Blueprint $table) {
 			$table->increments('id');
@@ -73,11 +76,10 @@ class CreateRolesTable extends Migration
         field type [
             Address,
 			Checkbox,
-			CKEditor,
+			Ckeditor,
 			Currency,
 			Date,
 			Date_picker,
-			Date_range,
 			Datetime,
 			Datetime_picker,
 			Email,

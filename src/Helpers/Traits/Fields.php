@@ -214,17 +214,11 @@ trait Fields
         foreach ($fields as $field) {
             if(isset($field->field_type->name) && in_array($field->field_type->name, ['Month'])) {
                 if($field->field_type->name == 'Month' && isset($data[$field->name]) && $data[$field->name]) {
-                    $data[$field->name] = \Carbon::parse($data[$field->name])->format('Y-m-d');
-                // } else if(in_array($field->field_type->name ,['Datetime']) && isset($data[$field->name])) {
-                //     $data[$field->name] = \CustomHelper::date_format($data[$field->name], 'data_save_simpel_with_time');
-                // } else if(in_array($field->field_type->name ,['Datetime_picker']) && isset($data[$field->name])) {
-                //     $data[$field->name] = \CustomHelper::date_format($data[$field->name], 'data_save_with_time');
-                // } else if($field->field_type->name == 'Date_picker' && isset($data[$field->name])) {
-                //     $data[$field->name] = \CustomHelper::date_format($data[$field->name],'data_save');
+                    $data[$field->name] = \Carbon::parse('01-'.$data[$field->name])->format('Y-m-d');
                 }
-            } else if(isset($field->field_type->name) && in_array($field->field_type->name, ['Multiselect','Select2_multiple','Select2_from_array_multiple','Select2_from_ajax_multiple','Checkbox','Select2_multiple_tags'])) {
+            } else if(isset($field->field_type->name) && in_array($field->field_type->name, ['Multiselect','Select2_multiple','Select2_from_array_multiple','Select2_from_ajax_multiple','Checkbox','Select2_multiple_tags','Table'])) {
                 if(isset($data[$field->name]) && is_array($data[$field->name])) {
-                    $data[$field->name] = json_encode($data[$field->name]);
+                    $data[$field->name] = json_encode(array_filter($data[$field->name]));
                 }
             } else if(isset($field->field_type->name) && in_array($field->field_type->name, ['Json'])) {
                 $arr = [];
@@ -238,23 +232,8 @@ trait Fields
                         unset($data[$field_name]);
                     }
                 }
-                $data[$field->name] = json_encode($arr);
+                $data[$field->name] = json_encode(array_filter($arr));
             }
-            // Test the field is castable
-            // if (isset($field->name) && array_key_exists($field->name, $casted_attributes)) {
-                
-            //     // Handle JSON field types
-            //     $jsonCastables = ['array', 'object', 'json'];
-            //     $fieldCasting = $casted_attributes[$field->name];
-                
-            //     if (in_array($fieldCasting, $jsonCastables) && isset($data[$field->name]) && ! empty($data[$field->name]) && ! is_array($data[$field->name])) {
-            //         try {
-            //             $data[$field->name] = json_decode($data[$field->name]);
-            //         } catch (Exception $e) {
-            //             $data[$field->name] = [];
-            //         }
-            //     }
-            // }
         }
 
         return $data;

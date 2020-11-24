@@ -1,6 +1,8 @@
 
 function isset (variable) {
-    if(typeof(variable) != "undefined" && variable !== null) {
+    if(typeof(variable) != "undefined" && variable !== null && typeof variable != "object") {
+        return true;
+    } else if((typeof variable == "object" && typeof variable.length == "undefined") || (typeof variable == "object" && variable.length != "undefined" && variable.length > 0)) {
         return true;
     }
     return false;
@@ -14,7 +16,7 @@ function IsJsonString(str) {
     return true;
 }
 if(window.location.hash != "") {
-    $('a[href="' + window.location.hash + '"]').click()
+    $('a[href="' + window.location.hash + '"]').trigger('click')
 }
 
 $.ajaxSetup({
@@ -27,43 +29,50 @@ $.ajaxSetup({
 $("select").on("select2:close", function (e) {
     $(this).valid();
 });
-
+$("form").on('change', ':input', function(){
+    $(this).valid();
+});
 $.validator.setDefaults({
     ignore: ':disabled',
     errorClass: "error invalid-feedback",
     errorElement: "span",
     highlight: function(element) {
-        if(isset($(element).closest('.form-group'))) {
-            $(element).closest('.form-group').addClass("has-error");
-            $(element).addClass('is-invalid');
+        if(isset($(element).closest('.btn-group').find('a[file_type]'))) {
+            $(element).closest('.btn-group').find('a[file_type]').addClass('form-control is-invalid');
+        } else if($(element).hasClass('ckeditor_required')) {
+            $('#cke_'+element.id).addClass('form-control is-invalid');
+        } else if(isset($(element).closest('.form-group'))) {
+            $(element).closest('.form-group').find(':input').addClass('is-invalid');
         } else {
             $(element).addClass('is-invalid');
         }
     },
     unhighlight: function(element) {
-        if(isset($(element).closest('.form-group'))) {
-            $(element).closest('.form-group').removeClass("has-error");
-            $(element).closest('.form-group').find('label.error').remove();
-            $(element).closest('.form-group').find('.help-block').remove();
+        if(isset($(element).closest('.btn-group').find('a[file_type]'))) {
+            $(element).closest('.btn-group').find('a[file_type]').removeClass('form-control is-invalid');
+        } else if($(element).hasClass('ckeditor_required')) {
+            $('#cke_'+element.id).removeClass('form-control is-invalid');
+        } else if(isset($(element).closest('.form-group'))) {
+            $(element).closest('.form-group').find(':input').removeClass('is-invalid');
+            $(element).closest('.form-group').find('.error').remove();
+        } else {
             $(element).removeClass('is-invalid');
+            $(element).parent().find('.error').remove();
         }
     },
     errorPlacement: function (error, element) {
-        $(element).closest('.form-group').find('.help-block').remove();
-        if (element.attr("type") == "checkbox") {
-            error.insertAfter($(element).closest('.form-group').find(':last'));
-        } else {
-            if($(element).closest('.form-group').length > 0) {
-                error.insertAfter($(element).closest('.form-group').children().last());
-            } else if($(element).closest('.input-group').length > 0) {
-                error.insertAfter($(element).closest('.input-group').children().last());
-            }
+        $(error).css('display','block')
+        $(element).closest('.form-group').find('.invalid-feedback').remove();
+        if($(element).closest('.form-group').length > 0) {
+            error.insertAfter($(element).closest('.form-group').children().last());
+        } else if($(element).closest('.input-group').length > 0) {
+            error.insertAfter($(element).closest('.input-group').children().last());
         }
     },
     invalidHandler: function(event, validator) {
         var element = validator.errorList[0].element;
         var target = $(element).closest('.tab-pane').attr('id');
-        $(`[data-target='#${target}']`).click();
+        $(`[data-target='#${target}']`).trigger('click');
         var errors = validator.numberOfInvalids();
         if (errors) {
             if(element.type && element.type == 'hidden') {
@@ -110,24 +119,21 @@ $.validator.addMethod("extension", function(value, element, param) {
 }, "Please select a file valid extension.");
 
 $.validator.addMethod("ckeditor_required", function(value, element) {
-    // console.log(element.name+" - "+CKEDITOR.instances[element.name].getData());
     var editor = CKEDITOR.instances[element.name];
     var editor1 = CKEDITOR.instances[element.id];
     if (isset(editor) || isset(editor1)) {
         if(isset(editor)) {
             if(editor.getData() != null && editor.getData() != "") {
-                // console.log(editor);
                 return true;
             }
         } else if(isset(editor1)) {
             if(editor1.getData() != null && editor1.getData() != "") {
-                // console.log(editor1);
                 return true;
             }
         }
     }
     return false;
-}, "This field is required.");
+}, "This ckediter field is required.");
 
 // jquery custome validate methode
 $.validator.addMethod("phone_input", function(value, element) {
@@ -164,24 +170,11 @@ function UpperCase(params) {
     $(params).val(value);
 }
 
-$(function () {
-    if($('input[type="checkbox"], input[type="radio"]').length > 0) {
-        $('input[type="checkbox"], input[type="radio"]').iCheck({
-            checkboxClass: 'icheckbox_square-orange',
-            radioClass: 'icheckbox_square-orange',
-            increaseArea: '10%' // optional
-        });
-    }
-    $(".alert.alert-danger.alert-dismissable").fadeTo(90000, 500).slideUp(500, function(){
-        $(".alert.alert-danger.alert-dismissable").slideUp(500);
-    });
-});
-
 $('button.btn.f-next-btn.btn-success').on('click', function() {
     $data = $(this).closest('.tab-pane').find(':input');
     if($data.valid()) {
         var classli = $(this).data('target');
-        $('a[href="#' + classli + '"]').click();
+        $('a[href="#' + classli + '"]').trigger('click');
     }
 });
 function datatable_details(table,table_data) {
@@ -269,7 +262,6 @@ function  xeditable(nRow) {
             return data;
         },
         success: function(response, newValue) {
-            // console.log(response);
             if(response.status == 'success' || response.statusCode == '200') {
                 sweetAlert('Success',response.message);
             } else {
@@ -278,7 +270,7 @@ function  xeditable(nRow) {
         }
     });
 }
-$(document).ready(function () {
+$(function () {
     $('body.hide').fadeIn(1000).removeClass('hide');
     $('.overlay').on('click',function(){
         $('body').find('#f-bg-gallery').remove();
@@ -297,9 +289,13 @@ $(document).ready(function () {
     $('body').on('click','#f-bg-gallery .fa.fa-times',function(){
         $('body').find('#f-bg-gallery').remove();
     });
+    
+    $(".alert.alert-danger.alert-dismissable").fadeTo(90000, 500).slideUp(500, function(){
+        $(".alert.alert-danger.alert-dismissable").slideUp(500);
+    });
 });
 function ajax_form_notification(form,data,$refresh=true) {
-    $(form).find('.alert,.error').remove();
+    $(form).find('.alert,.error,is-invalid').remove();
     if(data.status == "validation_error" || data.status == '422') {
         var errors = [];
         if(isset(data.errors)) {
