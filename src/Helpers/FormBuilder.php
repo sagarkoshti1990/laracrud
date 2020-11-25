@@ -952,7 +952,7 @@ class FormBuilder
                         foreach(json_decode($value) as $key => $val) {
                             $data .= "<tr class='array-row'>";
                                 foreach( $json_values as $prop => $label) {
-                                    $data .= "<td>".$val->{$label} ?? ""."</td>";
+                                    $data .= "<td>".($val->{$label} ?? "")."</td>";
                                 }
                             $data .= "</tr>";
                         }

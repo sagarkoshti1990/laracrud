@@ -18,11 +18,11 @@
 @section('content')
     <div class="row">
         <div class="col-md-12">
-            <div class="box">
+            <div class="card">
                 @include('crud.inc.button_stack', ['stack' => 'top'])
-                {{-- <div class="box-header {{ $crud->hasAccess('create')?'with-border':'d-none' }}">
+                {{-- <div class="card-header {{ $crud->hasAccess('create')?'with-border':'d-none' }}">
                 </div> --}}
-                <div class="box-body">
+                <div class="card-body">
                     <table id="crudTable" class="table table-bordered table-hover display crudTable">
                         <thead class="table-success">
                             <tr>
@@ -53,8 +53,8 @@
                             @endforeach
                         </tbody>
                     </table>
-                </div><!-- /.box-body -->
-            </div><!-- /.box -->
+                </div><!-- /.card-body -->
+            </div><!-- /.card -->
         </div>
     </div>
 

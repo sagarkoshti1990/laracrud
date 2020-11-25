@@ -1,27 +1,35 @@
 @extends(config('stlc.stlc_layout_path','stlc::layouts.app'))
 @section('header')
-    <section class="content-header">
-        <h1>
-            <a href="{{ url($crud->route) }}">
-                <span class="{{ $crud->icon }}"></span>
-                <span class="text-capitalize">{{ $crud->label }}</span>
-            </a>
-            <small>Edit</small>
-        </h1>
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ url(config('stlc.route_prefix'), 'dashboard') }}">Dashboard</a></li>
-            <li class="breadcrumb-item"><a href="{{ url($crud->route) }}" class="text-capitalize">{{ $crud->labelPlural }}</a></li>
-            <li class="breadcrumb-item active">Edit</li>
-        </ol>
-    </section>
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>
+                    <a href="{{ url($crud->route) }}">
+                        <span class="{{ $crud->icon }}"></span>
+                        <span class="text-capitalize">{{ $crud->label }}</span>
+                    </a>
+                    <small>{{trans('stlc.edit')}}</small>
+                </h1>
+            </div><!-- /.col -->
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{{ url(config('stlc.route_prefix'), 'dashboard') }}">{{ trans('stlc.dashboard') }}</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url($crud->route) }}" class="text-capitalize">{{ $crud->labelPlural }}</a></li>
+                    <li class="breadcrumb-item active">{{trans('stlc.edit')}}</li>
+                </ol>
+            </div><!-- /.col -->
+        </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+</div>
 @endsection
 
 @section('content')
 <div class="row">
     <div class="col-md-12">
         {!! Form::open(array('url' => $crud->route.'/'.$field->id, 'method' => 'put', 'id' => 'edit_form', "autocomplete"=>"off")) !!}
-            <div class="box">
-                <div class="box-body">
+            <div class="card">
+                <div class="card-body">
                     @if(isset($src))
                         {{ Form::hidden('src', $src) }}
                     @endif
@@ -37,11 +45,11 @@
                             </div>
                         </div>
                     </div>
-                </div><!-- /.box-body -->
-                <div class="box-footer">
+                </div><!-- /.card-body -->
+                <div class="card-footer">
                     @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.form_save_buttons')
                 </div>
-            </div><!-- /.box -->
+            </div><!-- /.card -->
         {!! Form::close() !!}
     </div>
 </div>

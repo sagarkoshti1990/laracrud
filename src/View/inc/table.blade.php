@@ -1,12 +1,12 @@
 @if(isset($crud->name))
-@if(isset($box) && $box == true)
+@if(isset($card) && $card == true)
 <div class="row">
 <div class="col-md-12">
-<div class="box mob-box">
+<div class="card mob-card">
     @if(isset($add_btn) && $add_btn == true)
         @include('crud.inc.button_stack', ['stack' => 'top','crud' => $crud])
     @endif
-<div class="box-body">
+<div class="card-body">
 @else
 <div class="parent-{{$crud->name}} {{$class ?? ""}}">
 @endif
@@ -26,7 +26,7 @@
         <tbody>
         </tbody>
     </table>
-@if(isset($box) && $box == true)
+@if(isset($card) && $card == true)
 </div>
 @else
 </div></div></div></div>

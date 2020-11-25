@@ -1,29 +1,37 @@
 @extends(config('stlc.stlc_layout_path','stlc::layouts.app'))
 
 @section('header')
-    <section class="content-header">
-        <h1>
-            <span class="{{ $crud->icon }}"></span>
-            <span class="text-capitalize">{{ $crud->labelPlural }}</span>
-            <small>{{ trans('stlc.list') }}</small>
-        </h1>
-        <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ url(config('stlc.route_prefix'), 'dashboard') }}">{{ trans('stlc.dashboard') }}</a></li>
-            <li class="breadcrumb-item"><a href="{{ url($crud->route) }}" class="text-capitalize">{{ $crud->labelPlural }}</a></li>
-            <li class="breadcrumb-item active">{{ trans('stlc.list') }}</li>
-        </ol>
-    </section>
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>
+                        <span class="{{ $crud->icon }}"></span>
+                        <span class="text-capitalize">{{ $crud->labelPlural }}</span>
+                        <small>{{ trans('stlc.list') }}</small>
+                    </h1>
+                </div><!-- /.col -->
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item"><a href="{{ url(config('stlc.route_prefix'), 'dashboard') }}">{{ trans('stlc.dashboard') }}</a></li>
+                        <li class="breadcrumb-item"><a href="{{ url($crud->route) }}" class="text-capitalize">{{ $crud->labelPlural }}</a></li>
+                        <li class="breadcrumb-item active">{{ trans('stlc.list') }}</li>
+                    </ol>
+                </div><!-- /.col -->
+            </div><!-- /.row -->
+        </div><!-- /.container-fluid -->
+    </div>
 @endsection
 
 @section('content')
     <div class="row">
         <div class="col-md-12">
-            <div class="box">
-                {{-- <div class="box-header {{ $crud->hasAccess('create')?'with-border':'' }}">
+            <div class="card">
+                {{-- <div class="card-header {{ $crud->hasAccess('create')?'with-border':'' }}">
                     @include('crud::inc.button_stack', ['stack' => 'top']) 
                     <div id="datatable_button_stack" class="float-right text-right"></div>
                 </div> --}}
-                <div class="box-body">
+                <div class="card-body">
                     {{-- propadmin List Filters --}}
                     {{-- @if ($crud->filtersEnabled())
                         @include('crud::inc.filters_navbar')
@@ -40,8 +48,8 @@
                             </tr>
                         </thead>
                     </table>
-                </div><!-- /.box-body -->
-            </div><!-- /.box -->
+                </div><!-- /.card-body -->
+            </div><!-- /.card -->
         </div>
     </div>
 @endsection

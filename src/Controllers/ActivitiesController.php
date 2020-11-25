@@ -24,7 +24,7 @@ class ActivitiesController extends StlcController
         $module->table_name = "activity_log";
         $module->controller = "ActivitiesController";
         $module->represent_attr = "user_id";
-        $module->icon = "fa-history";
+        $module->icon = "fa fa-history";
         $module->model = config('stlc.activity_model');
 
         $module->fields = [

@@ -20,17 +20,17 @@
     <div class="row">
         <div class="col-md-12">
             {!! Form::open(array('url' => $crud->route.'/'.$item->id, 'method' => 'put', 'id' => 'edit_form')) !!}
-                <div class="box">
-                    {{-- <div class="box-header">
-                        <h4 class="box-title">{{ trans('stlc.edit') }}</h4>
+                <div class="card">
+                    {{-- <div class="card-header">
+                        <h4 class="card-title">{{ trans('stlc.edit') }}</h4>
                     </div> --}}
-                    <div class="box-body">
+                    <div class="card-body">
                         @if(isset($src))
                             {{ Form::hidden('src', $src) }}
                         @endif
                         @form($crud, [], ["class" => "col-md-6"])
                     </div>
-                    <div class="box-footer">
+                    <div class="card-footer">
                         @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.form_save_buttons')
                     </div>
                 </div>

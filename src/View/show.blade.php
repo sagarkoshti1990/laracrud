@@ -3,7 +3,7 @@
 @section('content')
     <div class="row">
         <div class="col-md-12">
-            <div class="box box-widget widget-user mb-0 bg-info">
+            <div class="card card-widget widget-user mb-0 bg-info" style="min-height: 70px">
                 <div class="bg-dark-purple p-3">
                     <div class="row">
                         <div class="col-md-6">
@@ -15,7 +15,7 @@
                     </div>
                 </div>
                 <div class="widget-user-image" style="top: 5px;">
-                    <span class="info-box-icon" style="border-radius:100%;height: 55px;width: 55px;font-size: 30px;line-height: 60px;"><i class="fa {{ $crud->module->icon }}"></i></span>
+                    <span class="img-circle elevation-2 py-1 px-2" style="font-size:30px;line-height:60px;"><i class="{{ $crud->module->icon }}"></i></span>
                 </div>
             </div>
         </div>
@@ -31,11 +31,11 @@
                 </div>
                 <div class="tab-content">
                     <div class="tab-pane fade show in active" id="tab-information">
-                        <div class="box">
-                            {{-- <div class="box-header with-border">
+                        <div class="card">
+                            {{-- <div class="card-header with-border">
                                 <h4>Information</h4>
                             </div> --}}
-                            <div class="box-body">
+                            <div class="card-body">
                                 @displayAll($crud, [], ["class" => "col-md-6"])
                             </div>
                         </div>

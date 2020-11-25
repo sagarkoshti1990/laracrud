@@ -39,7 +39,7 @@
                                     <input
                                         class='form-control form-control-sm' type='text'
                                         name='{{ $field['name']."[".$key."][".$label."]" }}'
-                                        value="{{ $item->{$label} ?? $item[$label] ?? "" }}"
+                                        value="{{ (is_object($item) && isset($item->{$label})) ? $item->{$label} : ( (is_array($item) && isset($item[$label])) ? $item[$label] : "") }}"
                                     >
                                 </td>
                             @endforeach

@@ -1,5 +1,5 @@
-<div class="box px-3 pb-1 pt-2">
-    <div class="box-body box-profile text-center">
+<div class="card px-3 pb-1 pt-2">
+    <div class="card-body card-profile text-center">
 		<img class="profile-user-img img-responsive rounded-circle" src="{{ Auth::user()->profile_pic() }}">
 		<h3 class="profile-username text-center">{{ auth()->user()->name }}</h3>
 		<span><h6>Roles</h6></span>

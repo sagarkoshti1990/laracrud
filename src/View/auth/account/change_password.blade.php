@@ -10,22 +10,25 @@
 @endsection
 
 @section('header')
-<section class="content-header">
-    <h1>
-        {{ trans('base.my_account') }}
-    </h1>
-    <ol class="breadcrumb">
-        <li>
-            <a href="{{ url('/') }}"></a>
-        </li>
-        <li>
-            <a href="{{ route('stlc.account.info') }}">{{ trans('base.my_account') }}</a>
-        </li>
-        <li class="active">
-            {{ trans('base.change_password') }}
-        </li>
-    </ol>
-</section>
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>
+                    <span class="far fa-id-card"></span>
+                    <span class="text-capitalize">{{ trans('stlc.my_account') }}</span>
+                </h1>
+            </div><!-- /.col -->
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{{ url(config('stlc.route_prefix'), 'dashboard') }}">{{ trans('stlc.dashboard') }}</a></li>
+                    <li class="breadcrumb-item"><a href="{{ route('stlc.account.info') }}" class="text-capitalize">{{ trans('stlc.my_account') }}</a></li>
+                    <li class="breadcrumb-item active">{{ trans('stlc.change_password') }}</li>
+                </ol>
+            </div><!-- /.col -->
+        </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+</div>
 @endsection
 
 @section('content')
@@ -36,8 +39,8 @@
     <div class="col-md-9">
         <form class="form" action="{{ route('stlc.account.password') }}" method="post">
             {!! csrf_field() !!}
-            <div class="box">
-                <div class="box-body p15 pb5 pt10 lara-profile-form">
+            <div class="card">
+                <div class="card-body lara-profile-form">
                     <div class="row">
                         <div class="col-md-12">
                             @if (session('success'))
@@ -78,7 +81,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="box-footer p15 pt0">
+                <div class="card-footer">
                     <button type="submit" class="btn bg-orange float-right btn-flat btn-labeled p5">Change Password</button>
                     <a href="{{ url(config('stlc.route_prefix')) }}" class="btn p5 btn-default float-left btn-flat btn-labeled">Cancel</a>
                 </div>

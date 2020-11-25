@@ -66,21 +66,19 @@ return [
     // (you then need to manually define the routes in your web.php)
     'setup_my_account_routes' => true,
 
-    'devloper_modules' => ['Roles'],
-    
     'restrictedModules' => [
         'menu' => [
             'Uploadables',
         ],
         'routeAdmin' => [
-            'Uploadables','Roles',
+            'Uploadables',
         ]
     ],
 
     'generateMenu' => [
         ["name" => "Dashboard","label" => 'My Dashboard',"link" => "dashboard","icon" => "fa fa-tachometer-alt","type" => 'custom'],
         ["name" => "Profile","label" => 'Profile',"link" => "#", "icon" => "fa fa-user-secret","type" => 'custom',"hierarchy" => 1,
-            'childMenu' => ["Roles","Employees"]
+            'childMenu' => ["Users","Roles"]
         ]
     ],
 

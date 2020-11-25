@@ -25,19 +25,19 @@
     <div class="row">
         <div class="col-md-12">
             {!! Form::open(array('url' => $crud->route.'/'.$setting->id, 'method' => 'put', 'id' => 'edit_form', "autocomplete"=>"off")) !!}
-                <div class="box">
-                    {{-- <div class="box-header with-border">
-                        <h4 class="box-title">{{ trans('stlc.edit') }}</h4>
+                <div class="card">
+                    {{-- <div class="card-header with-border">
+                        <h4 class="card-title">{{ trans('stlc.edit') }}</h4>
                     </div> --}}
-                    <div class="box-body">
+                    <div class="card-body">
                         @if(isset($src))
                             {{ Form::hidden('src', $src) }}
                         @endif
                         <div class="col-md-6">
                             @form($crud, [], ["col" => "1"])
                         </div>
-                    </div><!-- /.box-body -->
-                    <div class="box-footer">
+                    </div><!-- /.card-body -->
+                    <div class="card-footer">
                         @include('crud.inc.form_save_buttons')
                     </div>
                 </div>

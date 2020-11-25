@@ -3,22 +3,22 @@
 @section('content')
     <div class="row">
         <div class="col-md-12">
-            <div class="box box-widget widget-user mb-0 bg-info">
+            <div class="card card-widget widget-user mb-0 bg-info" style="min-height: 70px">
                 <div class="bg-dark-purple p-3">
                     <div class="row">
                         <div class="col-md-6">
-                            <h3 class="widget-user-username">{{ $module->$represent_attr }}</h3>
+                            <h3 class="widget-user-username fonttxt">{{ $module->$represent_attr }}</h3>
                             {{--  <h5 class="widget-user-desc">Founder &amp; CEO</h5>  --}}
                         </div>
                         <div class="col-md-6 text-right">
-                            <button data-toggle="modal" data-target="#add_field_modal" class="btn btn-flat bg-green btn-sm btn-with-icon">
+                            <button data-toggle="modal" data-target="#add_field_modal" class="btn btn-flat bg-green btn-sm btn-with-icon mb-2">
                                 <span class="ladda-label"><i class="fa fa-plus"></i> Field</span>
                             </button>
                         </div>
                     </div>
                 </div>
                 <div class="widget-user-image" style="top: 5px;">
-                    <span class="info-box-icon" style="border-radius:100%;height: 55px;width: 55px;font-size: 30px;line-height: 60px;"><i class="{{ $crud->module->icon }}"></i></span>
+                    <span class="img-circle elevation-2 py-1 px-2" style="font-size:30px;line-height:60px;"><i class="{{ $crud->module->icon }}"></i></span>
                 </div>
             </div>
         </div>
@@ -35,11 +35,11 @@
                 <div class="tab-content">
                     <div class="tab-pane fade in" id="tab-information">
                         <div class="tab-content">
-                            <div class="box">
-                                <div class="box-header with-border">
-                                    <h4 class="box-title">Information</h4>
+                            <div class="card">
+                                <div class="card-header with-border">
+                                    <h4 class="card-title">Information</h4>
                                 </div>
-                                <div class="box-body">
+                                <div class="card-body">
                                     @displayAll($crud, [], ["class" => "col-md-6"])
                                 </div>
                             </div>
@@ -47,8 +47,8 @@
                     </div>
                     <div class="tab-pane fade in active show" id="tab-Fields">
                         <div class="tab-content">
-                            <div class="box infolist">
-                                <div class="box-body table-responsive">
+                            <div class="card infolist">
+                                <div class="card-body table-responsive">
                                     <table id="crudTable" class="table table-bordered table-striped display crudTable">
                                         <thead class="table-success">
                                             <tr>

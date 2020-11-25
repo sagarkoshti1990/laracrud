@@ -131,6 +131,11 @@ return [
     'toggle_filters' => 'Toggle filters',
     'remove_filters' => 'Remove filters',
 
+    // account
+    'my_account' => 'My Account',
+    'change_password' => 'Change Password',
+    'update_account_info' => 'Update Account Info',
+
     // Fields
     'none_value' => 'None',
     'browse_uploads' => 'Browse uploads',

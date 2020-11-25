@@ -1,26 +1,34 @@
 @extends(config('stlc.stlc_layout_path','stlc::layouts.app'))
 
 @section('header')
-<section class="content-header">
-    <h1>
-        <span class="fa {{ $crud->icon }}"></span>
-        <span class="text-capitalize">{{ $crud->labelPlural }}</span>
-        <small>List.</small>
-    </h1>
-    <ol class="breadcrumb">
-        <li class="breadcrumb-item"><a href="{{ url(config('stlc.route_prefix'), 'dashboard') }}">Dashboard</a></li>
-        <li class="breadcrumb-item"><a href="{{ url($crud->route) }}" class="text-capitalize">{{ $crud->labelPlural }}</a></li>
-        <li class="breadcrumb-item active">List</li>
-    </ol>
-</section>
+<div class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>
+                    <span class="fa {{ $crud->icon }}"></span>
+                    <span class="text-capitalize">{{ $crud->labelPlural }}</span>
+                    <small>{{trans('stlc.list')}}.</small>
+                </h1>
+            </div><!-- /.col -->
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="{{ url(config('stlc.route_prefix'), 'dashboard') }}">{{ trans('stlc.dashboard') }}</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url($crud->route) }}" class="text-capitalize">{{ $crud->labelPlural }}</a></li>
+                    <li class="breadcrumb-item active">{{trans('stlc.list')}}</li>
+                </ol>
+            </div><!-- /.col -->
+        </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+</div>
 @endsection
 
 @section('content')
     <div class="row">
         <div class="col-md-12">
-            <div class="box mob-box">
+            <div class="card mob-card">
                 @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.button_stack', ['stack' => 'top'])
-                <div class="box-body">
+                <div class="card-body">
                     <table id="crudTable" class="table table-bordered table-striped display crudTable">
                         <thead class="table-success">
                             <tr>
@@ -57,8 +65,8 @@
                             @endforeach
                         </tbody>
                     </table>
-                </div><!-- /.box-body -->
-            </div><!-- /.box -->
+                </div><!-- /.card-body -->
+            </div><!-- /.card -->
         </div>
     </div>
 @endsection

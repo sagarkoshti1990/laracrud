@@ -79,6 +79,9 @@ class CreateUsersTable extends Migration
                 'required' => true,
 				'nullable_required' => true,
 			]
+        ],[
+            'model' => config('stlc.user_model'),
+            'controller' => \Sagartakle\Laracrud\Controllers\UsersController::class
         ]);
         
         /*
