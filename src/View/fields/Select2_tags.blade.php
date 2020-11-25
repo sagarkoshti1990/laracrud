@@ -1,6 +1,6 @@
 @php 
     if(isset($field['multiple']) && $field['multiple']) {
-        $value = old($field['name']) ? old($field['name']) : (isset($field['value']) ? json_decode($field['value']) : (isset($field['default']) ? $field['default'] : '' ));
+        $value = (old($field['name']) && is_array(old($field['name']))) ? old($field['name']) : (old($field['name']) && is_array(json_decode(old($field['name'])))) ? json_decode(old($field['name'])) : (isset($field['value']) ? json_decode($field['value']) : (isset($field['default']) ? $field['default'] : '' ));
     } else {
         $value = old($field['name']) ? old($field['name']) : (isset($field['value']) ? $field['value'] : (isset($field['default']) ? $field['default'] : '' ));
     }

@@ -1,6 +1,13 @@
 @php
-    if (isset($field['value'])) {
-        $field['value'] = \Carbon::parse($field['value'])->format('m-Y');
+    $value = isset($field['default']) ? $field['default'] : '';
+    if(old($field['name'])) {
+        try {
+            $value = \Carbon::parse(old($field['name']))->format('m-Y');
+        } catch (\Exception $e) {
+            $value = old($field['name']);
+        }
+    } else if (isset($field['value'])) {
+        $value = \Carbon::parse($field['value'])->format('m-Y');
     }
 @endphp
 <!-- html5 month input -->
@@ -11,7 +18,7 @@
     <input
         type="text"
         name="{{ $field['name'] }}"
-        value="{{ old($field['name']) ? old($field['name']) : (isset($field['value']) ? $field['value'] : (isset($field['default']) ? $field['default'] : '' )) }}"
+        value="{{ $value }}"
         @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_attributes')
         data-format="MM-YYYY"
         data-template="MMM YYYY"

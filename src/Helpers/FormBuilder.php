@@ -714,7 +714,7 @@ class FormBuilder
                     $upload = config('stlc.upload_model')::find($value);
                     if(isset($upload->id)) {
                         $url_file = url("files/" . $upload->hash . DIRECTORY_SEPARATOR . $upload->name);
-                        $img = CustomHelper::showHtml($value);
+                        $img = CustomHelper::showHtml($value,'uploaded_file',false);
                     }
                 }
                 if(isset($html) && $html == true) {
@@ -741,7 +741,7 @@ class FormBuilder
                                     if(isset($html) && $html == "value") {
                                         $url_file[] = url("files/" . $upload->hash . DIRECTORY_SEPARATOR . $upload->name);
                                     } else {
-                                        $img .= CustomHelper::showHtml($value,'uploaded_file2');
+                                        $img .= CustomHelper::showHtml($upload->id,'uploaded_file2',false);
                                     }
                                 }
                             }
@@ -794,7 +794,7 @@ class FormBuilder
                         if(isset($html) && $html == "value") {
                             $value = url("files/" . $upload->hash . DIRECTORY_SEPARATOR . $upload->name);
                         } else {
-                            $value = CustomHelper::showHtml($value);
+                            $value = CustomHelper::showHtml($value,'uploaded_file',false);
                         }
                     } else {
                         $value = 'Uploaded image not found.';
@@ -1036,6 +1036,9 @@ class FormBuilder
         $col_class = "col-12 col-sm-".(($col > 0) ? 12/$col : 6);
         $field_names = collect($field_names)->chunk($col);
         foreach($field_names as $key => $field_parent) {
+            if($fuction == "display") {
+                $out .="<div class='list-group-item'>";
+            }
             $out .= "<div class='row'>";
             foreach($field_parent as $key => $field) {
                 if(isset($crud->fields[$field]->id)) {
@@ -1068,6 +1071,9 @@ class FormBuilder
                 }
             }
             $out .= "</div>";
+            if($fuction == "display") {
+                $out .= "</div>";
+            }
         }
         return $out;
     }

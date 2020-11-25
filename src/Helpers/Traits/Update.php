@@ -56,7 +56,7 @@ trait Update
                     );
                 }
             }
-            config('stlc.activity_model')::log(config('App.activity_log.UPDATED'), $this, ['new' => $item, 'old' => $old_item]);
+            config('stlc.activity_model')::log(config('App.activity_log.UPDATED','Updated'), $this, ['new' => $item, 'old' => $old_item]);
             if(isset($transaction) && $transaction == true) {
                 \DB::commit();
             }

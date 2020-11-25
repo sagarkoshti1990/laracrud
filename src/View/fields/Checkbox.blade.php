@@ -5,6 +5,8 @@
     $field['wrapperAttributes']['class'] = "form-group";
     if((old($field['name'])) && is_array(old($field['name']))) {
         $optionValue = old($field['name']);
+    } else if(old($field['name']) && is_array(json_decode(old($field['name'])))) {
+        $optionValue = json_decode(old($field['name']), true);
     } else if((isset($field['value'])) && is_array(json_decode($field['value']))) {
         $optionValue = json_decode($field['value'], true);
     } else if((isset($field['default'])) && is_array(json_decode($field['default']))) {

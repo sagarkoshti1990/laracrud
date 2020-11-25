@@ -15,6 +15,7 @@ return [
 	'sidebar' => 'sidebar-light-indigo',
 	'text_color' => 'accent-indigo text-sm',
 	'brand_logo' => 'navbar-indigo text-center text-white',
+	'show_bg' => 'bg-indigo',
 	/*
 		navbar : navbar-light navbar-[color], navbar-dark navbar-[color]
 		sidebar : sidebar-light-[color], sidebar-dark-[color]

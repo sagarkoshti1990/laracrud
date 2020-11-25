@@ -27,7 +27,7 @@
         @elseif (isset($field['options']) && is_array($field['options']) && count($field['options']))
             @foreach ($field['options'] as $key => $optionValue)
                 <option value="{{ $optionValue }}"
-                    @if (isset($value) && (is_array($value) && in_array($optionValue, $value)))
+                    @if (isset($value) && ((is_array($value) && in_array($optionValue, $value)) || (is_array(json_decode($value)) && in_array($optionValue, json_decode($value)))))
                         selected
                     @endif
                 >{{ $optionValue }}</option>

@@ -3,7 +3,7 @@
 @section('content')
     <div class="row">
         <div class="col-md-12">
-            <div class="card card-widget widget-user mb-0 bg-info" style="min-height: 70px">
+            <div class="card card-widget widget-user mb-0 {{ config('stlc.show_bg') }}" style="min-height: 70px">
                 <div class="bg-dark-purple p-3">
                     <div class="row">
                         <div class="col-md-6">
@@ -37,7 +37,7 @@
                                 <div class="card-header with-border">
                                     <h4 class="card-title">Information</h4>
                                 </div>
-                                <div class="card-body">
+                                <div class="card-body list-group-flush">
                                     @displayAll($crud, ['remove' => ['json_type']], ["class" => "col-md-6"])
                                 </div>
                             </div>

@@ -27,16 +27,17 @@ trait Polymorphic
         $module = config('stlc.module_model')::where('table_name',$this->getTable())->first();
         $field = $module->fields->firstWhere('name',$attr);
         $polymorphic_module = $field->getJsonModule();
+        $selectData = [];
         if(isset($polymorphic_module->id)) {
             $ralasion_field = $polymorphic_module->fields->firstWhere('name',$polymorphic_module->represent_attr);
             $ralasion_module = $ralasion_field->getJsonModule();
             if(isset($ralasion_module->id)) {
                 $polymorphic_field = $polymorphic_module->fields->firstWhere('field_type.name','Polymorphic_select');
-                $ralasion = $this->morphToMany($ralasion_module->model, $polymorphic_field->name,$polymorphic_module->table_name,null,$polymorphic_module->represent_attr)->withTimestamps()->where('attribute',$attr);
+                $ralasion = $this->morphToMany($ralasion_module->model, $polymorphic_field->name,$polymorphic_module->table_name,null,$polymorphic_module->represent_attr)->withTimestamps()->wherePivot('attribute',$attr);
                 foreach($value as $key => $val_id) {
-                    $value[$val_id] = ['attribute' => $attr];
+                    $selectData[$val_id] = ['attribute' => $attr];
                 }
-                $ralasion->sync($value);
+                $ralasion->sync($selectData);
             }
         }
         return $this;

@@ -1878,7 +1878,7 @@ class Module extends Model
                     if(\Str::startsWith($field->json_values, "@") && (isset($request->{$field['name']}) || (is_array($request) && isset($request[$field['name']])))) {
                         $foreign_table_name = \Str::plural(ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', str_replace("@", "", $field->json_values))), '_'));
                         $col .= "exists:" . $foreign_table_name .',id';
-                    } else if(isset($field->json_values) && is_array($json_arrya = json_decode($field->json_values)) && count($json_arrya) > 0 && !in_array($ftypes[$field['field_type']["id"]], ["Table"])) {
+                    } else if(isset($field->json_values) && is_array($json_arrya = json_decode($field->json_values)) && count($json_arrya) > 0 && !in_array($ftypes[$field['field_type']["id"]], ["Table",'Select2_tags','Select2_multiple_tags'])) {
                         $col .= "in:" . implode(',',$json_arrya);
                     }
                     

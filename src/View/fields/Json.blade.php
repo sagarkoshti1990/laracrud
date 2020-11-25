@@ -27,7 +27,7 @@
                         <input
                             type="{{$field['attributes']['input_type']}}"
                             name="{{ $field['name'].'_'.$value }}"
-                            value="{{ old($field['name'].'_'.$value) ? old($field['name'].'_'.$value) : (isset($field['value'], json_decode($field['value'])->$value) ? json_decode($field['value'])->$value : (isset($field['default']) ? $field['default'] : '' )) }}"
+                            value="{{ old($field['name'].'_'.$value) ? old($field['name'].'_'.$value) : (old($field['name']) && isset(json_decode(old($field['name']))->$value)) ? json_decode(old($field['name']))->$value : (isset($field['value'], json_decode($field['value'])->$value) ? json_decode($field['value'])->$value : (isset($field['default']) ? $field['default'] : '' )) }}"
                             @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_attributes')
                             placeholder="Enter {{ $value }}"
                         >

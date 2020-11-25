@@ -266,7 +266,7 @@ class CustomHelper
      * @param $upload_id upload id of image / file
      * @return string file / image url
      */
-    public static function showHtml($upload_id = null,$uploaded_file = 'uploaded_file')
+    public static function showHtml($upload_id = null,$uploaded_file = 'uploaded_file',$removable = true)
     {
         if(class_exists(config('stlc.upload_model'))) {
             $upload = config('stlc.upload_model')::find($upload_id);
@@ -315,7 +315,9 @@ class CustomHelper
                         <p class="card-text">'.$str_name.'</p>
                     </div>
                 </div>';
-            $img .= "<i title='Remove File' class='fa fa-times'></i>";
+            if($removable == true) {
+                $img .= "<i title='Remove File' class='fa fa-times'></i>";
+            }
             $img .= "</a>";
             $hide = "d-none";
         } else {

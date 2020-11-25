@@ -33,6 +33,7 @@ class Activity extends Model
      */
     protected $fillable = [
         'user_id',
+        'user_type',
         'context_type',
         'context_id',
         'action',
@@ -71,7 +72,7 @@ class Activity extends Model
      */
     public function user()
     {
-        return $this->belongsTo(config('auth.providers.users.model'), 'user_id');
+        return $this->morphTo()->withTrashed();
     }
     
     /**
@@ -219,6 +220,7 @@ class Activity extends Model
         // set the user ID
         if (!isset($data['user_id'])) {
             $data['user_id'] = Auth::check() ? Auth::id() : null;
+            $data['user_type'] = Auth::check() ? get_class(Auth::user()) : null;
         }
 
         // allow "updated" boolean to set action and replace activity text verbs with "Updated"

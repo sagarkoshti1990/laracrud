@@ -8,27 +8,27 @@
         }
     @endphp
     @if($next_date)
-        <li class="time-label">
+        <div class="time-label">
             <span class="bg-green">
             {{ $created_at->format('d-M-Y') }}
             </span>
-        </li>
+        </div>
     @endif
-    <li>
+    <div>
         {!! $activity->getIconMarkup() !!}
         <div class="timeline-item">
             <span class="time"><i class="fa fa-clock"></i> {{ Carbon::parse($activity->created_at)->format('g:i a') }}</span>
-            <h3 class="timeline-header">Activity By - <a href="#">{{ $activity->user->name ?? "unknown" }}</a></h3>
+            <h3 class="timeline-header">Activity By - <a href="#">@if(isset($activity->user_id) && class_exists($activity->user_type)) {{ $activity->user->name }} @else unknown @endif</a></h3>
             <div class="timeline-body">
                 {!! $activity->getHtmlDescription() !!}
             </div>
         </div>
-    </li>
+    </div>
 @endforeach
 
-<li>
+<div>
     <i class="fa fa-clock bg-gray"></i>
-</li>
+</div>
 <div class="text-center">
 <button class="crm-load-more btn btn-link btn-sm" page-number>load more</button>
 </div>
