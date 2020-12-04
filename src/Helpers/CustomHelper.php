@@ -43,11 +43,11 @@ class CustomHelper
         $array['label'] = ucfirst(\Str::plural(preg_replace('/[A-Z]/', ' $0', $module_name)));
         $array['table_name'] = \Str::plural(ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', $module_name)), '_'));
         if($module_name == "Users") {
-            $array['model'] = "\\App\\".ucfirst(\Str::singular($module_name));
+            $array['model'] = "App\\".ucfirst(\Str::singular($module_name));
         } else {
-            $array['model'] = "\\App\Models\\".ucfirst(\Str::singular($module_name));
+            $array['model'] = "App\Models\\".ucfirst(\Str::singular($module_name));
         }
-        $array['controller'] = "\\App\Http\Controllers\Admin\\".$array['name'] . "Controller";
+        $array['controller'] = "App\Http\Controllers\Admin\\".$array['name'] . "Controller";
         
         if(isset($module_compair) && collect($module_compair)->count() > 0) {
             $arr = [];
