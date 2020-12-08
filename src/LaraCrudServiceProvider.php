@@ -44,14 +44,14 @@ class LaraCrudServiceProvider extends ServiceProvider
 
         $this->app->booting(function() {
             $loader = AliasLoader::getInstance();
-            $loader->alias('FormBuilder', FormBuilder::class);
-            $loader->alias('CustomHelper', CustomHelper::class);
-            $loader->alias('Module', Module::class);
-            $loader->alias('Field', Field::class);
-            $loader->alias('FieldType', FieldType::class);
-            $loader->alias('ObjectHelper', ObjectHelper::class);
+            $loader->alias('FormBuilder', config('stlc.form_builder',FormBuilder::class));
+            $loader->alias('CustomHelper', config('stlc.custom_helper',CustomHelper::class));
+            $loader->alias('Module', config('stlc.module_model',Module::class));
+            $loader->alias('Field', config('stlc.field_model',Field::class));
+            $loader->alias('FieldType', config('stlc.field_type_model',FieldType::class));
+            $loader->alias('ObjectHelper', config('stlc.object_helper',ObjectHelper::class));
             $loader->alias('Carbon', \Carbon\Carbon::class);
-            $loader->alias('Activity', Activity::class);
+            $loader->alias('Activity', config('stlc.activity_model',Activity::class));
         });
     }
 
@@ -107,27 +107,27 @@ class LaraCrudServiceProvider extends ServiceProvider
 
         // Form Input Maker
         Blade::directive('input', function ($expression) {
-            return "<?php echo FormBuilder::input(".$expression."); ?>";    
+            return "<?php echo \FormBuilder::input(".$expression."); ?>";    
         });
         
         // Form Form Maker
         Blade::directive('form', function ($expression) {
-            return "<?php echo FormBuilder::form(".$expression."); ?>";
+            return "<?php echo \FormBuilder::form(".$expression."); ?>";
         });
         
         // Form Maker - Display Values
         Blade::directive('display', function ($expression) {
-            return "<?php echo FormBuilder::display(".$expression."); ?>";
+            return "<?php echo \FormBuilder::display(".$expression."); ?>";
         });
         
         // Form Maker - DisplayAll Values
         Blade::directive('displayAll', function ($expression) {
-            return "<?php echo FormBuilder::displayAll(".$expression."); ?>";
+            return "<?php echo \FormBuilder::displayAll(".$expression."); ?>";
         });
         
         // Form Maker - Check Whether User has Module Access
         Blade::directive('access', function ($expression) {
-            return "<?php if(FormBuilder::access(".$expression.")) { ?>";
+            return "<?php if(\FormBuilder::access(".$expression.")) { ?>";
         });
         Blade::directive('endaccess', function ($expression) {
             return "<?php } ?>";
@@ -135,30 +135,22 @@ class LaraCrudServiceProvider extends ServiceProvider
         
         // Form Maker - Check Whether User has Module Access
         Blade::directive('pageAccess', function ($expression) {
-            return "<?php if(FormBuilder::pageAccess(".$expression.")) { ?>";
+            return "<?php if(\FormBuilder::pageAccess(".$expression.")) { ?>";
         });
         Blade::directive('endpageAccess', function ($expression) {
             return "<?php } ?>";
         });
-
-        // Form Maker - Check Whether User has Module Field Access
-        Blade::directive('field_access', function ($expression) {
-            return "<?php if(FormBuilder::field_access(".$expression.")) { ?>";
-        });
-        Blade::directive('endfield_access', function ($expression) {
-            return "<?php } ?>";
-        });
-
+        
         // Form Maker - Check Whether User has Module Access
         Blade::directive('hasRoles', function ($expression) {
-            return "<?php if(\Auth::user()->hasRoles(".$expression.")) { ?>";
+            return "<?php if(\Module::user()->hasRoles(".$expression.")) { ?>";
         });
         Blade::directive('endhasRoles', function ($expression) {
             return "<?php } ?>";
         });
 
         Blade::directive('ajprint', function ($expression) {
-            return "<?php CustomHelper::ajprint(".$expression.") ?>";
+            return "<?php \CustomHelper::ajprint(".$expression.") ?>";
         });
     }
 }

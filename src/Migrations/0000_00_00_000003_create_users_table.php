@@ -2,9 +2,6 @@
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
-use Sagartakle\Laracrud\Models\Module;
-use Sagartakle\Laracrud\Models\FieldType;
-use Sagartakle\Laracrud\Models\Field;
 
 class CreateUsersTable extends Migration
 {
@@ -15,7 +12,7 @@ class CreateUsersTable extends Migration
      */
     public function up()
     {
-        Module::generate('Users', 'users', 'last_name', 'fa fa-users', [
+        \Module::generate('Users', 'users', 'last_name', 'fa fa-users', [
             [
 				'name' => 'title',
 				'label' => 'Title',
@@ -85,7 +82,7 @@ class CreateUsersTable extends Migration
         ]);
         
         /*
-        Module::generate('Users' 'users', 'last_name', 'fa fa-users', [
+        \Module::generate('Users' 'users', 'last_name', 'fa fa-users', [
             [
                 'name' => 'name',
                 'label' => 'Name',

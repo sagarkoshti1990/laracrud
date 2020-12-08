@@ -154,7 +154,7 @@ jQuery(document).ready(function($) {
 
     select_data($('#add_form :input[name="json_type"]'));
 
-    $('#add_form :input[name="json_type"]').on('ifChecked',function(e){
+    $('#add_form :input[name="json_type"]').on('change',function(e){
         select_data(this);
     });
 
@@ -182,8 +182,8 @@ jQuery(document).ready(function($) {
             $(":input#json_values").select2({
                 placeholder: "Select Module",
                 ajax: {
-                    url: "{{ url(config('lara.base.route_prefix').'/data_select') }}",
-                    type: "get",
+                    url: "{{ url(config('stlc.stlc_route_prefix').'/data_select') }}",
+                    type: "Get",
                     dataType: 'json',
                     delay: 250,
                     data: function (params) {

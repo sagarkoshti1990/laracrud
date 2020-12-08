@@ -18,7 +18,7 @@ Route::group([
     'namespace'  => '\\',
 ], function () {
     if(Schema::hasTable('modules')) {
-        $modules = config('stlc.module_model')::whereNotIn('name',config('stlc.restrictedModules.routeAdmin',[]))->get();
+        $modules = \Module::whereNotIn('name',config('stlc.restrictedModules.routeAdmin',[]))->get();
         if(isset($modules) && count($modules)) {
             foreach ($modules as $key => $module) {
                 Crud::resource($module->table_name, $module->controller);
@@ -44,7 +44,6 @@ Route::group([
     
     // modules
     Crud::resource("modules", "ModulesController");
-    Crud::resource('roles', 'RolesController');
     Crud::resource('uploads', 'UploadsController');
     Route::get('data_select', 'ModulesController@select2');
     Route::get('fields', 'ModulesController@index');

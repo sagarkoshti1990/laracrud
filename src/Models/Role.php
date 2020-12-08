@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 // use Actuallymab\LaravelComment\Commentable;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Sagartakle\Laracrud\Helpers\Traits\ActivityTrait;
-use Sagartakle\Laracrud\Models\Module;
 
 class Role extends Model
 {
@@ -47,7 +46,7 @@ class Role extends Model
      */
     public Static function get_module()
     {
-        return config('stlc.module_model')::where('name', 'Roles')->first();
+        return \Module::where('name', 'Roles')->first();
     }
 
     /**

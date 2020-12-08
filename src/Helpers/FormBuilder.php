@@ -6,9 +6,6 @@ use Schema;
 use Illuminate\Support\Str;
 use Collective\Html\FormFacade as Form;
 use DB;
-use Sagartakle\Laracrud\Models\Module;
-use Sagartakle\Laracrud\Models\FieldType;
-use Sagartakle\Laracrud\Models\Field;
 use Sagartakle\Laracrud\Models\Upload;
 use Sagartakle\Laracrud\Models\Page;
 
@@ -126,7 +123,7 @@ class FormBuilder
         }
 
         if(isset($json_values) && !empty($json_values) && is_string($json_values) && \Str::startsWith($json_values, "@")) {
-            $module = config('stlc.module_model')::where('name', str_replace("@", "", $json_values))->first();
+            $module = \Module::where('name', str_replace("@", "", $json_values))->first();
             if(!isset($module->model)) {
                 $json_values_arr = explode('|',$fields[$field_name]->json_values);
                 $module = (object)[];
@@ -608,7 +605,7 @@ class FormBuilder
     public static function display($crud, $field_name, $arr = ['class' => 'row'], $labaleclass = "col-md-4 col-sm-6 col-xs-6", $valueclass = 'col-md-8 col-sm-6 col-xs-6')
     {
         // Check Field View Access
-        // if(Module::hasFieldAccess($crud->id, $crud->fields[$field_name]['id'], $access_type = "view")) {
+        // if(\Module::hasFieldAccess($crud->id, $crud->fields[$field_name]['id'], $access_type = "view")) {
             $fields = $crud->fields;
             if(!isset($fields[$field_name]->name)) {
                 return;
@@ -758,7 +755,7 @@ class FormBuilder
                 break;
             case 'Hidden':
                 if(\Str::startsWith($fields[$field_name]->json_values, "@")) {
-                    $module = config('stlc.module_model')::where('name',substr($fields[$field_name]->json_values, 1))->first();
+                    $module = \Module::where('name',substr($fields[$field_name]->json_values, 1))->first();
                     if(!isset($module->model)) {
                         $json_values_arr = explode('|',$fields[$field_name]->json_values);
                         $module = (object)[];
@@ -841,7 +838,7 @@ class FormBuilder
                     $ps_type = $item->{$field_name.'_type'};
                 }
                 if(isset($ps_type)) {
-                    $ps_module = config('stlc.module_model')::where('model',$item->{$field_name.'_type'})->first();
+                    $ps_module = \Module::where('model',$item->{$field_name.'_type'})->first();
                     $ps_item = (new $item->{$field_name.'_type'})->find(($item->{$field_name.'_id'} ?? ""));
                     if(isset($ps_item->id) && isset($ps_module->id)) {
                         if(isset($ps_module->name) && in_array($ps_module->name,['MasterUsers','Employees','PartnerUsers'])) {
@@ -876,7 +873,7 @@ class FormBuilder
             case 'Select2':
             case 'Select2_from_ajax':
                 if(\Str::startsWith($fields[$field_name]->json_values, "@")) {
-                    $module = config('stlc.module_model')::where('name',substr($fields[$field_name]->json_values, 1))->first();
+                    $module = \Module::where('name',substr($fields[$field_name]->json_values, 1))->first();
                     if(!isset($module->model)) {
                         $json_values_arr = explode('|',$fields[$field_name]->json_values);
                         $module = (object)[];
@@ -900,7 +897,7 @@ class FormBuilder
                 if(\Str::startsWith($fields[$field_name]->json_values, "@")) {
                     if(isset($value) && is_array(json_decode($value))) {
                         foreach(json_decode($value) as $val) {
-                            $module = config('stlc.module_model')::where('name',substr($fields[$field_name]->json_values, 1))->first();
+                            $module = \Module::where('name',substr($fields[$field_name]->json_values, 1))->first();
                             if(!isset($module->model)) {
                                 $json_values_arr = explode('|',$fields[$field_name]->json_values);
                                 $module = (object)[];
@@ -1042,7 +1039,7 @@ class FormBuilder
             $out .= "<div class='row'>";
             foreach($field_parent as $key => $field) {
                 if(isset($crud->fields[$field]->id)) {
-                    $field_type_name = config('stlc.field_model')::find($crud->fields[$field]->id)->field_type->name;
+                    $field_type_name = \Field::find($crud->fields[$field]->id)->field_type->name;
                 } else if(isset($crud->fields[$field]->field_type)){
                     if(is_object($crud->fields[$field])) {
                         $field_type_name = $crud->fields[$field]->field_type;
@@ -1089,8 +1086,7 @@ class FormBuilder
      */
     public static function access($crud_id, $access_type = "view", $user_id = 0)
     {
-        // Check Module access by hasAccess method
-        return config('stlc.module_model')::hasAccess($crud_id, $access_type, $user_id);
+        return \Module::hasAccess($crud_id, $access_type, $user_id);
     }
     
     /**
@@ -1107,7 +1103,7 @@ class FormBuilder
         // Check Module access by hasAccess method
         if(!class_exists(\App\Models\Page::class)) {
             $page = Page::where('name',$page_name)->first();
-            return config('stlc.module_model')::hasAccess($page, $access_type, $user_id);
+            return \Module::hasAccess($page, $access_type, $user_id);
         } else {
             return true;
         }
@@ -1126,6 +1122,6 @@ class FormBuilder
     public static function field_access($crud_id, $field_id, $access_type = "view", $user_id = 0)
     {
         // Check Module Field access by hasFieldAccess method
-        return config('stlc.module_model')::hasFieldAccess($crud_id, $field_id, $access_type, $user_id);
+        return \Module::hasFieldAccess($crud_id, $field_id, $access_type, $user_id);
     }
 }

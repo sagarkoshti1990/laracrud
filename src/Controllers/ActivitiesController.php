@@ -8,16 +8,12 @@ use Illuminate\Http\Request;
 use DB;
 use Validator;
 use Yajra\DataTables\Datatables;
-use Sagartakle\Laracrud\Models\Module;
-use Sagartakle\Laracrud\Models\Field;
-use Sagartakle\Laracrud\Models\Activity;
-use Sagartakle\Laracrud\Helpers\ObjectHelper;
 
 class ActivitiesController extends StlcController
 {
     function __construct() {
         
-        $this->crud = new ObjectHelper;
+        $this->crud = new \ObjectHelper;
         $module = (object)[];
         $module->name = "Activities";
         $module->label = "Activities";
@@ -25,7 +21,7 @@ class ActivitiesController extends StlcController
         $module->controller = "ActivitiesController";
         $module->represent_attr = "user_id";
         $module->icon = "fa fa-history";
-        $module->model = config('stlc.activity_model');
+        $module->model = \Activity::class;
 
         $module->fields = [
             [
@@ -68,8 +64,8 @@ class ActivitiesController extends StlcController
     public function index(Request $request)
     {
         $crud = $this->crud;
-		if(\Auth::user()->isSuperAdmin()) {
-            $activities = config('stlc.activity_model')::all();
+		if(\Module::user()->isSuperAdmin()) {
+            $activities = \Activity::all();
             $this->data['crud'] = $crud;
             $this->data['title'] = ucfirst($crud->labelPlural);
             return view('stlc::Activities.index', $this->data);
@@ -109,14 +105,14 @@ class ActivitiesController extends StlcController
      */
     public function get_data(Request $request, $id)
     {
-        if(config('stlc.module_model')::hasAccess("Activities", "view")) {
+        if($this->crud->hasAccess('view')) {
             if(isset($request->src)) {
                 $src = url($request->src);
             } else {
                 $src = Null;
             }
 
-            $activity = config('stlc.activity_model')::find($id);
+            $activity = \Activity::find($id);
             if(isset($activity->id)) {
                 
                 return response()->json([

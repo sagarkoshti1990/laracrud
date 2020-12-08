@@ -13,7 +13,7 @@
     @stack('p_before_styles')
     <link rel="stylesheet" href="{{ asset('node_modules/admin-lte/dist/css/AdminLTE.min.css') }}">
     <link href="{{ asset('public/css/app.css') }}" rel="stylesheet" type="text/css" />
-	@stack('p_after_styles')
+    @stack('p_after_styles')
 </head>
 <body class="sidebar-mini {{config('stlc.text_color','')}}" bsurl="{{ url('') }}" adminRoute="{{ config('stlc.route_prefix') }}">
     @yield('p_content')

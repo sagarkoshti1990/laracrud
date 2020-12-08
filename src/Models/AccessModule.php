@@ -56,7 +56,7 @@ class AccessModule extends Model
      */
     public function module()
     {
-        return $this->belongsTo('Sagartakle\Laracrud\\Module','module_id');
+        return $this->belongsTo('Sagartakle\Laracrud\Module','module_id');
     }
 
     /*

@@ -1,4 +1,4 @@
-@if (Auth::check())
+@if (isset(\Module::user()->id))
 <aside class="main-sidebar elevation-4 {{config('stlc.sidebar','sidebar-dark-primary')}}">
 	<!-- sidebar: style can be found in sidebar.less -->
 	<a href="{{ url('/') }}" class="brand-link {{config('stlc.brand_logo','')}}">
@@ -10,10 +10,10 @@
 		<!-- Sidebar user panel -->
 		<div class="user-panel mt-3 mb-3 d-flex">
 			<div class="image">
-				<img src="{{ Auth::user()->profile_pic() }}" class="img-circle elevation-2" alt="User Image">
+				<img src="{{ \Module::user()->profile_pic() }}" class="img-circle elevation-2" alt="User Image">
 			</div>
 			<div class="info pt-0 pb-2">
-				<span class="nav-header">{{ Auth::user()->name }}</span>
+				<span class="nav-header">{{ \Module::user()->name }}</span>
 				<a class="d-block small" href="{{ url(config('stlc.route_prefix').'/logout') }}">
 					<i class="fa fa-sign-out"></i>
 					<span>Logout</span>

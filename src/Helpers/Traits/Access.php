@@ -2,7 +2,6 @@
 
 namespace Sagartakle\Laracrud\Helpers\Traits;
 
-use Sagartakle\Laracrud\Models\Module;
 use App\Models\Page;
 
 trait Access
@@ -37,7 +36,7 @@ trait Access
         if (in_array($permission, $this->access)) {
             return true;
         } else if(isset($this->module->name)) {
-            return config('stlc.module_model')::hasAccess($this, $permission);
+            return \Module::hasAccess($this, $permission);
         } else {
             return false;
         }
@@ -52,7 +51,7 @@ trait Access
      */
     public function hasRoles($roles)
     {
-        return \Auth::user()->hasRoles($roles);
+        return \Module::user()->hasRoles($roles);
     }
     /**
      * Check if a permission is enabled for a Crud Panel. Return false if not.
@@ -65,7 +64,7 @@ trait Access
     {
         $page = Page::where('name',$page_name)->first();
         if(isset($page->name) && $page->name == $page_name) {
-            return config('stlc.module_model')::hasAccess($page, $permission);
+            return \Module::hasAccess($page, $permission);
         } else {
             return false;
         }
@@ -81,7 +80,7 @@ trait Access
     {
         foreach ($permission_array as $key => $permission) {
             if(isset($this->module->name)) {
-                return config('stlc.module_model')::hasAccess($this, $permission);
+                return \Module::hasAccess($this, $permission);
             } else if (in_array($permission, $this->access)) {
                 return true;
             }
@@ -101,7 +100,7 @@ trait Access
     {
         foreach ($permission_array as $key => $permission) {
             if(isset($this->module->name)) {
-                return config('stlc.module_model')::hasAccess($this, $permission);
+                return \Module::hasAccess($this, $permission);
             } else if (! in_array($permission, $this->access)) {
                 return false;
             }
@@ -121,7 +120,7 @@ trait Access
     public function hasAccessOrFail($permission)
     {
         if(isset($this->module->name)) {
-            return config('stlc.module_model')::hasAccess($this, $permission);
+            return \Module::hasAccess($this, $permission);
         } else if(! in_array($permission, $this->access)) {
             abort(403, trans('stlc.unauthorized_access'));
         }

@@ -9,10 +9,6 @@ use Exception;
 use Log;
 use DB;
 
-use Sagartakle\Laracrud\Models\Field;
-use Sagartakle\Laracrud\Models\FieldType;
-use Sagartakle\Laracrud\Helpers\ObjectHelper;
-use Sagartakle\Laracrud\Helpers\CustomHelper;
 use Sagartakle\Laracrud\User;
 use Sagartakle\Laracrud\Models\AccessModule;
 // use Sagartakle\Laracrud\Models\Page;
@@ -51,7 +47,7 @@ class Module extends Model
         }
         
 		if(isset($module)) {
-            $crud = new ObjectHelper;
+            $crud = new \ObjectHelper;
             
             if(isset($data->setModel) || isset($data['setModel'])) {
                 $crud->setModel(($data->setModel ?? $data['setModel']));
@@ -104,6 +100,17 @@ class Module extends Model
 		}
     }
     
+    public static function user()
+    {
+        $guards = array_keys(config('auth.guards',[]));
+        foreach($guards as $guard) {
+            if(\Auth::guard($guard)->check() && \Auth::guard($guard)->user()) {
+                return \Auth::guard($guard)->user();
+            }
+        }
+        return null;
+    }
+
     /**
      * A user belongs to some users of the model associated with its guard.
      */
@@ -191,7 +198,7 @@ class Module extends Model
      */
     public static function generate($module_name, $table_name, $represent_attr, $icon = "fa fa-smile", $fields = [],$module = [])
     {
-        $names = CustomHelper::generateModuleNames($module_name);
+        $names = \CustomHelper::generateModuleNames($module_name);
         if(is_array($module) && count($module) > 0) {
             $names = array_merge($names,$module);
         }
@@ -221,7 +228,7 @@ class Module extends Model
                 $module = [];
             }
             if(Schema::hasTable('field_types')) {
-                $ftypes = config('stlc.field_type_model')::getFTypes();
+                $ftypes = \FieldType::getFTypes();
             } else {
                 $ftypes = [];
             }
@@ -230,7 +237,7 @@ class Module extends Model
                 Schema::table($table_name, function (Blueprint $table) use ($fields, $module, $ftypes) {
                     foreach($fields as $key => $field) {
                         if(Schema::hasTable('fields') && isset($module->id)) {
-                            $mod = config('stlc.field_model')::where('module_id', $module->id)->where('name', $field->name)->first();
+                            $mod = \Field::where('module_id', $module->id)->where('name', $field->name)->first();
                         }
                         if(isset($mod->id)) {
                             $field->id = $mod->id;
@@ -244,7 +251,7 @@ class Module extends Model
                         } else {
                             // Create Module field Metadata / Context
                             if(Schema::hasTable('fields')) {
-                                $field_obj = config('stlc.field_model')::create([
+                                $field_obj = \Field::create([
                                     'name' => $field->name,
                                     'label' => $field->label,
                                     'rank' => $field->rank ?? ($key * 5),
@@ -278,10 +285,10 @@ class Module extends Model
                     $table->bigIncrements('id');
                     foreach($fields as $key => $field) {
                         if(Schema::hasTable('fields') && isset($module->id)) {
-                            $mod = config('stlc.field_model')::where('module_id', $module->id)->where('name', $field->name)->first();
+                            $mod = \Field::where('module_id', $module->id)->where('name', $field->name)->first();
                             if(!isset($mod->id)) {
                                 // Create Module field Metadata / Context
-                                $field_obj = config('stlc.field_model')::create([
+                                $field_obj = \Field::create([
                                     'name' => $field->name,
                                     'label' => $field->label,
                                     'rank' => $field->rank ?? ($key * 5),
@@ -328,7 +335,7 @@ class Module extends Model
     public static function create_field_schema($table, $field, $nullable_required = true, $update = false, $isFieldTypeChange = false)
     {
         if(is_numeric($field->field_type)) {
-            $ftypes = config('stlc.field_type_model')::getFTypes();
+            $ftypes = \FieldType::getFTypes();
             $field->field_type = array_search($field->field_type, $ftypes);
         }
         if(!is_string($field->defaultvalue)) {
@@ -1696,7 +1703,7 @@ class Module extends Model
         $out = [];
         foreach($fields as $field) {
             // Check if field format is New
-            if(CustomHelper::is_assoc_array($field)) {
+            if(\CustomHelper::is_assoc_array($field)) {
                 $obj = (object)$field;
                 
                 if(!isset($obj->name)) {
@@ -1826,7 +1833,7 @@ class Module extends Model
         
         $rules = [];
         if(isset($crud->module->id)) {
-            $ftypes = config('stlc.field_type_model')::getFTypes2();
+            $ftypes = \FieldType::getFTypes2();
             $add_from = true;
 
             foreach($crud->fields as $field) {
@@ -1916,11 +1923,11 @@ class Module extends Model
                         }
                         $json_values = $field->json_values;
                         if(isset($json_values) && !empty($json_values) && is_string($json_values) && \Str::startsWith($json_values, "@")) {
-                            $pm_module = config('stlc.module_model')::where('name', str_replace("@", "", $json_values))->first();
+                            $pm_module = \Module::where('name', str_replace("@", "", $json_values))->first();
                             if(isset($pm_module->represent_attr) && isset(($pm_field = $pm_module->fields->firstWhere('name',$pm_module->represent_attr))->json_values)) {
                                 $json_values = $pm_field->json_values;
                                 if(isset($json_values) && !empty($json_values) && is_string($json_values) && \Str::startsWith($json_values, "@")) {
-                                    $pm_module = config('stlc.module_model')::where('name', str_replace("@", "", $json_values))->first();
+                                    $pm_module = \Module::where('name', str_replace("@", "", $json_values))->first();
                                 }
                                 $req .= "exists:" . $pm_module->table_name .',id';
                             }
@@ -1952,7 +1959,7 @@ class Module extends Model
      */
     public static function hasRoleAccess($crud, $permission = "view", $role_id = false)
     {
-        if(\Auth::user()->isSuperAdmin()) {
+        if(\Module::user()->isSuperAdmin()) {
             return true;
         }
 
@@ -1971,7 +1978,7 @@ class Module extends Model
                 $roles = $role->roles();
             }
         } else {
-            $roles = \Auth::user()->roles();
+            $roles = \Module::user()->roles();
         }
         foreach($roles->get() as $role) {
             if(isset($module->id)) {
@@ -2064,7 +2071,7 @@ class Module extends Model
      */
     public static function hasAccess($crud, $permission = "view", $user_id = false)
     {
-        if(\Auth::user()->isSuperAdmin() || self::hasRoleAccess($crud, $permission)) {
+        if(\Module::user()->isSuperAdmin() || self::hasRoleAccess($crud, $permission)) {
             return true;
         }
 
@@ -2077,7 +2084,7 @@ class Module extends Model
             $module = $crud->module;
         }
         
-        if(\Auth::user()->isAdmin() && !(isset($crud->name) && in_array($crud->name, ['Employees']))) {
+        if(\Module::user()->isAdmin() && !(isset($crud->name) && in_array($crud->name, ['Employees']))) {
             return true;
         } else if((isset($crud->name) && in_array($crud->name, ['Employees']))) {
             return false;
@@ -2091,7 +2098,7 @@ class Module extends Model
                 $user = [];
             }
         } else {
-            $user = \Auth::user();
+            $user = \Module::user();
         }
         
         if(isset($user->id) && isset($module->id)) {
@@ -2172,10 +2179,10 @@ class Module extends Model
         $module = null;
         if(is_int($module_id_name)) {
             $module = self::make($module_id_name)->module;
-            $show_indexs = config('stlc.field_model')::where('module_id', $module->id)->where('show_index', 1)->get()->toArray();
+            $show_indexs = \Field::where('module_id', $module->id)->where('show_index', 1)->get()->toArray();
         } else if(is_string($module_id_name)) {
             $module = self::where('name', $module_id_name)->first();
-            $show_indexs = config('stlc.field_model')::where('module_id', $module->id)->where('show_index', 1)->get()->toArray();
+            $show_indexs = \Field::where('module_id', $module->id)->where('show_index', 1)->get()->toArray();
         } else if(isset($module_id_name->module)){
             $module = $module_id_name->module;
             $show_indexs = collect($module_id_name->fields)->where('show_index', 1)->toArray();
@@ -2270,11 +2277,11 @@ class Module extends Model
      */
     public function fields()
     {
-        return $this->hasMany('Sagartakle\Laracrud\Models\Field', 'module_id', 'id')->orderBy('rank');
+        return $this->hasMany(\Field::class, 'module_id', 'id')->orderBy('rank');
     }
     /**
      * Get the fields of this module.
-     * Module::field_names_array($name)
+     * \Module::field_names_array($name)
      */
     public static function field_names_array($name)
     {
@@ -2284,7 +2291,7 @@ class Module extends Model
 
     public function dependency_fields()
     {
-        return config('stlc.field_model')::where('json_values','@'.$this->name)->with(['module','field_type'])->get();
+        return \Field::where('json_values','@'.$this->name)->with(['module','field_type'])->get();
     }
 
     public function delete_dependency($item_id)

@@ -15,7 +15,7 @@
         }
     @endphp
     @if(isset($field['prefix']) || isset($field['suffix'])) <div class="input-group"> @endif
-        @if(isset($field['prefix'])) <div class="input-group-prepend"><span class="input-group-text">{!! $field['prefix'] !!}<span></div> @endif
+        @if(isset($field['prefix'])) <div class="input-group-prepend"><span class="input-group-text">{!! $field['prefix'] !!}</span></div> @endif
             <div class="row">
                 @foreach ($field['options'] as $key => $value)
                 @php
@@ -35,7 +35,7 @@
                 </div>
                 @endforeach
             </div>
-        @if(isset($field['suffix'])) <div class="input-group-append"><span class="input-group-text">{!! $field['suffix'] !!}<span></div> @endif
+        @if(isset($field['suffix'])) <div class="input-group-append"><span class="input-group-text">{!! $field['suffix'] !!}</span></div> @endif
     @if(isset($field['prefix']) || isset($field['suffix'])) </div> @endif
     @if ($errors->has($field['name']))
         <div class="is-invalid"></div><span class="invalid-feedback">{{ $errors->first($field['name']) }}</span>

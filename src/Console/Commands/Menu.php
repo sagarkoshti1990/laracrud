@@ -3,7 +3,6 @@
 namespace Sagartakle\Laracrud\Console\Commands;
 
 use Illuminate\Console\Command;
-use Sagartakle\Laracrud\Helpers\CustomHelper;
 
 class Menu extends Command
 {
@@ -38,6 +37,6 @@ class Menu extends Command
      */
     public function handle()
     {
-        CustomHelper::generateMenu();
+        \CustomHelper::generateMenu();
     }
 }

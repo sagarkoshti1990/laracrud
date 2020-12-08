@@ -10,16 +10,6 @@
         </li>
     </ul>
     <ul class="navbar-nav flex-row ml-md-auto d-none d-md-flex">
-        @if (Auth::guest())
-            <li class="nav-item">
-                <a class="nav-item nav-link" href="{{ url($prefix.'/login') }}">{{ trans('base.login') }}</a>
-            </li>
-            @if (config('stlc.registration_open'))
-                <li class="nav-item">
-                    <a class="nav-item nav-link" href="{{ url($prefix.'/register') }}">{{ trans('base.register') }}</a>
-                </li>
-            @endif
-        @else
         <li class="nav-item dropdown">
             <a class="nav-link" data-toggle="dropdown" href="#" aria-expanded="false">
                 <i class="far fa-bell"></i>
@@ -48,22 +38,22 @@
         </li>
         <li class="nav-item dropdown user-menu" data-toggle="tooltip" title="Profile">
             <a href="#" class="nav-item nav-link dropdown-toggle mr-md-2" data-toggle="dropdown" id="bd-versions-user">
-                <img src="{{ Auth::user()->profile_pic() }}" class="user-image" alt="">
-                <span class="hidden-xs">{{ Auth::user()->name }}</span>
+                <img src="{{ \Module::user()->profile_pic() }}" class="user-image" alt="">
+                <span class="hidden-xs">{{ \Module::user()->name }}</span>
             </a>
             <ul class="dropdown-menu dropdown-menu-right">
                 <!-- User image -->
                 <li class="user-header">
-                    <img src="{{ Auth::user()->profile_pic() }}" class="rounded-circle" alt="">
+                    <img src="{{ \Module::user()->profile_pic() }}" class="rounded-circle" alt="">
                     <p></p>
-                    @forelse(\Auth::user()->roles as $role)
+                    @forelse(\Module::user()->roles as $role)
                         <span class="badge bg-green text-center">{{ $role->label }}</span>
                     @empty
                         <span class="badge bg-red bg-red text-center">Not Assigned</span>
                     @endforelse
                 </li>
                 <!-- Menu Body -->
-                @if(\Auth::user()->isSuperAdmin())
+                @if(\Module::user()->isSuperAdmin())
                     <li class="user-body p-0">
                         <ul class="nav nav-pills nav-justified">
                             <li class="nav-item" role="presentation">
@@ -96,6 +86,5 @@
                 </li>
             </ul>
         </li>
-        @endif
     </ul>
 </nav>

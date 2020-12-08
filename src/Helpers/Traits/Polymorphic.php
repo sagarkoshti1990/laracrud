@@ -2,8 +2,6 @@
 
 namespace Sagartakle\Laracrud\Helpers\Traits;
 
-use Sagartakle\Laracrud\Models\Module;
-
 trait Polymorphic
 {
     /*
@@ -24,7 +22,7 @@ trait Polymorphic
      */
     public function polymorphic_save($attr,$value)
     {
-        $module = config('stlc.module_model')::where('table_name',$this->getTable())->first();
+        $module = \Module::where('table_name',$this->getTable())->first();
         $field = $module->fields->firstWhere('name',$attr);
         $polymorphic_module = $field->getJsonModule();
         $selectData = [];

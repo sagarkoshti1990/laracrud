@@ -3,7 +3,6 @@
 namespace Sagartakle\Laracrud\Console\Commands;
 
 use Illuminate\Console\GeneratorCommand;
-use Sagartakle\Laracrud\Models\Module;
 
 class ViewShow extends GeneratorCommand
 {
@@ -62,7 +61,7 @@ class ViewShow extends GeneratorCommand
         $table = \Str::plural(ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', str_replace($this->getNamespace($name).'\\', '', \Str::plural($name)))), '_'));
 
         $name = $this->getNameInput();
-        $modul = config('stlc.module_model')::where('name', $name)->first();
+        $modul = \Module::where('name', $name)->first();
         $out = "";
         if(isset($modul) && $modul->id) {
             foreach ($modul->fields as $key => $field) {

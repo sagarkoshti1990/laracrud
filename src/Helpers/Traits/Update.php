@@ -2,10 +2,7 @@
 
 namespace Sagartakle\Laracrud\Helpers\Traits;
 
-use Sagartakle\Laracrud\Models\FieldType;
 use App\Models\RelationalDataTable;
-use Sagartakle\Laracrud\Models\Activity;
-use Sagartakle\Laracrud\Models\Module;
 
 trait Update
 {
@@ -47,7 +44,7 @@ trait Update
             }
             if(isset($column_names_ralationaldata) && count($column_names_ralationaldata) > 0) {
                 $update_data = collect($data)->only($column_names_ralationaldata)->toArray();
-                $ftypes = config('stlc.field_type_model')::getFTypes();
+                $ftypes = \FieldType::getFTypes();
                 foreach($update_data as $key => $value) {
                     $r_datas['field_type_id'] = $ftypes[$this->fields['feats']->field_type];
                     RelationalDataTable::updateOrCreate(
@@ -56,7 +53,7 @@ trait Update
                     );
                 }
             }
-            config('stlc.activity_model')::log(config('App.activity_log.UPDATED','Updated'), $this, ['new' => $item, 'old' => $old_item]);
+            \Activity::log(config('App.activity_log.UPDATED','Updated'), $this, ['new' => $item, 'old' => $old_item]);
             if(isset($transaction) && $transaction == true) {
                 \DB::commit();
             }

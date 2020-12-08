@@ -2,9 +2,6 @@
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
-use Sagartakle\Laracrud\Models\Module;
-use Sagartakle\Laracrud\Models\FieldType;
-use Sagartakle\Laracrud\Models\Field;
 
 class Create__Class__Table extends Migration
 {
@@ -15,12 +12,12 @@ class Create__Class__Table extends Migration
      */
     public function up()
     {
-        Module::generate('__Class__', '__Table__', '__attribute__', '__icon__', [
+        \Module::generate('__Class__', '__Table__', '__attribute__', '__icon__', [
             __single_field__
         ]__Custom_attr__);
         
         /*
-        Module::generate('__Class__' '__Table__', '__attribute__', '__icon__', [
+        \Module::generate('__Class__' '__Table__', '__attribute__', '__icon__', [
             [
                 'name' => 'name',
                 'label' => 'Name',

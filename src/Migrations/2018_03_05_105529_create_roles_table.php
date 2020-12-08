@@ -2,9 +2,6 @@
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
-use Sagartakle\Laracrud\Models\Module;
-use Sagartakle\Laracrud\Models\FieldType;
-use Sagartakle\Laracrud\Models\Field;
 use Sagartakle\Laracrud\Models\Role;
 
 class CreateRolesTable extends Migration
@@ -16,7 +13,7 @@ class CreateRolesTable extends Migration
      */
     public function up()
     {
-        Module::generate('Roles', 'roles', 'name', 'fa fa-user-circle', [
+        \Module::generate('Roles', 'roles', 'name', 'fa fa-user-circle', [
             [
 				'name' => 'name',
 				'label' => 'Name',
@@ -57,7 +54,7 @@ class CreateRolesTable extends Migration
 			$table->morphs('rollable');
         });
         /*
-        Module::generate('Roles' 'roles', 'name', 'fa-user', [
+        \Module::generate('Roles' 'roles', 'name', 'fa-user', [
             [
                 'name' => 'name',
                 'label' => 'Name',

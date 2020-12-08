@@ -2,10 +2,7 @@
 
 namespace Sagartakle\Laracrud\Helpers\Oprations;
 
-use Sagartakle\Laracrud\Models\Field;
-use Sagartakle\Laracrud\Models\Module;
 use Illuminate\Http\Request;
-use Sagartakle\Laracrud\Helpers\FormBuilder;
 use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Datatables;
 
@@ -48,7 +45,7 @@ trait Index
     public function datatable(Request $request)
     {
         $crud = $this->crud;
-        $listing_cols = config('stlc.module_model')::getListingColumns($crud);
+        $listing_cols = \Module::getListingColumns($crud);
         $values = DB::table($crud->table_name)->select($listing_cols)->latest();
         if(isset($request->filter)) {
 			$values->where($request->filter);
@@ -56,7 +53,7 @@ trait Index
         
         $out = Datatables::of($values)->make();
         $data = $out->getData();
-        $fields_popup = config('stlc.field_model')::getFields($crud->name);
+        $fields_popup = \Field::getFields($crud->name);
         // array_splice($listing_cols, 2, 0, "index_name");
         
         for($i = 0; $i < count($data->data); $i++) {
@@ -68,7 +65,7 @@ trait Index
             // array_splice($data->data[$i], 2, 0, true);
             for($j = 0; $j < count($listing_cols); $j++) {
                 $col = $listing_cols[$j];
-                $data->data[$i][$j] = FormBuilder::get_field_value($crud, $col);
+                $data->data[$i][$j] = \FormBuilder::get_field_value($crud, $col);
                 if(isset($data->data[$i][$j]) && $col == $crud->module->represent_attr && !isset($item->deleted_at)) {
                     $data->data[$i][$j] = '<a href="' . url($crud->route .'/'. $item->id) . '"><i class="fa fa-eye mr-1"></i>' . $data->data[$i][$j] . '</a>';
                 }

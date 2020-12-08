@@ -31,15 +31,19 @@
             'Strike','RemoveFormat','CopyFormatting'
         ];
         $output = array_diff($arr, $field['attribute']);
+    } else {
+        // $output = [
+        //     'Save','Templates','Print','NewPage','Cut','Undo','Copy','Redo','Paste','PasteText','PasteFromWord','Find','Replace','SelectAll','Scayt',
+        //     'Form','Checkbox','Radio','TextField','Textarea','Select','Button','ImageButton','HiddenField','CopyFormatting','RemoveFormat',
+        //     'Outdent','Indent','CreateDiv','BidiLtr','BidiRtl','Language','Link','Unlink','Anchor','Flash','SpecialChar','PageBreak','Iframe','About'
+        // ];
     }
-    // $output = ['Bold'];
 @endphp
 @pushonce('crud_fields_styles')
 @endpushonce
 {{-- FIELD JS - will be loaded in the after_scripts section --}}
 @pushonce('crud_fields_scripts')
     <script src="{{ asset('node_modules/ckeditor-full/ckeditor.js') }}"></script>
-    {{-- <script src="{{ asset('node_modules/admin-lte/bower_components/ckeditor/adapters/jquery.js') }}"></script> --}}
 @endpushonce
 @push('crud_fields_scripts')
 <script>
@@ -47,45 +51,36 @@
         var arr = {};
         @if(isset($output) && is_array($output))
             arr.removeButtons = "{{ implode(',',$output) }}";
+        @else
+            arr.toolbar = [
+                { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ], items: [ 'Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript'] },
+                { name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align', 'bidi' ], items: [ 'NumberedList', 'BulletedList', '-', 'Blockquote', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock'] },
+                { name: 'insert', items: [ 'Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley','Preview'] },
+                { name: 'styles', items: [ 'Styles', 'Format', 'Font', 'FontSize' ] },
+                { name: 'document', groups: [ 'mode', 'document', 'doctools' ], items: [ 'Source'] },
+            ];
         @endif
-        // {{-- arr.toolbar = [
-        //     { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ], items: [ 'Bold', 'Italic', 'Underline', 'Strike', 'Subscript', 'Superscript', '-', 'CopyFormatting', 'RemoveFormat' ] },
-        //     { name: 'clipboard', groups: [ 'clipboard', 'undo' ], items: [ 'Cut', 'Copy', 'Paste', 'PasteText', 'PasteFromWord', '-', 'Undo', 'Redo' ] },
-        //     { name: 'editing', groups: [ 'find', 'selection', 'spellchecker' ], items: [ 'Find', 'Replace', '-', 'SelectAll', '-', 'Scayt' ] },
-        //     { name: 'forms', items: [ 'Form', 'Checkbox', 'Radio', 'TextField', 'Textarea', 'Select', 'Button', 'ImageButton', 'HiddenField' ] },
-        //     { name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align', 'bidi' ], items: [ 'NumberedList', 'BulletedList', '-', 'Outdent', 'Indent', '-', 'Blockquote', 'CreateDiv', '-', 'JustifyLeft', 'JustifyCenter', 'JustifyRight', 'JustifyBlock', '-', 'BidiLtr', 'BidiRtl', 'Language' ] },
-        //     { name: 'links', items: [ 'Link', 'Unlink', 'Anchor' ] },
-        //     { name: 'insert', items: [ 'Image', 'Flash', 'Table', 'HorizontalRule', 'Smiley', 'SpecialChar', 'PageBreak', 'Iframe' ] },
-        //     { name: 'styles', items: [ 'Styles', 'Format', 'Font', 'FontSize' ] },
-        //     { name: 'document', groups: [ 'mode', 'document', 'doctools' ], items: [ 'Source', '-', 'Save', 'NewPage', 'Preview', 'Print', '-', 'Templates' ] },
-        // ]; --}}
         arr.height="100px";
         // arr.maxHeight="300px";
         arr.removePlugins= 'elementspath';
         arr.resize_enabled=false;
-        arr.toolbar = [{
-                name: 'document',
-                items: ['Undo', 'Redo','Source','Maximize']
-            },{
-                name: 'colors', items: [ 'TextColor', 'BGColor', 'FontSize' ]
-            },{
-                name: 'basicstyles',
-                items: ['Bold', 'Italic', 'Strike']
-            },{
-                name: 'insert',
-                items: ['Smiley']
-            },{
-                name: 'links',
-                items: ['Link', 'Unlink']
+        arr.on = {
+            instanceReady: function(e) {
+                @if ($errors->has($field['name']))
+                    e.editor.container.addClass('form-control');
+                    e.editor.container.addClass('is-invalid');
+                @endif
+            },
+            pluginsLoaded: function(event) {
+                event.editor.dataProcessor.dataFilter.addRules({
+                    elements: {
+                        script: function(element) {
+                            return false;
+                        }
+                    }
+                });
             }
-        ];
-
-        arr.on = {instanceReady: function(e) {
-            @if ($errors->has($field['name']))
-                e.editor.container.addClass('form-control');
-                e.editor.container.addClass('is-invalid');
-            @endif
-        }}
+        }
         CKEDITOR.replace("{{ $field['attributes']['id'] }}", arr);
         CKEDITOR.instances["{{ $field['attributes']['id'] }}"].on('change',function(){
             $('[name="{{ $field['name'] }}"]').valid();

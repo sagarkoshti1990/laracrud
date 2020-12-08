@@ -3,13 +3,12 @@
 namespace DummyNamespace;
 
 use Sagartakle\Laracrud\Controllers\StlcController;
-use Sagartakle\Laracrud\Models\Module;
 use App\Models\__ModelName__;
 
 class __Class__Controller extends StlcController
 {
     function __construct() {
-        $this->crud = Module::make('__Class__');
+        $this->crud = \Module::make('__Class__');
     }
     
     // write custom function or override function.

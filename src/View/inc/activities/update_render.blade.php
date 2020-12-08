@@ -7,7 +7,7 @@ if(isset($data['old']) && count($data['old']) && $data['new'] && count($data['ne
 } else {
     $count = [];
 }
-$context_crud = config('stlc.module_model')::make((new $item->context_type)->get_module()->name);
+$context_crud = \Module::make((new $item->context_type)->get_module()->name);
 @endphp
 <h4>{{ $item->description.". Following are the change parameter" }}</h4><br>
 <table class="table table-bordered table-condensed" style="background: #fff;margin: 10px;clear: both;width: -webkit-fill-available;">

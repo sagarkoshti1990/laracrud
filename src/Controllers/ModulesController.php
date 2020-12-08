@@ -9,14 +9,9 @@ use Auth;
 use DB;
 use Validator;
 use Yajra\DataTables\Datatables;
-use Sagartakle\Laracrud\Models\Module;
-use Sagartakle\Laracrud\Helpers\ObjectHelper;
 use Prologue\Alerts\Facades\Alert;
-use Sagartakle\Laracrud\Models\Field;
-use Sagartakle\Laracrud\Models\FieldType;
 use Sagartakle\Laracrud\Models\AccessModule;
 use Sagartakle\Laracrud\Models\Role;
-use Sagartakle\Laracrud\Helpers\CustomHelper;
 
 class ModulesController extends StlcController
 {
@@ -24,7 +19,7 @@ class ModulesController extends StlcController
 
     function __construct() {
 
-        $this->crud = new ObjectHelper;
+        $this->crud = new \ObjectHelper;
         $module = (object)[];
         $module->name = "Modules";
         $module->label = "Modules";
@@ -32,7 +27,7 @@ class ModulesController extends StlcController
         $module->controller = self::class;
         $module->represent_attr = "label";
         $module->icon = "fa fa-briefcase";
-        $module->model = config('stlc.module_model');
+        $module->model = \Module::class;
 
         $module->fields = [
             [
@@ -76,7 +71,7 @@ class ModulesController extends StlcController
         $this->crud->setModule($module);
         $this->crud->setRoute(config("stlc.stlc_route_prefix",'developer') . '/'.$module->table_name);
 
-        $this->crud_filed = new ObjectHelper;
+        $this->crud_filed = new \ObjectHelper;
         $module = (object)[];
         $module->name = "Fields";
         $module->label = "Fields";
@@ -84,7 +79,7 @@ class ModulesController extends StlcController
         $module->controller = "ModulesController";
         $module->represent_attr = "label";
         $module->icon = "fa fa-list";
-        $module->model = config('stlc.field_model');
+        $module->model = \Field::class;
 
         $module->fields = [
             [
@@ -107,13 +102,13 @@ class ModulesController extends StlcController
 				'label' => 'Module',
 				'field_type' => 'Select2',
 				'required' => true,
-                'json_values' => '@'.(config('stlc.module_model')).'|name'
+                'json_values' => '@'.(\Module::class).'|name'
 			],[
 				'name' => 'field_type_id',
 				'label' => 'Field Type',
 				'field_type' => 'Select2',
 				'required' => true,
-                'json_values' => '@'.(config('stlc.field_type_model')).'|name'
+                'json_values' => '@'.(\FieldType::class).'|name'
 			],[
 				'name' => 'unique',
 				'label' => 'Unique',
@@ -158,7 +153,7 @@ class ModulesController extends StlcController
         $this->crud_filed->setRoute(config("stlc.stlc_route_prefix",'developer') . '/'.$module->table_name);
         
         if(class_exists(\App\Models\Setting::class)) {
-            $this->setting_crud = new ObjectHelper;
+            $this->setting_crud = new \ObjectHelper;
             $crud = (object)[];
             $crud->name = "Settings";
             $crud->label = "Settings";
@@ -206,13 +201,13 @@ class ModulesController extends StlcController
      */
     public function index(Request $request)
     {
-		if(Auth::user()->isSuperAdmin()) {
+		if(\Module::user()->isSuperAdmin()) {
             $crud = $this->crud;
             $crud->removeButton('deleted_data');
             if(isset($request->src_ajax) && $request->src_ajax) {
-                $modules = config('stlc.module_model')::custome_all_modules();
+                $modules = \Module::custome_all_modules();
             } else {
-                $modules = config('stlc.module_model')::all();
+                $modules = \Module::all();
             }
             
             $crud->datatable = true;
@@ -242,7 +237,7 @@ class ModulesController extends StlcController
      */
     public function select2(Request $request)
     {
-        $modules = config('stlc.module_model')::custome_all_modules();
+        $modules = \Module::custome_all_modules();
         
         if(isset($request->searchTerm)) {
             $fetchData = $modules->where('name', 'like', '%'.$request->searchTerm.'%')->get();
@@ -258,95 +253,14 @@ class ModulesController extends StlcController
     }
 
     public function getModuleData(Request $request)
-    {
-        $module = config('stlc.module_model')::where('model',$request->model)->first();
-        if(isset($module->name) && in_array($module,['MasterUsers','Employees','PartnerUsers'])) {
-            $data = (new $module->model)->get();
-        } else if(isset($module->name) && in_array($module->name,['Users'])) {
-            $data = (new $module->model)
-                ->select(DB::raw("concat_ws(' ', CONCAT(UCASE(LEFT(users.title, 1)),LCASE(SUBSTRING(users.title, 2))), CONCAT(UCASE(LEFT(users.`first_name`, 1)),LCASE(SUBSTRING(users.`first_name`, 2))), CONCAT(UCASE(LEFT(users.`last_name`, 1)),LCASE(SUBSTRING(users.`last_name`, 2)))) as text, id as value"))
-                ->get();
-        } else {
-            $data = (new $module->model)->select(DB::raw($module->represent_attr.' as text, id as value'))->get();
+    {   
+        $request->validate(['model' => 'required|exists:modules,model']);
+        $crud = \Module::where('model',$request->model)->first();
+        $query = (new $crud->model)->select(DB::raw($crud->represent_attr.' as text, id as value'));
+        if(isset($request->q)) {
+            $query = $query->where($crud->represent_attr,'LIKE',"%".$request->q."%");
         }
-        return response()->json(['statusCode' => '200','message' => 'success','data' => $data]);
-    }
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create(Request $request)
-    {
-        if(Auth::user()->isSuperAdmin()) {
-            if(isset($request->src)) {
-                $src = $request->src;
-            } else {
-                $src = Null;
-            }
-            
-            $crud = $this->crud;
-
-            return view(config('stlc.stlc_modules_folder_name','stlc::').'Modules.create', [
-                'crud' => $crud,
-                'src' => $src
-            ]);
-        } else {
-            abort(403, 'Unauthorized Access');
-        }
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        if(Auth::user()->isSuperAdmin()) {
-            if (is_null($request)) {
-                $request = \Request::instance();
-            }
-            
-            $rules = config('stlc.module_model')::validateRules("Modules", $request);
-            $validator = Validator::make($request->all(), $rules);
-            
-            if ($validator->fails()) {
-                return redirect()->back()->withErrors($validator)->withInput();
-            }
-
-            // replace empty values with NULL, so that it will work with MySQL strict mode on
-            foreach ($request->input() as $key => $value) {
-                if (empty($value) && $value !== '0') {
-                    $request->request->set($key, null);
-                }
-            }
-
-            // insert item in the db
-            $item = $this->crud->create($request);
-            $this->data['entry'] = $this->crud->entry = $item;
-
-            // add activity log
-            // \Activity::log(config('activity_log.context.CREATED'), $this->crud, ['new' => $item]);
-
-            // show a success message
-            if(!$request->src_ajax) {
-                \Alert::success($this->crud->label." The item has been added successfully.")->flash();
-            }
-
-            if(isset($request->go_view) && $request->go_view) {
-                return redirect($this->crud->route.'/'.$item->id);
-            } else if(isset($request->src_ajax) && $request->src_ajax) {
-                return response()->json(['status' => 'success', 'message' => 'created', 'item' => $item]);
-            } else if(isset($request->src)) {
-                return redirect($request->src);
-            } else {
-                return redirect($this->crud->route);
-            }
-        } else {
-            abort(403, 'Unauthorized Access');
-        }
+        return response()->json(['statusCode' => '200','message' => 'success', 'item' => $query->paginate(10)]);
     }
 
     /**
@@ -357,15 +271,15 @@ class ModulesController extends StlcController
      */
     public function show(Request $request, $id)
     {
-        if(Auth::user()->isSuperAdmin()) {
+        if(\Module::user()->isSuperAdmin()) {
             if(isset($request->src)) {
                 $src = url($request->src);
             } else {
                 $src = Null;
             }
 
-            $module = config('stlc.module_model')::where('id',$id)->first();
-            if ((isset($module->id) && !(isset($module->deleted_at) && $module->deleted_at)) || (isset($module->deleted_at) && $module->deleted_at && \Auth::user()->isAdmin())) {
+            $module = \Module::where('id',$id)->first();
+            if ((isset($module->id) && !(isset($module->deleted_at) && $module->deleted_at)) || (isset($module->deleted_at) && $module->deleted_at && \Module::user()->isAdmin())) {
 
                 $crud = $this->crud;
                 $crud->datatable = true;
@@ -382,7 +296,7 @@ class ModulesController extends StlcController
                         'module' => $module,
                         'src' => $src,
                         'represent_attr' => $crud->module->represent_attr,
-                        'fieldTypes' => $fieldTypes = config('stlc.field_type_model')::all()
+                        'fieldTypes' => $fieldTypes = \FieldType::all()
                     ]);
                 }
             } else {
@@ -404,268 +318,15 @@ class ModulesController extends StlcController
         }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Request $request, $id)
-    {
-        if(Auth::user()->isSuperAdmin()) {
-            if(isset($request->src)) {
-                $src = $request->src;
-            } else {
-                $src = Null;
-            }
-            
-            $module = config('stlc.module_model')::find($id);
-            if(isset($module->id)) {
-                
-                $crud = $this->crud;
-                $crud->row = $module;
-            
-                return view(config('stlc.stlc_modules_folder_name','stlc::').'Modules.edit', [
-                    'crud' => $crud,
-                    'module' => $module,
-                    'src' => $src
-                ]);
-            } else {
-                return view('errors.404', [
-                    'record_id' => $id,
-                    'record_name' => ucfirst("modules"),
-                ]);
-            }
-        } else {
-            abort(403, 'Unauthorized Access');
-        }
-    }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        if(Auth::user()->isSuperAdmin()) {
-            // old data
-            $old_item = config('stlc.module_model')::find($id);
-            if(isset($old_item->id)) {
-                if (is_null($request)) {
-                    $request = \Request::instance();
-                }
-
-                $rules = config('stlc.module_model')::validateRules("Modules", $request, true);
-                $validator = Validator::make($request->all(), $rules);
-                
-                if ($validator->fails()) {
-                    return redirect()->back()->withErrors($validator)->withInput();
-                }
-
-                // replace empty values with NULL, so that it will work with MySQL strict mode on
-                foreach ($request->input() as $key => $value) {
-                    if (empty($value) && $value !== '0') {
-                        $request->request->set($key, null);
-                    }
-                }
-
-                // update the row in the db
-                $item = $this->crud->update($id, $request);
-                $this->data['entry'] = $this->crud->entry = $item;
-
-                // add activity log
-                // \Activity::log(config('activity_log.context.UPDATED'), $this->crud, ['new' => $item, 'old' => $old_item]);
-
-                // show a success message
-                if(!$request->src_ajax) {
-                    \Alert::success($this->crud->label." ".trans('stlc.update_success'))->flash();
-                }
-
-                if(isset($request->src_ajax) && $request->src_ajax) {
-                    return response()->json(['status' => 'success', 'message' => 'updated', 'item' => $item]);
-                } else if(isset($request->src)) {
-                    return redirect($request->src);
-                } else {
-                    return redirect($this->crud->route);
-                }
-            } else {
-                abort(403, trans('stlc.data_not_found'));
-            }
-        } else {
-            abort(403, 'Unauthorized Access');
-        }
-    }
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function deleted_data()
-    {
-		if(Auth::user()->isSuperAdmin()) {
-            $crud = $this->crud;
-            $modules = config('stlc.module_model')::onlyTrashed()->get();
-            $crud->onlyButton('restore');
-            $crud->labelPlural = trans('stlc.delete')." ".$crud->labelPlural;
-            $crud->datatable = true;
-            return view(config('stlc.stlc_modules_folder_name','stlc::').'Modules.index', [
-                'crud' => $crud,
-                'modules' => $modules,
-                'btn_hide' => true
-            ]);
-        } else {
-            abort(403, 'Unauthorized Access');
-        }
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Request $request, $id)
-    {
-        if(Auth::user()->isSuperAdmin()) {
-            // old data
-            $old_item = config('stlc.module_model')::find($id);
-            if(isset($old_item->id)) {
-                $module = config('stlc.module_model')::find($id)->delete();
-
-                // add activity log
-                // \Activity::log(config('activity_log.context.DELETED'), $this->crud, ['old' => $old_item]);
-                
-                if(isset($request->src_ajax) && $request->src_ajax) {
-                    return response()->json(['status' => 'success', 'message' => trans('stlc.delete_confirmation_message')]);
-                } else if(isset($request->src)) {
-                    Alert::success(trans('stlc.delete_confirmation_message'))->flash();
-                    return redirect($request->src);
-                } else {
-                    Alert::success(trans('stlc.delete_confirmation_message'))->flash();
-                    // return redirect()->route(config('aquaspade.base.route_prefix') . 'modules');
-                    return (string) $module;
-                }
-            } else {
-                if(isset($request->src_ajax) && $request->src_ajax) {
-                    return response()->json(['status' => 'failed', 'message' => trans('stlc.data_not_found')]);
-                } else {
-                    abort(403, trans('stlc.data_not_found'));
-                }
-            }
-        } else {
-            if(isset($request->src_ajax) && $request->src_ajax) {
-                return response()->json(['status' => 'failed', 'message' => 'Unauthorized Access']);
-            } else {
-                abort(403, 'Unauthorized Access');
-            }
-        }
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function restore(Request $request, $id)
-    {
-        if(Auth::user()->isSuperAdmin()) {
-            // old data
-            $old_item = config('stlc.module_model')::onlyTrashed()->find($id);
-            if(isset($old_item->id)) {
-                $module = config('stlc.module_model')::onlyTrashed()->find($id)->restore();
-
-                // add activity log
-                // \Activity::log(config('activity_log.context.restore'), $this->crud, ['old' => $old_item]);
-                
-                if(isset($request->src_ajax) && $request->src_ajax) {
-                    return response()->json(['status' => 'success', 'message' => 'restore']);
-                } else if(isset($request->src)) {
-                    return redirect($request->src);
-                } else {
-                    // return redirect()->route(config('stlc.route_prefix') . 'crud.modules.index');
-                    return (string) $module;
-                }
-            } else {
-                if(isset($request->src_ajax) && $request->src_ajax) {
-                    return response()->json(['status' => 'failed', 'message' => trans('stlc.data_not_found')]);
-                } else {
-                    abort(403, trans('stlc.data_not_found'));
-                }
-            }
-        } else {
-            if(isset($request->src_ajax) && $request->src_ajax) {
-                return response()->json(['status' => 'failed', 'message' => 'Unauthorized Access']);
-            } else {
-                abort(403, 'Unauthorized Access');
-            }
-        }
-    }
-
-    /**
-     * Server side Datatable fetch via Ajax
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     */
-    public function datatable(Request $request)
-    {
-        $crud = $this->crud;
-        $listing_cols = config('stlc.module_model')::getListingColumns('Modules');
-        
-        if(isset($request->filter)) {
-			$values = DB::table('modules')->select($listing_cols)->whereNull('deleted_at')->where($request->filter);
-		} else {
-			$values = DB::table('modules')->select($listing_cols)->whereNull('deleted_at');
-		}
-        
-        $out = Datatables::of($values)->make();
-        $data = $out->getData();
-        
-        $fields_popup = config('stlc.field_model')::getFields('Modules');
-        
-        // array_splice($listing_cols, 2, 0, "index_name");
-        
-        for($i = 0; $i < count($data->data); $i++) {
-            $data->data[$i] = collect($data->data[$i])->values()->all();
-            $crud->row = $item = config('stlc.module_model')::find($data->data[$i][0]);
-            // array_splice($data->data[$i], 2, 0, true);
-            for($j = 0; $j < count($listing_cols); $j++) {
-                $col = $listing_cols[$j];
-                $data->data[$i][$j] = \FormBuilder::get_field_value($crud, $col);
-                if(isset($data->data[$i][$j]) && $col == $crud->module->represent_attr && !isset($item->deleted_at)) {
-                    $data->data[$i][$j] = '<a href="' . url($crud->route .'/'. $item->id) . '">' . $data->data[$i][$j] . '</a>';
-                }
-            }
-            
-            if ($crud->buttons->where('stack', 'line')->count()) {
-                $crud->datatable = true;
-                $output = '';
-                
-                $output .= \View::make('crud.inc.button_stack', ['stack' => 'line'])
-                ->with('crud', $crud)
-                ->with('entry', $item)
-                ->render();
-
-                $data->data[$i][] = (string)$output;
-            }
-        }
-        $out->setData($data);
-        return $out;
-    }
-    
     public function add_field(Request $request)
     {
-        if(Auth::user()->isSuperAdmin()) {
+        if(\Module::user()->isSuperAdmin()) {
             if (is_null($request)) {
                 $request = \Request::instance();
             }
             
-            $rules = config('stlc.module_model')::validateRules("Modules", $request);
+            $rules = \Module::validateRules("Modules", $request);
 			$validator = Validator::make($request->all(), $rules);
 			
 			if ($validator->fails()) {
@@ -725,14 +386,14 @@ class ModulesController extends StlcController
 
     public function edit_field(Request $request, $id)
     {
-        if(Auth::user()->isSuperAdmin()) {
+        if(\Module::user()->isSuperAdmin()) {
             if(isset($request->src)) {
                 $src = $request->src;
             } else {
                 $src = Null;
             }
             
-            $field = config('stlc.field_model')::find($id);
+            $field = \Field::find($id);
             if(isset($field->id)) {
                 
                 $crud = $this->crud_filed;
@@ -762,14 +423,14 @@ class ModulesController extends StlcController
      */
     public function show_field(Request $request, $id)
     {
-        if(Auth::user()->isSuperAdmin()) {
+        if(\Module::user()->isSuperAdmin()) {
             if(isset($request->src)) {
                 $src = url($request->src);
             } else {
                 $src = Null;
             }
 
-            $field = config('stlc.field_model')::find($id);
+            $field = \Field::find($id);
             if (isset($field->id)) {
 
                 $crud = $this->crud_filed;
@@ -784,7 +445,7 @@ class ModulesController extends StlcController
                         'field' => $field,
                         'src' => $src,
                         'represent_attr' => $crud->module->represent_attr,
-                        'fieldTypes' => $fieldTypes = config('stlc.field_type_model')::all()
+                        'fieldTypes' => $fieldTypes = \FieldType::all()
                     ]);
                 }
             } else {
@@ -808,15 +469,15 @@ class ModulesController extends StlcController
     
     public function update_field(Request $request,$id)
     {
-        if(Auth::user()->isSuperAdmin()) {
+        if(\Module::user()->isSuperAdmin()) {
             // old data
-            $old_item = config('stlc.field_model')::find($id);
+            $old_item = \Field::find($id);
             if(isset($old_item->id)) {
                 if (is_null($request)) {
                     $request = \Request::instance();
                 }
 
-                $rules = config('stlc.module_model')::validateRules($this->crud_filed->name, $request, true);
+                $rules = \Module::validateRules($this->crud_filed->name, $request, true);
                 $validator = Validator::make($request->all(), $rules);
                 
                 if ($validator->fails()) {
@@ -882,11 +543,11 @@ class ModulesController extends StlcController
      */
     public function destroy_field(Request $request, $id)
     {
-        if(Auth::user()->isSuperAdmin()) {
+        if(\Module::user()->isSuperAdmin()) {
             // old data
-            $old_item = config('stlc.field_model')::find($id);
+            $old_item = \Field::find($id);
             if(isset($old_item->id)) {
-                $field = config('stlc.field_model')::find($id)->delete();
+                $field = \Field::find($id)->delete();
 
                 // add activity log
                 // \Activity::log(config('activity_log.context.DELETED'), $this->crud, ['old' => $old_item]);
@@ -924,7 +585,7 @@ class ModulesController extends StlcController
      */
     public function setting_list()
     {
-        if(Auth::user()->isAdmin()) {
+        if(\Module::user()->isAdmin()) {
             $settings = Setting::all();
             if(isset($this->setting_crud->fields['value'])){
                 unset($this->setting_crud->fields['value']);
@@ -947,7 +608,7 @@ class ModulesController extends StlcController
      */
     public function setting_edit(Request $request, $id)
     {
-        if(Auth::user()->isAdmin()) {
+        if(\Module::user()->isAdmin()) {
             
             $setting = Setting::find($id);
             if(isset($this->setting_crud->fields['key'])){
@@ -984,7 +645,7 @@ class ModulesController extends StlcController
      */
     public function setting_store(Request $request)
     {
-        if(Auth::user()->isAdmin()) {
+        if(\Module::user()->isAdmin()) {
             if (is_null($request)) {
                 $request = \Request::instance();
             }
@@ -1045,7 +706,7 @@ class ModulesController extends StlcController
 
     public function setting_update(Request $request,$id)
     {
-        if(Auth::user()->isAdmin()) {
+        if(\Module::user()->isAdmin()) {
             $old_item = Setting::find($id);
             if(isset($old_item->id)) {
                 if (is_null($request)) {
@@ -1129,7 +790,7 @@ class ModulesController extends StlcController
                 $comment = $old_item->comment($request->comment);
                 $crud_comment = (object)['model'=>(new \App\Models\Comment),'action' => 'Created','description' => 'Comment Created'];
                 // add activity log
-                config('stlc.activity_model')::log('Created', $crud_comment, ['new' => $comment]);
+                \Activity::log('Created', $crud_comment, ['new' => $comment]);
                 return response()->json(['status' => 'success', 'message' => 'updated', 'item' => $comment]);
             } else {
                 return response()->json(['status' => 'failed', 'message' => trans('stlc.data_not_found'), 'item'=> $old_item]);
@@ -1192,9 +853,9 @@ class ModulesController extends StlcController
         } else if($request->assessor == 'role') {
             $assessor = config('stlc.role_model')::find($id);
         }
-		if(\Auth::user()->isAdmin() && isset($assessor->id)) {
+		if(\Module::user()->isAdmin() && isset($assessor->id)) {
             
-            $modules_access = config('stlc.module_model')::access_modules($assessor);
+            $modules_access = \Module::access_modules($assessor);
             
 			foreach($modules_access as $module) {
                 $module_name = $module->name;
@@ -1252,7 +913,7 @@ class ModulesController extends StlcController
             }
         }
         $data = $request->only(['add_btn','table_class','class']);
-        $data['crud'] = config('stlc.module_model')::make($request->crud,['route_prefix' => $request->prefix]); 
+        $data['crud'] = \Module::make($request->crud,['route_prefix' => $request->prefix]); 
         if(isset($request->src_ajax) && $request->src_ajax) {
             return response()->json([
                 'statusCode' => 200, 'message' => 'succeess',

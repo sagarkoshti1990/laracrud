@@ -3,9 +3,6 @@
 namespace Sagartakle\Laracrud\Console\Commands;
 
 use Illuminate\Console\GeneratorCommand;
-use Sagartakle\Laracrud\Models\Module;
-use Sagartakle\Laracrud\Models\FieldType;
-use Sagartakle\Laracrud\Helpers\CustomHelper;
 
 class Migrate extends GeneratorCommand
 {
@@ -77,7 +74,7 @@ class Migrate extends GeneratorCommand
     protected function replaceNameStrings(&$stub)
     {
         $name = $this->getNameInput();
-        $modul = config('stlc.module_model')::where('name', $name)->first();
+        $modul = \Module::where('name', $name)->first();
         $out = "";
         if(isset($modul) && $modul->id) {
             foreach ($modul->fields as $key => $field) {
@@ -144,7 +141,7 @@ class Migrate extends GeneratorCommand
                 }
             }
             $string_attr = "";
-            $arr = CustomHelper::generateModuleNames($modul->name,$modul);
+            $arr = \CustomHelper::generateModuleNames($modul->name,$modul);
             
             if(isset($arr['model'])) {
                 $string_attr = ",['model'=>'".$arr['model']."']";
@@ -186,7 +183,7 @@ class Migrate extends GeneratorCommand
         
         $field_types = "";
         $tabspace = "";
-        foreach (config('stlc.field_type_model')::all() as $key => $field_type) {
+        foreach (\FieldType::all() as $key => $field_type) {
             $field_types .= $tabspace.$field_type->name.','."\n";
             $tabspace = "\t\t\t";
         }

@@ -7,7 +7,6 @@ use Log;
 
 use Sagartakle\Laracrud\Models\Menu;
 use Sagartakle\Laracrud\Models\Page;
-use Sagartakle\Laracrud\Models\Module;
 use Sagartakle\Laracrud\Models\Upload;
 use GuzzleHttp\Client;
 use Jenssegers\Date\Date;
@@ -76,7 +75,7 @@ class CustomHelper
      */
     public static function getModuleNames($remove_modules = [])
     {
-        $modules = config('stlc.module_model')::all();
+        $modules = \Module::all();
         
         $modules_out = array();
         foreach($modules as $module) {
@@ -420,15 +419,15 @@ class CustomHelper
             foreach($childrens as $children) {
                 if($children->type == 'custom') {
                     if($menu->link == "#") {
-                        $str = '<li' . $treeview . '><a href="javascript:void(0)"><i class="nav-icon ' . $menu->icon . '"></i> <p>' . $menu->label . '</p> ' . $subviewSign . '</a>';
+                        $str = '<li' . $treeview . '><a href="javascript:void(0)"><i class="nav-icon ' . $menu->icon . '"></i> <p>' . $menu->label . $subviewSign . '</p></a>';
                     } else {
-                        $str = '<li' . $treeview . '><a class="nav-link" href="' . url($prefix_url . $menu->link) . '"><i class="nav-icon ' . $menu->icon . '"></i> <p>' . $menu->label . '</p> ' . $subviewSign . '</a>';
+                        $str = '<li' . $treeview . '><a class="nav-link" href="' . url($prefix_url . $menu->link) . '"><i class="nav-icon ' . $menu->icon . '"></i> <p>' . $menu->label . $subviewSign . '</p></a>';
                     }
                 } else {
                     if($children->type == 'page') {
                         $module = Page::where('name',$children->name)->first();
                     } else if($children->type == 'module') {
-                        $mkmodule = config('stlc.module_model')::where('name',$children->name)->first();
+                        $mkmodule = \Module::where('name',$children->name)->first();
                         if(isset($mkmodule) && $mkmodule->name == $children->name) {
                             $module = $mkmodule->name;
                         } else {
@@ -436,17 +435,17 @@ class CustomHelper
                         }
                     }
                     
-                    if(isset($module) && (config('stlc.module_model')::hasAccess($module) || $checkAccess)) {
+                    if(isset($module) && (\Module::hasAccess($module) || $checkAccess)) {
                         if($menu->link == "#") {
-                            $str = '<li' . $treeview . '><a class="nav-link" href="#"><i class="nav-icon ' . $menu->icon . '"></i> <p>' . $menu->label . '</p> ' . $subviewSign . '</a>';
+                            $str = '<li' . $treeview . '><a class="nav-link" href="javascript:void(0)"><i class="nav-icon ' . $menu->icon . '"></i> <p>' . $menu->label . $subviewSign . '</p></a>';
                         } else {
-                            $str = '<li' . $treeview . '><a class="nav-link" href="' . url($prefix_url . $menu->link) . '"><i class="nav-icon ' . $menu->icon . '"></i> <p>' . $menu->label . '</p> ' . $subviewSign . '</a>';
+                            $str = '<li' . $treeview . '><a class="nav-link" href="' . url($prefix_url . $menu->link) . '"><i class="nav-icon ' . $menu->icon . '"></i> <p>' . $menu->label . $subviewSign . '</p></a>';
                         }
                     }
                 }
             }
         } else {
-            $str = '<li' . $treeview . '><a class="nav-link" href="' . url($prefix_url . $menu->link) . '"><i class="nav-icon ' . $menu->icon . '"></i> <p>' . $menu->label . '</p> ' . $subviewSign . '</a>';
+            $str = '<li' . $treeview . '><a class="nav-link" href="' . url($prefix_url . $menu->link) . '"><i class="nav-icon ' . $menu->icon . '"></i> <p>' . $menu->label . $subviewSign . '</p></a>';
         }
         
         if(count($childrens)) {
@@ -458,14 +457,14 @@ class CustomHelper
                     if($children->type == 'page') {
                         $module = Page::where('name',$children->name)->first();
                     } else if($children->type == 'module') {
-                        $mkmodule = config('stlc.module_model')::where('name',$children->name)->first();
+                        $mkmodule = \Module::where('name',$children->name)->first();
                         if(isset($mkmodule) && $mkmodule->name == $children->name) {
                             $module = $mkmodule->name;
                         } else {
                             $module = collect();
                         }
                     }
-                    if(isset($module) && (config('stlc.module_model')::hasAccess($module) || $checkAccess)) {
+                    if(isset($module) && (\Module::hasAccess($module) || $checkAccess)) {
                         $str .= self::print_menu($children,$prefix,$checkAccess);
                     }
                 }
@@ -534,7 +533,7 @@ class CustomHelper
             foreach($menus as $key => $menu) {
                 $menuData = [];
                 if(is_string($menu)) {
-                    $module = config('stlc.module_model')::where('name',$menu)->first();
+                    $module = \Module::where('name',$menu)->first();
                     if(isset($module->id)) {
                         $menuData['name'] = $module->name;
                         $menuData['label'] = $module->label;
@@ -543,7 +542,7 @@ class CustomHelper
                     }
                 } else if(isset($menu) && is_array($menu) && isset($menu['name'])){
                     if(isset($menu['name'])) {
-                        $module = config('stlc.module_model')::where('name',$menu['name'])->first();
+                        $module = \Module::where('name',$menu['name'])->first();
                     }
                     if(isset($module->id)) {
                         $menuData['name'] = $module->name;
@@ -574,7 +573,7 @@ class CustomHelper
                 }
             }
             if(Schema::hasTable('modules') && $generateModule == true) {
-                $modules = config('stlc.module_model')::whereNotIn('name',config('stlc.restrictedModules.menu',['Users','Uploads']))
+                $modules = \Module::whereNotIn('name',config('stlc.restrictedModules.menu',['Users','Uploads']))
                             ->whereNotIn('name',config('stlc.menu_model')::select('name')->pluck('name'))->get();
                 foreach ($modules as $module) {
                     if(Schema::hasTable('menus')) {
@@ -946,7 +945,8 @@ class CustomHelper
                 "caption" => "",
                 "hash" => "",
                 "public" => true,
-                "user_id" => \Auth::id()
+				"context_id" => \Module::user()->id ?? null,
+				"context_type" => get_class(\Module::user())
             ]);
             // apply unique random hash to file
             while(true) {

@@ -1,5 +1,9 @@
 @php
-	$field['attributes']['class'] = $errors->has($field['name']) ? $field['attributes']['class'].' is-invalid' : $field['attributes']['class'];
+	if(isset($class)) {
+		$field['attributes']['class'] = $errors->has($field['name']) ? $class.' is-invalid' : $class;
+	} else {
+		$field['attributes']['class'] = $errors->has($field['name']) ? $field['attributes']['class'].' is-invalid' : $field['attributes']['class'];
+	}
 @endphp
 @if (isset($field['attributes']))
     @foreach ($field['attributes'] as $attribute => $value)

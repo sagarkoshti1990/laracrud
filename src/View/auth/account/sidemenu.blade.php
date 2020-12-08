@@ -1,14 +1,14 @@
 <div class="card px-3 pb-1 pt-2">
     <div class="card-body card-profile text-center">
-		<img class="profile-user-img img-responsive rounded-circle" src="{{ Auth::user()->profile_pic() }}">
+		<img class="profile-user-img img-responsive rounded-circle" src="{{ \Module::user()->profile_pic() }}">
 		<h3 class="profile-username text-center">{{ auth()->user()->name }}</h3>
 		<span><h6>Roles</h6></span>
 		@if(!isset(auth()->user()->context()->id))
 			<span class="badge large bg-red text-center" style="font-size:12px;">No Context Found</span>
 		@endif
-		{{--  @foreach(Auth::user()->roles as $role)  --}}
+		{{--  @foreach(\Module::user()->roles as $role)  --}}
 		{{--  <span class="badge large bg-purple text-center">{{ $role->label }}</span>  --}}
-		@forelse(\Auth::user()->roles as $role)
+		@forelse(\Module::user()->roles as $role)
 				<span class="badge large bg-purple text-center" style="font-size:12px;">{{ $role->label }}</span>
 		@empty
 				<span class="badge large bg-red text-center" style="font-size:12px;">Not assing</span>

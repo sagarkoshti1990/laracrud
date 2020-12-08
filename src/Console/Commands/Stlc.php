@@ -4,7 +4,6 @@ namespace Sagartakle\Laracrud\Console\Commands;
 
 use Artisan;
 use Illuminate\Console\Command;
-use Sagartakle\Laracrud\Models\Module;
 
 class Stlc extends Command
 {
@@ -31,7 +30,7 @@ class Stlc extends Command
     {
         if ($this->option('option') && $this->option('option') != "with-views") {
             $this->info($this->option('option'));
-            foreach (config('stlc.module_model')::all() as $key => $value) {
+            foreach (\Module::all() as $key => $value) {
                 if(!in_array($value->name, ['Users','Uploads','Permissions','Roles','Employees','Tests'])) {
                     $this->info($value->name);
                     if(($this->option('option') == "migrate")) {

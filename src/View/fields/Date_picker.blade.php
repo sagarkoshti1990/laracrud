@@ -13,14 +13,14 @@
         <label for="{{ $field['name'] }}" class="control-label">{!! $field['label'] !!}</label>
     @endif
     <div class="input-group date">
-        @if(isset($field['prefix'])) <div class="input-group-prepend"><span class="input-group-text">{!! $field['prefix'] !!}<span></div> @endif
+        @if(isset($field['prefix'])) <div class="input-group-prepend"><span class="input-group-text">{!! $field['prefix'] !!}</span></div> @endif
         <input
             data-bs-datepicker="{{ isset($field['date_picker_options']) ? json_encode($field['date_picker_options']) : '{}'}}"
             type="text"
             data-name="{{ $field['name'] }}"
             @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_attributes')
             >
-        <div class="input-group-append"><span class="input-group-text">@if(isset($field['suffix'])) {!! $field['suffix'] !!} @else <span class="fa fa-calendar"></span> @endif <span></div>
+        <div class="input-group-append"><span class="input-group-text">@if(isset($field['suffix'])) {!! $field['suffix'] !!} @else <span class="fa fa-calendar"></span> @endif </span></div>
     </div>
     <input
         type="hidden"

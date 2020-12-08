@@ -89,15 +89,16 @@ return [
     |--------------------------------------------------------------------------
     */
     // Fully qualified namespace of the User model
-	'user_model' => '\App\User',
-	'access_module_model' => '\Sagartakle\Laracrud\Models\AccessModule',
-	'activity_model' => '\Sagartakle\Laracrud\Models\Activity',
-	'field_model' => '\Sagartakle\Laracrud\Models\Field',
-	'field_type_model' => '\Sagartakle\Laracrud\Models\FieldType',
-	'menu_model' => '\Sagartakle\Laracrud\Models\Menu',
-	'module_model' => '\Sagartakle\Laracrud\Models\Module',
-	'role_model' => '\Sagartakle\Laracrud\Models\Role',
-	'upload_model' => '\Sagartakle\Laracrud\Models\Upload',
+	'user_model' => \App\User::class,
+	'access_module_model' => \Sagartakle\Laracrud\Models\AccessModule::class,
+	'activity_model' => \Sagartakle\Laracrud\Models\Activity::class,
+	'field_model' => \Sagartakle\Laracrud\Models\Field::class,
+	'field_type_model' => \Sagartakle\Laracrud\Models\FieldType::class,
+	'menu_model' => \Sagartakle\Laracrud\Models\Menu::class,
+	'module_model' => \Sagartakle\Laracrud\Models\Module::class,
+	'role_model' => \Sagartakle\Laracrud\Models\Role::class,
+	'upload_model' => \Sagartakle\Laracrud\Models\Upload::class,
+	'custom_helper' => \Sagartakle\Laracrud\Helpers\CustomHelper::class,
 
     /*
     |--------------------------------------------------------------------------
@@ -111,8 +112,8 @@ return [
     |------------
     */
     // LIST VIEW (table view)
-        // How many items should be shown by default by the Datatable?
-        'default_page_length' => 10,
+	// How many items should be shown by default by the Datatable?
+	'default_page_length' => 10,
         
     // File manager
     // size in mb

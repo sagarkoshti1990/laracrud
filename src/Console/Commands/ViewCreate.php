@@ -3,7 +3,6 @@
 namespace Sagartakle\Laracrud\Console\Commands;
 
 use Illuminate\Console\GeneratorCommand;
-use Sagartakle\Laracrud\Models\Module;
 
 class ViewCreate extends GeneratorCommand
 {
@@ -60,7 +59,7 @@ class ViewCreate extends GeneratorCommand
     protected function replaceNameStrings(&$stub)
     {
         $name = $this->getNameInput();
-        $modul = config('stlc.module_model')::where('name', $name)->first();
+        $modul = \Module::where('name', $name)->first();
         $out = "";
         if(isset($modul) && $modul->id) {
             foreach ($modul->fields as $key => $field) {

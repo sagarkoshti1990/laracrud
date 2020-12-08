@@ -9,8 +9,6 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use App\Http\Requests\AccountInfoRequest;
 use Illuminate\Support\Facades\Hash;
-
-use Sagartakle\Laracrud\Models\Module;
 use App\User;
 
 class MyAccountController extends Controller
@@ -24,10 +22,10 @@ class MyAccountController extends Controller
     {
         $this->data['title'] = trans('base.my_account');
         $this->data['user'] = $this->guard()->user();
-        $this->data['crud'] = config('stlc.module_model')::make('Users');
+        $this->data['crud'] = \Module::make('Users');
         $this->data['crud']->datatable = true;
-        if(isset(Auth::user()->id) && isset(Auth::user()->context()->id)) {
-            $this->data['crud']->row = Auth::user()->context();
+        if(isset(\Module::user()->id) && isset(\Module::user()->context()->id)) {
+            $this->data['crud']->row = \Module::user()->context();
         }
         
         return view(config('stlc.stlc_modules_folder_name','stlc::').'auth.account.update_info', $this->data);

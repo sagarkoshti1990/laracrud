@@ -6,6 +6,20 @@ use Illuminate\Http\Request;
 
 trait Show
 {
+    public function beforeShow(Request $request,$item){}
+    public function onShow(Request $request,$item){
+        $this->crud->row = $item;
+        if($request->wantsJson()) {
+            return response()->json(['status' => '200', 'message' => 'updated', 'item' => $item],200);
+        } else {
+            return view($this->crud->view_path['show'], [
+                'crud' => $this->crud,
+                'item' => $item,
+                'src' => $request->src ?? null,
+                'represent_attr' => $this->crud->module->represent_attr
+            ]);
+        }
+    }
     /**
      * Display the specified resource.
      *
@@ -15,27 +29,15 @@ trait Show
     public function show(Request $request, $id)
     {
         if($this->crud->hasAccess('view')) {
-            $crud = $this->crud;
-            $item = $crud->model->find($id);
+            $item = $this->crud->model->find($id);
             if(isset($item->id)) {
-                $crud->datatable = true;
-                $crud->row = $item;
-            
-                if($request->wantsJson()) {
-                    return response()->json(['status' => '200', 'message' => 'updated', 'item' => $item],200);
-                } else {
-                    return view($crud->view_path['show'], [
-                        'crud' => $crud,
-                        'item' => $item,
-                        'src' => $request->src ?? null,
-                        'represent_attr' => $crud->module->represent_attr
-                    ]);
-                }
+                $this->beforeShow($request,$item);
+                return $this->onShow($request,$item);
             } else {
                 if($request->wantsJson()) {
                     return response()->json(['status' => '404', 'message' => trans('stlc.data_not_found')],404);
                 } else {
-                    abort(404, $crud->name);
+                    abort(404, $this->crud->name);
                 }
             }
         } else {

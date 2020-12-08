@@ -2,9 +2,6 @@
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
-use Sagartakle\Laracrud\Models\Module;
-use Sagartakle\Laracrud\Models\FieldType;
-use Sagartakle\Laracrud\Models\Field;
 
 class CreateUploadsTable extends Migration
 {
@@ -15,7 +12,7 @@ class CreateUploadsTable extends Migration
      */
     public function up()
     {
-        Module::generate('Uploads', 'uploads', 'name', 'fa fa-cloud-upload-alt', [
+        \Module::generate('Uploads', 'uploads', 'name', 'fa fa-cloud-upload-alt', [
             [
 				'name' => 'name',
 				'label' => 'Name',
@@ -60,7 +57,7 @@ class CreateUploadsTable extends Migration
             'controller' => \Sagartakle\Laracrud\Controllers\UploadsController::class
         ]);
 		
-		Module::generate('Uploadables', 'uploadables', 'upload_id', 'fa fa-scissors', [
+		\Module::generate('Uploadables', 'uploadables', 'upload_id', 'fa fa-scissors', [
             [
                 'name' => 'upload_id',
                 'label' => 'Upload',
@@ -82,7 +79,7 @@ class CreateUploadsTable extends Migration
             ]
 		]);
         /*
-        Module::generate('Uploads' 'uploads', 'name', 'fa fa-cloud-upload-alt', [
+        \Module::generate('Uploads' 'uploads', 'name', 'fa fa-cloud-upload-alt', [
             [
                 'name' => 'name',
                 'label' => 'Name',

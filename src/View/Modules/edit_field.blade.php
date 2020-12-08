@@ -68,11 +68,11 @@
         $('#edit_form').validate();
         
         @if(is_string($field->json_values) && \Str::startsWith($field->json_values, "@"))
-            $('#edit_form :input[name="json_type"][value=Module]').iCheck('check');
+            $('#edit_form :input[name="json_type"][value=Module]').attr('checked',true);
             var json_values = `{{ str_replace("@", "", $field->json_values) }}`;
             select_data('Module');
         @else
-            $('#edit_form :input[name="json_type"][value=Json]').iCheck('check');
+            $('#edit_form :input[name="json_type"][value=Json]').attr('checked',true);
             var json_values = @php echo (isset($field->json_values) && $field->json_values != "") ? $field->json_values : "[]"; @endphp;
             select_data('Json');
         @endif

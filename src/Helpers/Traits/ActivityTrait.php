@@ -2,8 +2,6 @@
 
 namespace Sagartakle\Laracrud\Helpers\Traits;
 
-use Sagartakle\Laracrud\Models\Activity;
-
 trait ActivityTrait
 {
 
@@ -12,7 +10,7 @@ trait ActivityTrait
      */
     public function activities()
     {
-        return $this->morphMany(config('stlc.activity_model'), 'context');
+        return $this->morphMany(\Activity::class, 'context');
     }
 
     /**

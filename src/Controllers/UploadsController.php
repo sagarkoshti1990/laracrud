@@ -4,8 +4,6 @@ namespace Sagartakle\Laracrud\Controllers;
 
 use Auth;
 use File;
-use Sagartakle\Laracrud\Models\Field;
-use Sagartakle\Laracrud\Models\Module;
 use Sagartakle\Laracrud\Models\Upload;
 use Illuminate\Http\Request;
 use Sagartakle\Laracrud\Controllers\StlcController;
@@ -18,7 +16,7 @@ use Pion\Laravel\ChunkUpload\Exceptions\UploadMissingFileException;
 class UploadsController extends StlcController
 {
     function __construct() {
-        $this->crud = config('stlc.module_model')::make('Uploads',['setModel' => config('stlc.upload_model'),'route_prefix' => config('stlc.stlc_route_prefix', 'developer')]);
+        $this->crud = \Module::make('Uploads',['setModel' => config('stlc.upload_model'),'route_prefix' => config('stlc.stlc_route_prefix', 'developer')]);
     }
 	
 	/**
@@ -45,14 +43,14 @@ class UploadsController extends StlcController
 		}
 
 		// Validate if Image is Public
-		if(!$upload->public && !isset(Auth::user()->id)) {
+		if(!$upload->public && !isset(\Module::user()->id)) {
 			return response()->json([
 				'status' => "failure",
 				'message' => "Unauthorized Access 2",
 			]);
 		}
 
-		// if($upload->public || Entrust::hasRole('SUPER_ADMIN') || Auth::user()->id == $upload->user_id) {
+		// if($upload->public || Entrust::hasRole('SUPER_ADMIN') || \Module::user()->id == $upload->user_id) {
 			
 			$path = $upload->path;
 
@@ -114,7 +112,7 @@ class UploadsController extends StlcController
 	 */
 	public function upload_files(Request $request)
 	{
-		if(config('stlc.module_model')::hasAccess("Uploads", "create") || true) {
+		if($this->crud->hasAccess('create') || true) {
 			$input = $request->all();
 			
 			if($request->hasFile('file')) {
@@ -224,7 +222,7 @@ class UploadsController extends StlcController
 				"hash" => "",
 				"public" => $public,
 				"context_id" => Auth::id(),
-				"context_type" => get_class(Auth::user())
+				"context_type" => get_class(\Module::user())
 			]);
 			// apply unique random hash to file
 			while(true) {
@@ -255,7 +253,7 @@ class UploadsController extends StlcController
 	 */
 	public function uploaded_files(Request $response)
 	{
-		if(config('stlc.module_model')::hasAccess("Uploads", "view")) {
+		if($this->crud->hasAccess('view')) {
 			$select = ['id','name','extension','hash','public','caption'];
 			if(isset($response->file_type) && $response->file_type == "image") {
 				$uploads = config('stlc.upload_model')::select($select)->whereIn('extension',["jpg", "jpeg", "png", "gif", "bmp"])->paginate(config('stlc.file_modal_paginate_count',18));
@@ -285,13 +283,13 @@ class UploadsController extends StlcController
 	 */
 	public function update_caption()
 	{
-		if(config('stlc.module_model')::hasAccess("Uploads", "edit")) {
+		if($this->crud->hasAccess("edit")) {
 			$file_id = $request->get('file_id');
 			$caption = $request->get('caption');
 			
 			$upload = config('stlc.upload_model')::find($file_id);
 			if(isset($upload->id)) {
-				// if($upload->user_id == Auth::user()->id || Entrust::hasRole('SUPER_ADMIN')) {
+				// if($upload->user_id == \Module::user()->id || Entrust::hasRole('SUPER_ADMIN')) {
 	
 					// Update Caption
 					$upload->caption = $caption;
@@ -328,13 +326,13 @@ class UploadsController extends StlcController
 	 */
 	public function update_filename()
 	{
-		if(config('stlc.module_model')::hasAccess("Uploads", "edit")) {
+		if($this->crud->hasAccess("edit")) {
 			$file_id = $request->get('file_id');
 			$filename = $request->get('filename');
 			
 			$upload = config('stlc.upload_model')::find($file_id);
 			if(isset($upload->id)) {
-				// if($upload->user_id == Auth::user()->id || Entrust::hasRole('SUPER_ADMIN')) {
+				// if($upload->user_id == \Module::user()->id || Entrust::hasRole('SUPER_ADMIN')) {
 	
 					// Update Caption
 					$upload->name = $filename;
@@ -371,7 +369,7 @@ class UploadsController extends StlcController
 	 */
 	public function update_public()
 	{
-		if(config('stlc.module_model')::hasAccess("Uploads", "edit")) {
+		if($this->crud->hasAccess("edit")) {
 			$file_id = $request->get('file_id');
 			$public = $request->get('public');
 			if(isset($public)) {
@@ -382,7 +380,7 @@ class UploadsController extends StlcController
 			
 			$upload = config('stlc.upload_model')::find($file_id);
 			if(isset($upload->id)) {
-				// if($upload->user_id == Auth::user()->id || Entrust::hasRole('SUPER_ADMIN')) {
+				// if($upload->user_id == \Module::user()->id || Entrust::hasRole('SUPER_ADMIN')) {
 	
 					// Update Caption
 					$upload->public = $public;
@@ -419,12 +417,12 @@ class UploadsController extends StlcController
 	 */
 	public function delete_file()
 	{
-		if(config('stlc.module_model')::hasAccess("Uploads", "delete")) {
+		if($this->crud->hasAccess("delete")) {
 			$file_id = $request->get('file_id');
 			
 			$upload = config('stlc.upload_model')::find($file_id);
 			if(isset($upload->id)) {
-				// if($upload->user_id == Auth::user()->id || Entrust::hasRole('SUPER_ADMIN')) {
+				// if($upload->user_id == \Module::user()->id || Entrust::hasRole('SUPER_ADMIN')) {
 	
 					// Update Caption
 					$upload->delete();

@@ -6,7 +6,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 
 use Illuminate\Database\Eloquent\Model;
-use Sagartakle\Laracrud\Helpers\ObjectHelper;
 
 class Activity extends Model
 {
@@ -101,7 +100,7 @@ class Activity extends Model
             $arr['activity_name'] = $crud->module->name;
         } else if(isset($crud->name)) {
             $arr['activity_name'] = $crud->name;
-        } else if(!($crud instanceof ObjectHelper)) {
+        } else if(!($crud instanceof \ObjectHelper)) {
             if(is_object($crud) && isset($crud->name)) {
                 $arr['activity_name'] = $crud->name;
             } else if(is_array($crud) && isset($crud['name'])) {
@@ -117,7 +116,7 @@ class Activity extends Model
             $arr['activity_context_type'] = get_class($crud->model);
         } else if(isset($crud->context_type)) {
             $arr['activity_context_type'] = $crud->context_type;
-        } else if(!($crud instanceof ObjectHelper) && isset($crud['context_type'])) {
+        } else if(!($crud instanceof \ObjectHelper) && isset($crud['context_type'])) {
             $arr['activity_context_type'] = $crud['context_type'];
         } else {
             $arr['activity_context_type'] = "App\Models\Test";
@@ -125,7 +124,7 @@ class Activity extends Model
 
         if(isset($crud->action)) {
             $arr['activity_action'] = $crud->action;
-        } else if(!($crud instanceof ObjectHelper) && isset($crud['action'])) {
+        } else if(!($crud instanceof \ObjectHelper) && isset($crud['action'])) {
             $arr['activity_action'] = $crud['action'];
         } else {
             $arr['activity_action'] = config('App.activity_log.'.$arr['activity_name'].'.'.strtoupper($action).'.action',$action);
@@ -133,7 +132,7 @@ class Activity extends Model
 
         if(isset($crud->description)) {
             $arr['activity_description'] = $crud->description;
-        } else if(!($crud instanceof ObjectHelper) && isset($crud['description'])) {
+        } else if(!($crud instanceof \ObjectHelper) && isset($crud['description'])) {
             $arr['activity_description'] = $crud['description'];
         } else {
             $arr['activity_description'] = config('App.activity_log.'.$arr['activity_name'].'.'.strtoupper($action).'.description',$arr['activity_name'].' '.$action);
@@ -219,8 +218,8 @@ class Activity extends Model
         
         // set the user ID
         if (!isset($data['user_id'])) {
-            $data['user_id'] = Auth::check() ? Auth::id() : null;
-            $data['user_type'] = Auth::check() ? get_class(Auth::user()) : null;
+            $data['user_id'] = \Module::user()->id ?? null;
+            $data['user_type'] = get_class(\Module::user());
         }
 
         // allow "updated" boolean to set action and replace activity text verbs with "Updated"

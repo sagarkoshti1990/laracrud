@@ -2,10 +2,8 @@
 
 namespace Sagartakle\Laracrud\Helpers\Traits;
 
-use Sagartakle\Laracrud\Models\FieldType;
 use Sagartakle\Laracrud\Models\RelationalDataTable;
 Use Exception;
-use Sagartakle\Laracrud\Models\Activity;
 
 trait Create
 {
@@ -47,7 +45,7 @@ trait Create
             if(isset($column_names_ralationaldata) && count($column_names_ralationaldata) > 0) {
                 $update_data = collect($data)->only($column_names_ralationaldata)->toArray();
                 $i = 0;
-                $ftypes = config('stlc.field_type_model')::getFTypes();
+                $ftypes = \FieldType::getFTypes();
                 foreach($update_data as $key => $r_data) {
                     $r_datas[$i]['context_id'] = $item->id ?? null;;
                     $r_datas[$i]['context_type'] = get_class($this->model);
@@ -61,7 +59,7 @@ trait Create
                 }
                 RelationalDataTable::insert($r_datas);
             }
-            config('stlc.activity_model')::log(config('App.activity_log.CREATED','Created'), $this, ['new' => $item]);
+            \Activity::log(config('App.activity_log.CREATED','Created'), $this, ['new' => $item]);
             if(isset($transaction) && $transaction == true) {
                 \DB::commit();
             }

@@ -52,9 +52,7 @@
             {
                 $(obj).select2({
                     theme:"bootstrap4",
-                    multiple: false,
-                    placeholder: "{{ $field['attributes']['placeholder'] }}",
-                    minimumInputLength: "{{ $field['minimum_input_length'] ?? '3' }}",
+                    minimumInputLength: "{{ $field['minimum_input_length'] ?? '0' }}",
                     ajax: {
                         url: "{{ $field['data_source'] }}?get_data_ajax=1",
                         dataType: 'json',

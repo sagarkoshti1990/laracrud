@@ -8,19 +8,15 @@
     @endif
     <div class="has-feedback">
         <div class="input-group">
-            @if(isset($field['prefix'])) <div class="input-group-prepend"><span class="input-group-text">{!! $field['prefix'] !!}<span></div> @endif
+            @if(isset($field['prefix'])) <div class="input-group-prepend"><span class="input-group-text">{!! $field['prefix'] !!}</span></div> @endif
             <input
                 type="password"
                 name="{{ $field['name'] }}"
                 @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_attributes')
             >
             <div class="input-group-append"><span class="input-group-text">
-                @if(isset($field['suffix']))
-                    {!! $field['suffix'] !!}
-                @else
-                <i class="fa fa-eye-slash"></i>
-                @endif
-            <span></div>
+                @if(isset($field['suffix'])) {!! $field['suffix'] !!} @else <i class="fa fa-eye-slash"></i> @endif
+            </span></div>
         </div>
     </div>
     @if ($errors->has($field['name']))
