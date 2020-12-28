@@ -47,7 +47,7 @@
 		.crop-editor{position:fixed;left:0;right:0;top:0;bottom:0;z-index:9999;background-color: #000;}
 		.upload-confirm-btn,.upload-close-btn{position:absolute;left:15px;top:15px;z-index:9999;}
 		.upload-close-btn{right: 15px;left: auto;}
-		.uploaded_image i.fa-times,a.uploaded_file i.fa.fa-times,a.uploaded_file2 i.fa.fa-times {
+		.uploaded_image i.fa-times,.uploaded_file i.fa-times,.uploaded_file2 i.fa-times {
 			background: #f10000;display: block;position: absolute;top: -5px;right: -5px;color: #FFF;
 			padding: 3px;border-radius: 50%;text-align: center;font-size: 10px;cursor: pointer;z-index: 999;
 		}
@@ -63,17 +63,19 @@
 	$(document).ready(function() {
 		function set_file(upload) {
 			type = $("#image_selecter_origin_type").val();
-			// upload = JSON.parse(upload);
-			// console.log("upload sel: "+upload+" type: "+type);
+			
 			if(type == "file" || type == "image") {
 				$hinput = $("input[name="+$("#image_selecter_origin").val()+"]");
 				$hinput.val(upload.id).trigger('change');
-				$hinput.closest(".btn-group").find("#"+$("#image_selecter_origin").val()+"-error").remove();
-				$hinput.closest(".btn-group").find("a").addClass("d-none");
-				if($hinput.closest(".btn-group").find(".uploaded_file").length) {
-					$hinput.closest(".btn-group").find(".uploaded_file").remove();
+				$hinput.closest(".f-form-group").find("#"+$("#image_selecter_origin").val()+"-error").remove();
+				$hinput.closest(".f-form-group").find("a,.f-input-group").addClass("d-none");
+				if($hinput.closest(".f-form-group").find(".uploaded_file").length) {
+					$hinput.closest(".f-form-group").find(".uploaded_file").remove();
 				}
-				$hinput.closest(".btn-group").append("<a class='uploaded_file text-wrap' upload_id='"+upload.id+"' title='"+upload.name+"' target='_blank' href='"+bsurl+"/files/"+upload.hash+"/"+upload.name+"'>"+htmlFile(upload)+"<i title='Remove File' class='fa fa-times'></i></a>");
+				let appendHtml = `<div style="max-width:{{config('stlc.css.file_card_size','200px')}};cursor:pointer;" class='uploaded_file text-wrap' title='${upload.name}' target='_blank'>
+						${htmlFile(upload)}
+					</a>`;
+				$hinput.closest(".f-form-group").append(appendHtml);
 			} else if(type == "files") {
 				$hinput = $(`:input[name="${$("#image_selecter_origin").val()}[]"]`);
 				if(isset($hinput.val()) && $hinput.val() != "") {
@@ -93,7 +95,11 @@
 				}
 				if(!upload_id_exists) {
 					hiddenFIDs.push(upload.id);
-					$hinput.closest(".btn-group").find("div.uploaded_files").append("<a class='uploaded_file2 d-inline-block position-relative my-1 mr-2 align-top text-wrap' upload_id='"+upload.id+"' title='"+upload.name+"' target='_blank' href='"+bsurl+"/files/"+upload.hash+"/"+upload.name+"'>"+htmlFile(upload)+"<i title='Remove File' class='fa fa-times'></i></a>");
+					let appendHtml = `<div style="max-width:{{config('stlc.css.file_card_size','200px')}};cursor:pointer;" class='uploaded_file2 d-inline-block position-relative my-1 mr-2 align-top text-wrap'
+							title='${upload.name}'>
+							${htmlFile(upload)}
+						</div>`;
+					$hinput.closest(".f-form-group").find("div.uploaded_files").append(appendHtml);
 				}
 				var options_html = "";
 				hiddenFIDs.forEach((value,index) => {
@@ -101,7 +107,9 @@
 				});
 				$hinput.html(options_html).trigger('change');
 			}
-			$hinput.closest(".btn-group").find("a.btn.btn-default.btn-labeled").attr('disabled', false).find('.btn-label').html('<i class="fa fa-cloud-upload-alt"></i>');
+			$hinput.valid();
+			$hinput.closest(".btn-group").find("a.btn.btn-default.btn-labeled").attr('disabled', false);
+			$hinput.closest('.f-form-group').find('.input-group-prepend .input-group-text').html('<i class="fa fa-cloud-upload-alt"></i>');
 		}
 		function showLAFM(type, btn, extension = "") {
 			$("#image_selecter_origin_type").val(type);
@@ -169,7 +177,12 @@
 			// Dropzone.Options.clickable = "#fm_dropzone .dz-message";
 		}
 		function getLI(upload) {
-			return '<li class="list-inline-item"><a class="fm_file_sel d-inline-block position-relative my-1 align-top" data-toggle="tooltip" data-placement="top" title="'+upload.name+'" upload=\''+JSON.stringify(upload)+'\'>'+htmlFile(upload)+'</a></li>';
+			return `<li class="list-inline-item">
+				<div style="max-width:{{config('stlc.css.file_card_size','200px')}};cursor:pointer;" class="fm_file_sel d-inline-block position-relative my-1 align-top"
+					data-toggle="tooltip" data-placement="top"
+					title="${upload.name}" upload='${JSON.stringify(upload)}'>
+					${htmlFile(upload,false)}
+			</div></li>`;
 		}
 		function loadFMFiles(type = "",url1 = "") {
 			if(isset(url1) && url1 != "") {
@@ -313,13 +326,13 @@
 			} else {
 				$hinput = $("input[name="+$("#image_selecter_origin").val()+"]");
 			}
-			var progress_html = $hinput.closest('.form-group').find('.progress');
+			var progress_html = $hinput.closest('.f-form-group').find('.progress');
 			if(remove) {
 				$(progress_html).remove();
 			} else if(typeof progress_html != 'undefined' && progress_html.length > 0) {
 				$(progress_html).find(".progress-bar").css('width',progress + "%").attr('aria-valuenow',progress).text(progress + "%");
 			} else {
-				$hinput.closest('.form-group').append(`
+				$hinput.closest('.f-form-group').append(`
 					<div class="progress">
 						<div class="progress-bar" role="progressbar" style="width: ${progress}%;" aria-valuenow="${progress}" aria-valuemin="0" aria-valuemax="100">${progress}</div>
 					</div>
@@ -327,45 +340,43 @@
 			}
 		}
 
-		function htmlFile(upload) {
+		function htmlFile(upload,remove=true) {
 			var image = "";
-			if($.inArray(upload.extension, ["jpg","JPG","jpeg", "png", "gif", "bmp"]) > -1) {
-				image = '<img src="'+bsurl+'/files/'+upload.hash+'/'+upload.name+'?s=100" class="card-img-top">';
-			} else if($.inArray(upload.extension, ["ogg",'wav','mp3']) > -1) {
-				image = `<i class="far fa-file-audio fa-7x text-warning"></i>`;
-			} else if($.inArray(upload.extension, ["mp4","WEBM","MPEG","AVI","WMV","MOV","FLV","SWF"]) > -1) {
-				image = `<i class="far fa-file-video fa-7x text-success"></i>`;
-			} else {
-				switch (upload.extension) {
-					case "pdf":
-					image = '<i class="far fa-file-pdf fa-7x text-danger"></i>';
+			switch (upload.extension) {
+				case "jpg": case "JPG": case "jpeg": case "png": case "gif": case "bmp":
+					image = '<div class="img-square-wrapper" style="width:{{config('stlc.css.file_show_size','70px')}}"><img src="'+bsurl+'/files/'+upload.hash+'/'+upload.name+'?s={{config('stlc.css.image_show_size','70')}}" class="card-img-top"></div>';
 					break;
-				case "xls":
-					image = '<i class="far fa-file-excel fa-7x text-success"></i>';
+				case "ogg": case "wav": case "mp3":
+					image = '<i class="far fa-file-audio text-warning" style="font-size:{{config('stlc.css.file_show_size','70px')}}"></i>';
 					break;
-				case "docx":
-					image = '<i class="far fa-file-word fa-7x"></i>';
+				case "mp4": case "WEBM": case "MPEG": case "AVI": case "WMV": case "MOV": case "FLV": case "SWF":
+					image = '<i class="far fa-file-video text-success" style="font-size:{{config('stlc.css.file_show_size','70px')}}"></i>';
 					break;
-				case "xlsx":
-					image = '<i class="far fa-file-excel fa-7x text-success"></i>';
+				case "pdf": case "PDF":
+					image = '<i class="far fa-file-pdf text-danger" style="font-size:{{config('stlc.css.file_show_size','70px')}}"></i>';
 					break;
-				case "csv":
-					image = '<span class="fa-stack" style="color: #31A867 !important;">';
-					image += '<i class="far fa-file-alt fa-stack-2x"></i>';
-					image += '<strong class="fa-stack-1x">CSV</strong>';
-					image += '</span>';
+				case "xls": case "XLS": case "xlsx": case "XLSX":
+					image = '<i class="far fa-file-excel text-success" style="font-size:{{config('stlc.css.file_show_size','70px')}}"></i>';
+					break;
+				case "docx": case "DOCX":
+					image = '<i class="far fa-file-word" style="font-size:{{config('stlc.css.file_show_size','70px')}}"></i>';
+					break;
+				case "csv": case "CSV":
+					image = '<i class="fa fa-file-csv text-success" style="font-size:{{config('stlc.css.file_show_size','70px')}}"></i>';
 					break;
 				default:
-					image = '<i class="far fa-file-alt fa-7x"></i>';
-					break;
-				}
+					image = '<i class="far fa-file-alt" style="font-size:{{config('stlc.css.file_show_size','70px')}}"></i>';
+				break;
 			}
-			return `<div class="card text-center m-0">
+			
+			return `<div class="card m-0" style="flex-direction:row;">
 					${image}
-				<div class="card-body p-1">
-					<p class="card-text">${upload.name.substring(0,10)}${upload.name.length > 10 ? '..' : ""}</p>
-				</div>
-			</div>`;
+					<div class="card-body p-1 d-flex align-items-center">
+					<a upload_id='${upload.id}' target="_blank" href='${bsurl+"/files/"+upload.hash+"/"+upload.name}'>
+						${(upload.name.length > "{{config('stlc.css.file_text_size','20')}}") ? upload.name.substring(0,"{{config('stlc.css.file_text_size','20')}}") :upload.name}
+					</a></div>
+					${remove ? '<i title="Remove File" class="p-1 fa fa-times"></i>' : ""}
+				</div>`;
 		}
 
 		$("#fm input[type=search]").keyup(function () {
@@ -394,7 +405,7 @@
 			}
 			var type = $(this).attr("file_type");
 			showLAFM(type, this, extension);
-			$(this).attr('disabled', true).find('.btn-label').html('<i class="fa fa-circle-notch fa-spin"></i>');
+			$(this).attr('disabled', true).closest('.f-form-group').find('.input-group-prepend .input-group-text').html('<i class="fa fa-circle-notch fa-spin"></i>');
 		});
 
 		$("a.profile-pic[file_type='image']").on("click", function() {
@@ -404,15 +415,15 @@
 		
 		$("body").on("click", '.uploaded_file i.fa.fa-times', function(e) {
 			e.preventDefault();
-			$(this).closest(".btn-group").find('.btn_upload_file').removeClass("d-none");
-			$(this).closest(".btn-group").find('input[type="hidden"]').val(null).trigger('change');
-			$(this).closest('a').remove();
+			$(this).closest(".f-form-group").find('.btn_upload_file,.f-input-group').removeClass("d-none");
+			$(this).closest(".f-form-group").find('input[type="hidden"]').val(null).valid();
+			$(this).closest('.uploaded_file').remove();
 		});
 
 		$("body").on("click", ".uploaded_file2 i.fa.fa-times",function(e) {
 			e.preventDefault();
 			var upload_id = $(this).closest(".uploaded_file2").attr("upload_id");
-			var $hiddenFIDs = $(this).closest(".btn-group").find('select');
+			var $hiddenFIDs = $(this).closest(".f-form-group").find('select');
 			var hiddenFIDs = $hiddenFIDs.val();
 			
 			var options_html = "";
@@ -422,8 +433,8 @@
 					options_html += `<option value="${value}" selected>${value}</option>`; 
 				}
 			});
-			$hiddenFIDs.html(options_html);
-			$(this).closest('a').remove();
+			$hiddenFIDs.html(options_html).valid();
+			$(this).closest('.uploaded_file2').remove();
 		});
 
 		$('.fm_file_selector').on('click','.fm_file_sel',function() {

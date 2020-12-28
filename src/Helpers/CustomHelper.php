@@ -27,7 +27,7 @@ class CustomHelper
     /**
      * Gives various names of Module in Object like label, table, model, controller, singular
      *
-     * $names = CustomHelper::generateModuleNames($module_name);
+     * $names = \CustomHelper::generateModuleNames($module_name);
      *
      * @param $module_name module name
      * @param $icon module icon in FontAwesome
@@ -68,7 +68,7 @@ class CustomHelper
     /**
      * Get Array of All Modules
      *
-     * $modules = CustomHelper::getModuleNames([]);
+     * $modules = \CustomHelper::getModuleNames([]);
      *
      * @param array $remove_modules to exclude certain modules.
      * @return array Array of Modules
@@ -92,45 +92,9 @@ class CustomHelper
     }
     
     /**
-     * Method to parse the dropdown, Multiselect, Taginput and radio values which are linked with
-     * either other tables via "@" e.g. "@employees" or string array of values
-     *
-     * This function parse the either case and gives output in html labels.
-     * Used only in show.blade.php of modules
-     *
-     * CustomHelper::parseValues($field['json_values']);
-     *
-     * @param $value value source for column e.g. @employees / ["Marvel","Universal"]
-     * @return string html labeled values
-     */
-    public static function parseValues($value)
-    {
-        // return $value;
-        $valueOut = "";
-        if(strpos($value, '[') !== false) {
-            $arr = json_decode($value);
-            foreach($arr as $key) {
-                $valueOut .= "<div class='label label-primary'>" . $key . "</div> ";
-            }
-        } else if(strpos($value, ',') !== false) {
-            $arr = array_map('trim', explode(",", $value));
-            foreach($arr as $key) {
-                $valueOut .= "<div class='label label-primary'>" . $key . "</div> ";
-            }
-        } else if(strpos($value, '@') !== false) {
-            $valueOut .= "<b data-toggle='tooltip' data-placement='top' title='From " . str_replace("@", "", $value) . " table' class='text-primary'>" . $value . "</b>";
-        } else if($value == "") {
-            $valueOut .= "";
-        } else {
-            $valueOut = "<div class='label label-primary'>" . $value . "</div> ";
-        }
-        return $valueOut;
-    }
-    
-    /**
      * Log method to log either in command line or in Log file depending on $type.
      *
-     * CustomHelper::log("info", "", $commandObject);
+     * \CustomHelper::log("info", "", $commandObject);
      *
      * @param $type where to put log - error / info / debug
      * @param $text text to put in log
@@ -151,7 +115,7 @@ class CustomHelper
     /**
      * Method copies folder recursively into another
      *
-     * CustomHelper::recurse_copy("", "");
+     * \CustomHelper::recurse_copy("", "");
      *
      * @param $src source folder
      * @param $dst destination folder
@@ -178,7 +142,7 @@ class CustomHelper
     /**
      * Method deletes folder and its content
      *
-     * CustomHelper::recurse_delete("");
+     * \CustomHelper::recurse_delete("");
      *
      * @param $dir directory name
      */
@@ -201,7 +165,7 @@ class CustomHelper
     /**
      * Generate Random Password
      *
-     * $password = CustomHelper::gen_password();
+     * $password = \CustomHelper::gen_password();
      *
      * @param int $chars_min minimum characters
      * @param int $chars_max maximum characters
@@ -231,7 +195,7 @@ class CustomHelper
     /**
      * Get url of image by using $upload_id
      *
-     * CustomHelper::img($upload_id);
+     * \CustomHelper::img($upload_id);
      *
      * @param $upload_id upload id of image / file
      * @return string file / image url
@@ -260,7 +224,7 @@ class CustomHelper
     /**
      * Get url of image by using $upload_id
      *
-     * CustomHelper::showHtml($upload_id);
+     * \CustomHelper::showHtml($upload_id);
      *
      * @param $upload_id upload id of image / file
      * @return string file / image url
@@ -272,59 +236,45 @@ class CustomHelper
         }
         if(isset($upload->id)) {
             $url_file = url("files/" . $upload->hash . DIRECTORY_SEPARATOR . $upload->name);
-            $img = "<a title='$upload->name' class='".$uploaded_file." d-inline-block position-relative my-1 mr-2 align-top' upload_id='".$upload->id."' target='_blank' href='".$url_file."'>";
-
+            $img = '<div style="max-width:'.config('stlc.css.file_card_size','200px').'" title="'.$upload->name.'" class="'.$uploaded_file.'">';
             $image = '';
-            if(in_array($upload->extension, ["jpg", "JPG", "jpeg", "png", "gif", "bmp"])) {
-                $url_file .= "?s=100";
-                $image = '<img  width="100" src="'.$url_file.'" class="card-img-top">';
-            } else if(in_array($upload->extension, ["ogg",'wav','mp3'])) {
-                $image = '<i class="far fa-file-audio fa-7x text-warning"></i>';
-            } else if(in_array($upload->extension, ["mp4","WEBM","MPEG","AVI","WMV","MOV","FLV","SWF"])) {
-                $image = '<i class="far fa-file-video fa-7x text-success"></i>';
-            } else {
-                switch ($upload->extension) {
-                    case "pdf":
-                    $image = '<i class="far fa-file-pdf fa-7x text-danger"></i>';
+            switch ($upload->extension) {
+                case "jpg": case "JPG": case "jpeg": case "png": case "gif": case "bmp":
+                    $img_url_file = $url_file."?s=".config('stlc.css.image_show_size','50');
+                    $image = '<div class="img-square-wrapper" style="width:'.config('stlc.css.file_show_size','35px').'"><img src="'.$img_url_file.'" class="card-img-top"></div>';
                     break;
-                case "xls":
-                    $image = '<i class="far fa-file-excel fa-7x text-success"></i>';
+                case "ogg": case "wav": case "mp3":
+                    $image = '<i class="far fa-file-audio text-warning" style="font-size:'.config('stlc.css.file_show_size','35px').'"></i>';
                     break;
-                case "docx":
-                    $image = '<i class="far fa-file-word fa-7x"></i>';
+                case "mp4": case "WEBM": case "MPEG": case "AVI": case "WMV": case "MOV": case "FLV": case "SWF":
+                    $image = '<i class="far fa-file-video text-success" style="font-size:'.config('stlc.css.file_show_size','35px').'"></i>';
                     break;
-                case "xlsx":
-                    $image = '<i class="far fa-file-excel fa-7x text-success"></i>';
+                case "pdf": case "PDF":
+                    $image = '<i class="far fa-file-pdf text-danger" style="font-size:'.config('stlc.css.file_show_size','35px').'"></i>';
                     break;
-                case "csv":
-                    $image += '<span class="fa-stack" style="color: #31A867 !important;">';
-                    $image += '<i class="far fa-file fa-stack-2x"></i>';
-                    $image += '<strong class="fa-stack-1x">CSV</strong>';
-                    $image += '</span>';
+				case "xls": case "XLS": case "xlsx": case "XLSX":
+                    $image = '<i class="far fa-file-excel text-success" style="font-size:'.config('stlc.css.file_show_size','35px').'"></i>';
+                    break;
+                case "docx": case "DOCX":
+                    $image = '<i class="far fa-file-word"></i>';
+                    break;
+                case "csv": case "CSV":
+                    $image = '<i class="fas fa-file-csv text-success" style="font-size:'.config('stlc.css.file_show_size','35px').'"></i>';
                     break;
                 default:
-                    $image = '<i class="far fa-file-text fa-7x"></i>';
+                    $image = '<i class="far fa-file-csv" style="font-size:'.config('stlc.css.file_show_size','35px').'"></i>';
                     break;
-                }
             }
-            $str_name = substr($upload->name,0,10).(strlen($upload->name > 10) ? ".." : "");
-            $img .= '<div class="card text-center m-0" style="width: 100px;">
-                        '.$image.'
-                    <div class="card-body p-1">
-                        <p class="card-text">'.$str_name.'</p>
-                    </div>
-                </div>';
+            
+            $str_name = substr($upload->name,0,config('stlc.css.file_text_size','20')).(strlen($upload->name > config('stlc.css.file_text_size','20')) ? ".." : "");
+            $img .= '<div class="card m-0" style="flex-direction:row;">
+                    '.$image.'
+                    <div class="card-body p-1 d-flex align-items-center"><a upload_id="'.$upload->id.'" target="_blank" href="'.$url_file.'">'.$str_name.'</a></div>';
             if($removable == true) {
-                $img .= "<i title='Remove File' class='fa fa-times'></i>";
+                $img .= '<i title="Remove File" class="p-1 fa fa-times"></i>';
             }
-            $img .= "</a>";
+            $img .= '</div></div>';
             $hide = "d-none";
-        } else {
-            $img = "<a class='".$uploaded_file." d-none d-inline-block position-relative mt-1 mr-1' target='_blank'>";
-            $img .= "<span id='img_icon'></span>";
-            $img .= "<i title='Remove File' class='fa fa-times'></i>";
-            $img .= "</a>";
-            $hide = "";
         }
         return $img;
     }
@@ -332,7 +282,7 @@ class CustomHelper
     /**
      * Get Thumbnail image path of Uploaded image
      *
-     * CustomHelper::createThumbnail($filepath, $thumbpath, $thumbnail_width, $thumbnail_height);
+     * \CustomHelper::createThumbnail($filepath, $thumbpath, $thumbnail_width, $thumbnail_height);
      *
      * @param $filepath file path
      * @param $thumbpath thumbnail path
@@ -391,7 +341,7 @@ class CustomHelper
      * Print the sidebar menu view.
      * This needs to be done recursively
      *
-     * CustomHelper::print_menu($menu)
+     * \CustomHelper::print_menu($menu)
      *
      * @param $menu menu array from database
      * @return string menu in html string
@@ -479,7 +429,7 @@ class CustomHelper
      * Print the top navbar menu view.
      * This needs to be done recursively
      *
-     * CustomHelper::print_menu_topnav($menu)
+     * \CustomHelper::print_menu_topnav($menu)
      *
      * @param $menu menu array from database
      * @param bool $active is this menu active or not
@@ -517,7 +467,7 @@ class CustomHelper
     
     /**
      * delete and regenarate menu links
-     * CustomHelper::generateMenu();
+     * \CustomHelper::generateMenu();
      *
      */
     public static function generateMenu($menus = [],$parent = null,$generateModule = true,$withTruncate = true)
@@ -592,7 +542,7 @@ class CustomHelper
     /**
      * Get laravel version. very important in installation and handling Laravel 5.3 changes.
      *
-     * CustomHelper::laravel_ver()
+     * \CustomHelper::laravel_ver()
      *
      * @return float|string laravel version
      */
@@ -629,7 +579,7 @@ class CustomHelper
     /**
      * Get complete line within file by comparing passed substring $str
      *
-     * CustomHelper::getLineWithString()
+     * \CustomHelper::getLineWithString()
      *
      * @param $fileName file name to be scanned
      * @param $str substring to be checked for line match
@@ -649,7 +599,7 @@ class CustomHelper
     /**
      * Get complete line within given file contents by comparing passed substring $str
      *
-     * CustomHelper::getLineWithString2()
+     * \CustomHelper::getLineWithString2()
      *
      * @param $content content to be scanned
      * @param $str substring to be checked for line match
@@ -669,7 +619,7 @@ class CustomHelper
     /**
      * Method sets parameter in ".env" file as well as into php environment.
      *
-     * CustomHelper::setenv("CACHE_DRIVER", "array");
+     * \CustomHelper::setenv("CACHE_DRIVER", "array");
      *
      * @param $param parameter name
      * @param $value parameter value
@@ -701,7 +651,7 @@ class CustomHelper
     /**
      * Delete file
      *
-     * CustomHelper::deleteFile();
+     * \CustomHelper::deleteFile();
      *
      * @param $file_path file's path to be deleted
      */
@@ -710,28 +660,6 @@ class CustomHelper
         if(file_exists($file_path)) {
             unlink($file_path);
         }
-    }
-    
-    /**
-     * Get Migration file name by passing matching table name
-     *
-     * CustomHelper::get_migration_file("students_table");
-     *
-     * @param $file_name matching table name like 'create_employees_table'
-     * @return string returns migration file name if found else blank string
-     */
-    public static function get_migration_file($file_name)
-    {
-        $mfiles = scandir(base_path('database/migrations/'));
-        foreach($mfiles as $mfile) {
-            if(\Str::contains($mfile, $file_name)) {
-                $mgr_file = base_path('database/migrations/' . $mfile);
-                if(file_exists($mgr_file)) {
-                    return 'database/migrations/' . $mfile;
-                }
-            }
-        }
-        return "";
     }
     
     /**
@@ -766,7 +694,7 @@ class CustomHelper
     /**
      * date change formate
      * 
-     * CustomHelper::date_format($date);
+     * \CustomHelper::date_format($date);
      *
      * @param array date string
      * @return formatedDate
@@ -775,21 +703,23 @@ class CustomHelper
     {
         if(isset($date) && $date != "") {
             if($type == "show") {
-                return date("M d, Y", strtotime($date));
+                return date(config('stlc.date_format.show',"M d, Y"), strtotime($date));
             } else if($type == "field_show") {
-                return date("d-m-Y", strtotime($date));
+                return date(config('stlc.date_format.field_show',"d-m-Y"), strtotime($date));
+            } else if($type == "field_show_time") {
+                return date(config('stlc.date_format.field_show_time', "h:i A"), strtotime($date));
             } else if($type == "field_show_with_time") {
-                return date("M d, Y h:i A", strtotime($date));
+                return date(config('stlc.date_format.field_show_with_time', "M d, Y h:i A"), strtotime($date));
             } else if($type == "data_save_simpel") {
-                return date("Y-m-d", strtotime($date));
+                return date(config('stlc.date_format.data_save_simpel', "Y-m-d"), strtotime($date));
             } else if($type == "data_save_simpel_with_time") {
-                return date("Y-m-d H:i:s", strtotime($date));
+                return date(config('stlc.date_format.data_save_simpel_with_time', "Y-m-d H:i:s"), strtotime($date));
             } else if($type == "data_save") {
-                return \Carbon::createFromFormat('d/m/Y', $date)->format('Y-m-d');
+                return \Carbon::createFromFormat('d/m/Y', $date)->format(config('stlc.date_format.data_save', 'Y-m-d'));
             } else if($type == "data_save_with_time") {
-                return \Carbon::createFromFormat('d/m/Y H:i:s', $date)->format('Y-m-d H:i:s');
+                return \Carbon::createFromFormat('d/m/Y H:i:s', $date)->format(config('stlc.date_format.data_save_with_time', 'Y-m-d H:i:s'));
             } else if($type == "month_save") {
-                return \Carbon::parse($date)->format('M Y');
+                return \Carbon::parse($date)->format(config('stlc.date_format.month_save', 'M Y'));
             }
             return $date;
         } else {
@@ -853,7 +783,7 @@ class CustomHelper
 
     /**
      * send sms
-     * CustomHelper::sendsms($data);
+     * \CustomHelper::sendsms($data);
      * @param $data as array
      * @return response
      */
@@ -884,7 +814,7 @@ class CustomHelper
 
     /**
      * send sms
-     * CustomHelper::sendMail($data);
+     * \CustomHelper::sendMail($data);
      * @param $data as array
      * @return response
      */
@@ -918,7 +848,7 @@ class CustomHelper
     /**
      * upload file
      * 
-     * CustomHelper::fileUpload($file);
+     * \CustomHelper::fileUpload($file);
      *
      * @param file date string
      * @return upload
@@ -1050,5 +980,38 @@ class CustomHelper
             }
         }
         return self::checkRemoteFile($url);
+    }
+
+    /**
+     * \CustomHelper::get_represent_attr($data,$attributes);
+     */
+    public static function get_represent_attr($data,$attributes = null,$represent_attr = null)
+    {
+        $text="";
+        if(!isset($attributes) && isset($data->represent_attr)) {
+            $text = $data->represent_attr;
+        } else if(is_object($data) && class_exists(get_class($data))) {
+            $module = \Module::where('model',get_class($data))->first();
+            if(isset($module->id) && !isset($attributes)) {
+                $attributes = config('stlc.represent_attr.'.$module->name,[$module->represent_attr]);
+            } else if(!isset($attributes) && isset($represent_attr)){
+                $attributes = [$represent_attr];
+            } else {
+                if(is_string($attributes)) {
+                    $attributes = [$attributes];
+                }
+            }
+            if(isset($attributes) && is_array($attributes) && count($attributes) > 0) {
+                foreach($attributes as $key => $value) {
+                    $attr_value = collect($data)->get($value);
+                    if(isset($attr_value)) {
+                        $text .= $attr_value;
+                    } else {
+                        $text .= $value;
+                    }
+                }
+            }
+        }
+        return $text;
     }
 }

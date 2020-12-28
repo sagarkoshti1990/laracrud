@@ -23,8 +23,8 @@
                 {{-- <div class="card-header {{ $crud->hasAccess('create')?'with-border':'d-none' }}">
                 </div> --}}
                 <div class="card-body">
-                    <table id="crudTable" class="table table-bordered table-hover display crudTable">
-                        <thead class="table-success">
+                    <table id="crudTable" class="{{ config('stlc.css.table','table display crudTable') }}">
+                        <thead class="{{ config('stlc.css.thead','thead-light') }}">
                             <tr>
                                 {{-- Table columns --}}
                                 @foreach ($crud->columns as $column)

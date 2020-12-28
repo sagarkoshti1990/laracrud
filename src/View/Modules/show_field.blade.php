@@ -7,11 +7,11 @@
                 <div class="bg-dark-purple p-3">
                     <div class="row">
                         <div class="col-md-6">
-                            <h3 class="widget-user-username fonttxt">{{ $field->$represent_attr }}</h3>
+                            <h3 class="widget-user-username fonttxt">{{ $represent_value ?? '' }}</h3>
                             {{--  <h5 class="widget-user-desc">Founder &amp; CEO</h5>  --}}
                         </div>
                         <div class="col-md-6 text-right">
-                            @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.button_stack', ['stack' => 'line', 'src' => $crud->route.'/'.$field->id, 'name' => ['update','delete'], 'crud' => $crud, 'item' => $field])
+                            @include(config('stlc.view_path.inc.button_stack','stlc::inc.button_stack'), ['stack' => 'line', 'src' => $crud->route.'/'.$field->id, 'name' => ['update','delete'], 'crud' => $crud, 'item' => $field])
                         </div>
                     </div>
                 </div>

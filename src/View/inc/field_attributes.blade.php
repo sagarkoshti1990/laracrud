@@ -1,28 +1,13 @@
 @php
-	if(isset($class)) {
-		$field['attributes']['class'] = $errors->has($field['name']) ? $class.' is-invalid' : $class;
-	} else {
-		$field['attributes']['class'] = $errors->has($field['name']) ? $field['attributes']['class'].' is-invalid' : $field['attributes']['class'];
+	if(!isset($class)) {
+		if(isset($field['attributes'],$field['attributes']['class']) && !empty($field['attributes']['class'])) {
+			$class =  $field['attributes']['class'].' f-form-control';
+		} else {
+			$class =  config("stlc.css.form_control","form-control").' f-form-control';
+		}
 	}
+	$field['attributes']['class'] = (isset($errors) && $errors->has($field['name'])) ? $class.' is-invalid' : $class;
 @endphp
-@if (isset($field['attributes']))
-    @foreach ($field['attributes'] as $attribute => $value)
-		@if (is_string($attribute))
-		{{ $attribute }}="{{ $value }}"
-		@endif
-    @endforeach
-
-    @if (!isset($field['attributes']['class']))
-		@if (isset($default_class))
-			class="{{ $default_class }}"
-		@else
-			class="form-control"
-		@endif
-    @endif
-@else
-	@if (isset($default_class))
-		class="{{ $default_class }}"
-	@else
-		class="form-control"
-	@endif
-@endif
+@foreach ($field['attributes'] as $attribute => $value)
+	@if (is_string($attribute)) {{ $attribute }}="{{ $value }}"@endif
+@endforeach

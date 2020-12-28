@@ -77,15 +77,15 @@ class ObjectHelper
         $this->controller = $module->controller;
         $this->represent_attr = $module->represent_attr;
         $this->icon = $module->icon;
-        if(isset($module->fields)) {
+        if(isset($module->fields) && is_array($this->fields) && count($this->fields) < 1) {
             $this->setFields($module->fields);
         }
         if(!isset($this->view_path) || (is_array($this->view_path) && count($this->view_path) == 0)) {
             $this->setViewPath([
-                'index' => config('stlc.stlc_modules_folder_name','stlc::').'index',
-                'create' => config('stlc.stlc_modules_folder_name','stlc::').'form',
-                'edit' => config('stlc.stlc_modules_folder_name','stlc::').'form',
-                'show' => config('stlc.stlc_modules_folder_name','stlc::').'show',
+                'index' => config('stlc.view_path.index','stlc::index'),
+                'create' => config('stlc.view_path.create','stlc::form'),
+                'edit' => config('stlc.view_path.edit','stlc::form'),
+                'show' => config('stlc.view_path.show','stlc::show'),
             ]);
         }
         if(!isset($this->model)) {
@@ -193,48 +193,51 @@ class ObjectHelper
     }
     
     /**
+     * $stack, $name, $type, $content, $position = false
      * Add a button to the CRUD table view auto.
      */    
     public function initButtons()
     {
         $this->buttons = collect();
-
-        // line stack
-        // $this->addButton('line', 'preview', 'view', 'stlc::buttons.preview', 'end');
-        $this->addButton('line', 'clone', 'view', 'stlc::buttons.clone', 'end');
-        $this->addButton('line', 'update', 'view', 'stlc::buttons.update', 'end');
-        $this->addButton('line', 'delete', 'view', 'stlc::buttons.delete', 'end');
-        $this->addButton('line', 'restore', 'view', 'stlc::buttons.restore', 'end');
-        $this->addButton('line', 'restore', 'view', 'stlc::buttons.permanently_delete', 'end');
-
-        // top stack
-        $this->addButton('top', 'create', 'view', 'stlc::buttons.create');
+        $btnArr = [];
+        $defult = [
+            ['stack' => 'line', 'name' => 'preview', 'type' => 'view', 'content' => 'stlc::buttons.preview'],
+            ['stack' => 'line', 'name' => 'clone', 'type' => 'view', 'content' => 'stlc::buttons.clone'],
+            ['stack' => 'line', 'name' => 'update', 'type' => 'view', 'content' => 'stlc::buttons.update'],
+            ['stack' => 'line', 'name' => 'delete', 'type' => 'view', 'content' => 'stlc::buttons.delete'],
+            ['stack' => 'line', 'name' => 'restore', 'type' => 'deleted', 'content' => 'stlc::buttons.restore'],
+            ['stack' => 'line', 'name' => 'permanently_delete', 'type' => 'deleted', 'content' => 'stlc::buttons.permanently_delete'],
+            ['stack' => 'top', 'name' => 'create', 'type' => 'view', 'content' => 'stlc::buttons.create']
+        ];
+        $buttons = config('stlc.buttons',[]);
+        
+        foreach($buttons as $button) {
+            $btnArr[] = $button;
+        }
+        foreach($defult as $button) {
+            if(config('stlc.buttons.'.$button['name'],true) === true) {
+                $btnArr[] = $button;
+            }
+        }
+        foreach($btnArr as $button) {
+            if($button) {
+                $this->addButton($button);
+            }
+        }
     }
 
     /**
      * Add a button to the CRUD table view.
      */
-    public function addButton($stack, $name, $type, $content, $position = false)
+    public function addButton($data)
     {
-        if ($position == false) {
-            switch ($stack) {
-                case 'line':
-                    $position = 'beginning';
-                    break;
-
-                default:
-                    $position = 'end';
-                    break;
-            }
-        }
-
-        switch ($position) {
+        switch ($data['position'] ?? '') {
             case 'beginning':
-                $this->buttons->prepend((object)['stack' => $stack, "name" => $name, "type" => $type, "content" => $content]);
+                $this->buttons->prepend((object)$data);
                 break;
 
             default:
-                $this->buttons->push((object)['stack' => $stack, "name" => $name, "type" => $type, "content" => $content]);
+                $this->buttons->push((object)$data);
                 break;
         }
     }

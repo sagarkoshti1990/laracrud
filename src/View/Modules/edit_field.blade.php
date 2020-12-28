@@ -47,7 +47,7 @@
                     </div>
                 </div><!-- /.card-body -->
                 <div class="card-footer">
-                    @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.form_save_buttons')
+                    @include(config('stlc.view_path.inc.form_save_buttons','stlc::inc.form_save_buttons'))
                 </div>
             </div><!-- /.card -->
         {!! Form::close() !!}

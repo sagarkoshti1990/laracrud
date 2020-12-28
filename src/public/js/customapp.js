@@ -25,11 +25,7 @@ $.ajaxSetup({
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
     }
 });
-
-$("select").on("select2:close", function (e) {
-    $(this).valid();
-});
-$("form").on('change', ':input', function(){
+$("form").on('change select2:close', ':input', function(){
     $(this).valid();
 });
 $.validator.setDefaults({
@@ -37,34 +33,27 @@ $.validator.setDefaults({
     errorClass: "error invalid-feedback",
     errorElement: "span",
     highlight: function(element) {
-        if(isset($(element).closest('.btn-group').find('a[file_type]'))) {
-            $(element).closest('.btn-group').find('a[file_type]').addClass('form-control is-invalid');
-        } else if($(element).hasClass('ckeditor_required')) {
+        if($(element).hasClass('ckeditor_required')) {
             $('#cke_'+element.id).addClass('form-control is-invalid');
-        } else if(isset($(element).closest('.form-group'))) {
-            $(element).closest('.form-group').find(':input').addClass('is-invalid');
+        } else if(isset($(element).closest('.f-form-group'))) {
+            $(element).closest('.f-form-group').find(':input').addClass('is-invalid');
         } else {
             $(element).addClass('is-invalid');
         }
     },
     unhighlight: function(element) {
-        if(isset($(element).closest('.btn-group').find('a[file_type]'))) {
-            $(element).closest('.btn-group').find('a[file_type]').removeClass('form-control is-invalid');
-        } else if($(element).hasClass('ckeditor_required')) {
+        if($(element).hasClass('ckeditor_required')) {
             $('#cke_'+element.id).removeClass('form-control is-invalid');
-        } else if(isset($(element).closest('.form-group'))) {
-            $(element).closest('.form-group').find(':input').removeClass('is-invalid');
-            $(element).closest('.form-group').find('.error').remove();
-        } else {
-            $(element).removeClass('is-invalid');
-            $(element).parent().find('.error').remove();
+        } else if(isset($(element).closest('.f-form-group'))) {
+            $(element).closest('.f-form-group').find('.is-invalid').removeClass('is-invalid');
+            $(element).closest('.f-form-group').find('.error,.invalid-feedback').remove();
         }
     },
     errorPlacement: function (error, element) {
         $(error).css('display','block')
-        $(element).closest('.form-group').find('.invalid-feedback').remove();
-        if($(element).closest('.form-group').length > 0) {
-            error.insertAfter($(element).closest('.form-group').children().last());
+        $(element).closest('.f-form-group').find('.invalid-feedback').remove();
+        if($(element).closest('.f-form-group').length > 0) {
+            error.insertAfter($(element).closest('.f-form-group').children().last());
         } else if($(element).closest('.input-group').length > 0) {
             error.insertAfter($(element).closest('.input-group').children().last());
         }
@@ -76,7 +65,7 @@ $.validator.setDefaults({
         var errors = validator.numberOfInvalids();
         if (errors) {
             if(element.type && element.type == 'hidden') {
-                $(element).closest('.form-group').find(':input').not(':input[name='+element.name+']').first().focus();
+                $(element).closest('.f-form-group').find(':input.f-form-control').not(':input[name='+element.name+']').first().trigger('focus');
             } else {
                 element.focus();
             }
@@ -295,7 +284,7 @@ $(function () {
     });
 });
 function ajax_form_notification(form,data,$refresh=true) {
-    $(form).find('.alert,.error,is-invalid').remove();
+    $(form).find('.alert,.error').remove();
     if(data.status == "validation_error" || data.status == '422') {
         var errors = [];
         if(isset(data.errors)) {

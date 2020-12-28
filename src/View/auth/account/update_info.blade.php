@@ -25,7 +25,7 @@
 @section('content')
 <div class="row">
     <div class="col-md-3">
-        @include(config('stlc.stlc_modules_folder_name','stlc::').'auth.account.sidemenu')
+        @include(config('stlc.view_path.auth.account.sidemenu','stlc::auth.account.sidemenu'))
     </div>
     <div class="col-md-9">
         <div id="tab-information">

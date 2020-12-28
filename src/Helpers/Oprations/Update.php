@@ -7,14 +7,17 @@ use Prologue\Alerts\Facades\Alert;
 
 trait Update
 {
-    public function beforeEdit(Request $request,$item){}
-    public function onEdit(Request $request,$item){
-        $this->crud->row = $item;
-        return view($this->crud->view_path['edit'], [
+    public function changeDataEdit(Request $request,$item) : Array
+    {
+        return [
             'crud' => $this->crud,
             'item' => $item,
             'src' => $request->src ?? null
-        ]);
+        ];
+    }
+    public function onEdit(Request $request,$item){
+        $this->crud->row = $item;
+        return view($this->crud->view_path['edit'], $this->changeDataEdit($request,$item));
     }
     /**
      * Show the form for editing the specified resource.
@@ -28,7 +31,6 @@ trait Update
             $this->crud = $this->crud;
             $item = $this->crud->model->find($id);
             if(isset($item->id)) {
-                $this->beforeEdit($request,$item);
                 return $this->onEdit($request,$item);
             } else {
                 abort(404, $this->crud->name);

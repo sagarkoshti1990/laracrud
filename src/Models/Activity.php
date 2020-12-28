@@ -428,7 +428,7 @@ class Activity extends Model
                 return $this->description." By name ".$this->context->{$this->getAttr()};
             }
         } else if($this->action == 'Updated') {
-            return view(config('stlc.stlc_modules_folder_name','stlc::').'inc.activities.update_render',['item' => $this])->render();
+            return view(config('stlc.view_path.inc.activities.update_render','stlc::inc.activities.update_render'),['item' => $this])->render();
         } else if($this->action == 'Deleted') {
             if($this->context_type == "App\Models\Recording") {
                 return $this->description." By name ".$this->context->filedata->{'path()'};

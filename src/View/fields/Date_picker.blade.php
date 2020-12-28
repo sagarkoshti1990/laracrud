@@ -7,21 +7,16 @@
         $field['value'] = $field['value']->format('Y-m-d');
     }
     $field_language = isset($field['date_picker_options']['language'])?$field['date_picker_options']['language']:\App::getLocale();
+    $field['prefix'] = $field['prefix'] ?? '<span class="fa fa-calendar-alt"></span>';
 @endphp
-<div @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_wrapper_attributes',['field_name' => $field['name']]) >
-    @if((isset($field['attributes']['label']) && $field['attributes']['label']) || !isset($field['attributes']['label']))
-        <label for="{{ $field['name'] }}" class="control-label">{!! $field['label'] !!}</label>
-    @endif
-    <div class="input-group date">
-        @if(isset($field['prefix'])) <div class="input-group-prepend"><span class="input-group-text">{!! $field['prefix'] !!}</span></div> @endif
-        <input
-            data-bs-datepicker="{{ isset($field['date_picker_options']) ? json_encode($field['date_picker_options']) : '{}'}}"
-            type="text"
-            data-name="{{ $field['name'] }}"
-            @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_attributes')
-            >
-        <div class="input-group-append"><span class="input-group-text">@if(isset($field['suffix'])) {!! $field['suffix'] !!} @else <span class="fa fa-calendar"></span> @endif </span></div>
-    </div>
+@component(config('stlc.view_path.inc.input_group','stlc::inc.input_group'),['field' => $field])
+    @slot('onInput')
+    <input
+        data-bs-datepicker="{{ isset($field['date_picker_options']) ? json_encode($field['date_picker_options']) : '{}'}}"
+        type="text"
+        data-name="{{ $field['name'] }}"
+        @include(config('stlc.view_path.inc.field_attributes','stlc::inc.field_attributes'))
+    >
     <input
         type="hidden"
         name="{{ $field['name'] }}"
@@ -32,13 +27,8 @@
             @endif
         @endforeach
     >
-    @if ($errors->has($field['name']))
-        <div class="is-invalid"></div><span class="invalid-feedback">{{ $errors->first($field['name']) }}</span>
-    @endif
-    @if (isset($field['hint'])){{-- HINT --}}
-        <p class="form-text">{!! $field['hint'] !!}</p>
-    @endif
-</div>
+    @endslot
+@endcomponent
 @pushonce('crud_fields_styles')
     <!-- date picker -->
     <link rel="stylesheet" href="{{ asset('node_modules/bootstrap-datetimepicker-npm/build/css/bootstrap-datetimepicker.min.css') }}">
@@ -69,7 +59,7 @@
                         clear: 'fa fa-trash',
                         close: 'fa fa-times'
                     },
-                    format: 'DD/MM/YYYY',
+                    format: '{{ config("stlc.date_format.date_picker","DD/MM/YYYY") }}',
                     // inline: true,
                     // sideBySide: true,
                     defaultDate: $field.val()

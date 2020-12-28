@@ -7,6 +7,13 @@ use Prologue\Alerts\Facades\Alert;
 
 trait Store
 {
+    public function changeDataCreate(Request $request) : Array
+    {
+        return [
+            'crud' => $this->crud,
+            'src' => $request->src ?? null
+        ];
+    }
     /**
      * Show the form for creating a new resource.
      *
@@ -15,17 +22,13 @@ trait Store
     public function create(Request $request)
     {
         if($this->crud->hasAccess('create')) {
-            $crud = $this->crud;
             if(isset($request->copy)) {
-                $item = $crud->model->find($request->copy);
+                $item = $this->crud->model->find($request->copy);
                 if(isset($item->id)) {
-                    $crud->row = $item;
+                    $this->crud->row = $item;
                 }
             }
-            return view($crud->view_path['create'], [
-                'crud' => $crud,
-                'src' => $request->src ?? null
-            ]);
+            return view($this->crud->view_path['create'], $this->changeDataCreate($request));
         } else {
             abort(403, trans('stlc.unauthorized_access'));
         }

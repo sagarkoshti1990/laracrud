@@ -25,6 +25,18 @@ return [
 				maroon, orange, lime, teal, olive
 	*/
 
+	// css class
+	'css' => [
+		'table' => 'table display crudTable',
+		'thead' => 'thead-light',
+		'file_show_size' => '35px',
+		'image_show_size' => '50',
+	],
+
+	// represent_attr change by module
+	'represent_attr' => [
+		'Uploads' => ['public',' - ','extension', ' - ','name']
+	],
     /*
     |--------------------------------------------------------------------------
     | Registration Open
@@ -53,8 +65,17 @@ return [
     //stlc
     'stlc_route_prefix' => 'developer',
     'stlc_route_group_middleware' => 'auth',
-    'stlc_modules_folder_name' => 'stlc::',
-    'stlc_layout_path' => 'stlc::layouts.app',
+	'layout_path' => 'stlc::layouts.app',
+	
+	'view_path' => [
+		// 'Modules' => ['show'=>'test']
+	],
+
+	// buttons := preview,clone,update,delete,restore,permanently_delete,create
+	'buttons' => [
+		'preview' => false,//['stack' => 'line', 'name' => 'preview', 'type' => 'view', 'content' => 'test']
+	],
+
     // Set this to false if you would like to use your own AuthController and PasswordController
     // (you then need to setup your auth routes manually in your routes.php file)
     'setup_auth_routes' => true,

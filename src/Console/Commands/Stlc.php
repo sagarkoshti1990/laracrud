@@ -31,7 +31,7 @@ class Stlc extends Command
         if ($this->option('option') && $this->option('option') != "with-views") {
             $this->info($this->option('option'));
             foreach (\Module::all() as $key => $value) {
-                if(!in_array($value->name, ['Users','Uploads','Permissions','Roles','Employees','Tests'])) {
+                if(!in_array($value->name, config('stlc.not_genarate_views',[]))) {
                     $this->info($value->name);
                     if(($this->option('option') == "migrate")) {
                         Artisan::call('stlc:migrate', ['name' => $value->name]);

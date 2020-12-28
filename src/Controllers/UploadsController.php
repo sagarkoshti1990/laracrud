@@ -221,8 +221,8 @@ class UploadsController extends StlcController
 				"caption" => "",
 				"hash" => "",
 				"public" => $public,
-				"context_id" => Auth::id(),
-				"context_type" => get_class(\Module::user())
+				"context_id" => (\Module::user() !== null) ? \Module::user()->id : '',
+				"context_type" => (\Module::user() !== null) ? get_class(\Module::user()) : ''
 			]);
 			// apply unique random hash to file
 			while(true) {
@@ -268,140 +268,6 @@ class UploadsController extends StlcController
 				'uploads' => $uploads,
 				'link' => (string)$uploads->links()
 			]);
-		} else {
-			return response()->json([
-				'status' => "failure",
-				'message' => "Unauthorized Access"
-			]);
-		}
-	}
-
-	/**
-	 * Update Uploads Caption
-	 *
-	 * @return \Illuminate\Http\Response
-	 */
-	public function update_caption()
-	{
-		if($this->crud->hasAccess("edit")) {
-			$file_id = $request->get('file_id');
-			$caption = $request->get('caption');
-			
-			$upload = config('stlc.upload_model')::find($file_id);
-			if(isset($upload->id)) {
-				// if($upload->user_id == \Module::user()->id || Entrust::hasRole('SUPER_ADMIN')) {
-	
-					// Update Caption
-					$upload->caption = $caption;
-					$upload->save();
-	
-					return response()->json([
-						'status' => "success"
-					]);
-	
-				// } else {
-				// 	return response()->json([
-				// 		'status' => "failure",
-				// 		'message' => "Upload not found"
-				// 	]);
-				// }
-			} else {
-				return response()->json([
-					'status' => "failure",
-					'message' => "Upload not found"
-				]);
-			}
-		} else {
-			return response()->json([
-				'status' => "failure",
-				'message' => "Unauthorized Access"
-			]);
-		}
-	}
-
-	/**
-	 * Update Uploads Filename
-	 *
-	 * @return \Illuminate\Http\Response
-	 */
-	public function update_filename()
-	{
-		if($this->crud->hasAccess("edit")) {
-			$file_id = $request->get('file_id');
-			$filename = $request->get('filename');
-			
-			$upload = config('stlc.upload_model')::find($file_id);
-			if(isset($upload->id)) {
-				// if($upload->user_id == \Module::user()->id || Entrust::hasRole('SUPER_ADMIN')) {
-	
-					// Update Caption
-					$upload->name = $filename;
-					$upload->save();
-	
-					return response()->json([
-						'status' => "success"
-					]);
-	
-				// } else {
-				// 	return response()->json([
-				// 		'status' => "failure",
-				// 		'message' => "Unauthorized Access 1"
-				// 	]);
-				// }
-			} else {
-				return response()->json([
-					'status' => "failure",
-					'message' => "Upload not found"
-				]);
-			}
-		} else {
-			return response()->json([
-				'status' => "failure",
-				'message' => "Unauthorized Access"
-			]);
-		}
-	}
-
-	/**
-	 * Update Uploads Public Visibility
-	 *
-	 * @return \Illuminate\Http\Response
-	 */
-	public function update_public()
-	{
-		if($this->crud->hasAccess("edit")) {
-			$file_id = $request->get('file_id');
-			$public = $request->get('public');
-			if(isset($public)) {
-				$public = true;
-			} else {
-				$public = false;
-			}
-			
-			$upload = config('stlc.upload_model')::find($file_id);
-			if(isset($upload->id)) {
-				// if($upload->user_id == \Module::user()->id || Entrust::hasRole('SUPER_ADMIN')) {
-	
-					// Update Caption
-					$upload->public = $public;
-					$upload->save();
-	
-					return response()->json([
-						'status' => "success"
-					]);
-	
-				// } else {
-				// 	return response()->json([
-				// 		'status' => "failure",
-				// 		'message' => "Unauthorized Access 1"
-				// 	]);
-				// }
-			} else {
-				return response()->json([
-					'status' => "failure",
-					'message' => "Upload not found"
-				]);
-			}
 		} else {
 			return response()->json([
 				'status' => "failure",

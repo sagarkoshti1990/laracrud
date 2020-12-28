@@ -27,10 +27,10 @@
     <div class="row">
         <div class="col-md-12">
             <div class="card mob-card">
-                @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.button_stack', ['stack' => 'top'])
+                @include(config('stlc.view_path.inc.button_stack','stlc::inc.button_stack'), ['stack' => 'top'])
                 <div class="card-body">
-                    <table id="crudTable" class="table table-bordered table-striped display crudTable">
-                        <thead class="table-success">
+                    <table id="crudTable" class="{{ config('stlc.css.table','table display crudTable') }}">
+                        <thead class="{{ config('stlc.css.thead','thead-light') }}">
                             <tr>
                                 <th>ID</th>
                                 <th>Name</th>
@@ -58,7 +58,7 @@
                                     <td><span class="fa {{ $module->icon }}"></span></td>
                                     @if ( $crud->buttons->where('stack', 'line')->count() )
                                         <td>
-                                            @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.button_stack', ['stack' => 'line', 'crud' => $crud, 'item' => $module])
+                                            @include(config('stlc.view_path.inc.button_stack','stlc::inc.button_stack'), ['stack' => 'line', 'crud' => $crud, 'item' => $module])
                                         </td>
                                     @endif
                                 </tr>

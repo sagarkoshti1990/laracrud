@@ -25,6 +25,7 @@
     <script src="{{ asset('node_modules/admin-lte/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
     <script src="{{ asset('node_modules/admin-lte/dist/js/adminlte.min.js') }}"></script>
     <script src="{{ asset('node_modules/admin-lte/plugins/jquery-validation/jquery.validate.min.js') }}"></script>
+    @include(config('stlc.view_path.inc.alerts','stlc::inc.alerts'))
     @stack('p_after_scripts')
 </body>
 </html>

@@ -1,4 +1,4 @@
-@extends(config('stlc.stlc_modules_folder_name','stlc::').'layouts.parentapp')
+@extends(config('stlc.view_path.layouts.parentapp','stlc::layouts.parentapp'))
 
 @section('htmlheader_title')
 	Register
@@ -13,7 +13,7 @@
             </div>
             <div class="card-body register-card-body">
                 <p class="login-box-msg">Register a new membership</p>
-                @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.grouped_errors', ['style_class' => 'mb-0'])
+                @include(config('stlc.view_path.inc.grouped_errors','stlc::inc.grouped_errors'), ['style_class' => 'mb-0'])
                 <form class="" role="form" method="POST" action="{{ route('register.store') }}">
                     {!! csrf_field() !!}
                     <div class="input-group mb-3">

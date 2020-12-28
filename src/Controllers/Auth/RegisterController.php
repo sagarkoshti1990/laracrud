@@ -113,7 +113,7 @@ class RegisterController extends Controller
 
         // $this->data['title'] = trans('base.register'); // set the page title
 
-        return view(config('stlc.stlc_modules_folder_name','stlc::').'auth.register', $this->data);
+        return view(config('stlc.view_path.auth.register','stlc::auth.register'), $this->data);
     }
 
     /**

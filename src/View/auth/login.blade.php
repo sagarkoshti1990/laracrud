@@ -1,4 +1,4 @@
-@extends(config('stlc.stlc_modules_folder_name','stlc::').'layouts.parentapp')
+@extends(config('stlc.view_path.layouts.parentapp','stlc::layouts.parentapp'))
 
 @section('htmlheader_title')
 	Login

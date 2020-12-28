@@ -191,7 +191,7 @@ class ModulesController extends StlcController
 
     public function dashboard(Request $request)
     {
-        return view(config('stlc.stlc_modules_folder_name','stlc::').'layouts.app');
+        return view(config('stlc.view_path.layouts.app','stlc::layouts.app'));
     }
 
     /**
@@ -210,13 +210,12 @@ class ModulesController extends StlcController
                 $modules = \Module::all();
             }
             
-            $crud->datatable = true;
             // echo "<pre>".json_encode($crud->fields,JSON_PRETTY_PRINT);exit;
 
             if(isset($request->src_ajax) && $request->src_ajax) {
                 return response()->json(['status' => 'success', 'message' => 'created', 'item' => $modules]);
             } else {
-                return view(config('stlc.stlc_modules_folder_name','stlc::').'Modules.index', [
+                return view(config('stlc.view_path.Modules.index','stlc::Modules.index'), [
                     'crud' => $crud,
                     'modules' => $modules
                 ]);
@@ -255,12 +254,22 @@ class ModulesController extends StlcController
     public function getModuleData(Request $request)
     {   
         $request->validate(['model' => 'required|exists:modules,model']);
-        $crud = \Module::where('model',$request->model)->first();
-        $query = (new $crud->model)->select(DB::raw($crud->represent_attr.' as text, id as value'));
+        $module = \Module::where('model',$request->model)->first();
+        $query = (new $module->model);
         if(isset($request->q)) {
-            $query = $query->where($crud->represent_attr,'LIKE',"%".$request->q."%");
+            $field_names = $module::field_names_array($module->name);
+            foreach($field_names as $value) {
+                if(in_array($value,config('stlc.represent_attr.'.$module->name,[$module->represent_attr]))) {
+                    $query = $query->orWhere($value,'LIKE',"%".$request->q."%");
+                }
+            }
         }
-        return response()->json(['statusCode' => '200','message' => 'success', 'item' => $query->paginate(10)]);
+        $result = $query->paginate(10);
+        $arr = [];
+        foreach($result as $value) {
+            $arr[] = ['text'=>\CustomHelper::get_represent_attr($value),'value'=>$value->id];
+        }
+        return response()->json(['statusCode' => '200','message' => 'success', 'item' => $arr]);
     }
 
     /**
@@ -282,20 +291,18 @@ class ModulesController extends StlcController
             if ((isset($module->id) && !(isset($module->deleted_at) && $module->deleted_at)) || (isset($module->deleted_at) && $module->deleted_at && \Module::user()->isAdmin())) {
 
                 $crud = $this->crud;
-                $crud->datatable = true;
                 $crud_filed = $this->crud_filed;
-                $crud_filed->datatable = true;
                 $crud->row = $module;
             
                 if(isset($request->get_data_ajax) && $request->get_data_ajax) {
                     return response()->json(['status' => 'success', 'message' => 'updated', 'item' => $module]);
                 } else {
-                    return view(config('stlc.stlc_modules_folder_name','stlc::').'Modules.show', [
+                    return view(config('stlc.view_path.Modules.show','stlc::Modules.show'), [
                         'crud' => $crud,
                         'crud_filed' => $crud_filed,
                         'module' => $module,
                         'src' => $src,
-                        'represent_attr' => $crud->module->represent_attr,
+                        'represent_value' => \CustomHelper::get_represent_attr($module,$crud->module->represent_attr),
                         'fieldTypes' => $fieldTypes = \FieldType::all()
                     ]);
                 }
@@ -399,7 +406,7 @@ class ModulesController extends StlcController
                 $crud = $this->crud_filed;
                 $crud->row = $field;
             
-                return view(config('stlc.stlc_modules_folder_name','stlc::').'Modules.edit_field', [
+                return view(config('stlc.view_path.Modules.edit_field','stlc::Modules.edit_field'), [
                     'crud' => $crud,
                     'field' => $field,
                     'src' => $src
@@ -434,17 +441,16 @@ class ModulesController extends StlcController
             if (isset($field->id)) {
 
                 $crud = $this->crud_filed;
-                $crud->datatable = true;
                 $crud->row = $field;
 
                 if(isset($request->get_data_ajax) && $request->get_data_ajax) {
                     return response()->json(['status' => 'success', 'message' => 'updated', 'item' => $field]);
                 } else {
-                    return view(config('stlc.stlc_modules_folder_name','stlc::').'Modules.show_field', [
+                    return view(config('stlc.view_path.Modules.show_field','stlc::Modules.show_field'), [
                         'crud' => $crud,
                         'field' => $field,
                         'src' => $src,
-                        'represent_attr' => $crud->module->represent_attr,
+                        'represent_value' => \CustomHelper::get_represent_attr($field,$crud->module->represent_attr),
                         'fieldTypes' => $fieldTypes = \FieldType::all()
                     ]);
                 }
@@ -591,7 +597,7 @@ class ModulesController extends StlcController
                 unset($this->setting_crud->fields['value']);
             }
             $this->setting_crud->create_button = 'modal';
-            return view(config('stlc.stlc_modules_folder_name','stlc::').'Modules.settings', [
+            return view(config('stlc.view_path.Modules.settings','stlc::Modules.settings'), [
                 'crud' => $this->setting_crud,
                 'settings' => $settings
             ]);
@@ -622,7 +628,7 @@ class ModulesController extends StlcController
                 $this->setting_crud->fields['value']->field_type = $setting_keys;
                 
                 $this->setting_crud->row = $setting; 
-                return view(config('stlc.stlc_modules_folder_name','stlc::').'Modules.setting_edit', [
+                return view(config('stlc.view_path.Modules.setting_edit','stlc::Modules.setting_edit'), [
                     'crud' => $this->setting_crud,
                     'setting' => $setting
                 ]);
@@ -801,38 +807,6 @@ class ModulesController extends StlcController
     }
 
     /**
-     * comment_history on the context.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function comment_history(Request $request, $id)
-    {
-        $validator = Validator::make($request->all(), ['commentable_type' => 'required']);
-        
-        if ($validator->fails()) {
-            return response()->json(['status' => 'failed', 'message' => "validation error", 'error' => $validator]);
-        }
-        
-        if(isset($request->commentable_type) && class_exists($request->commentable_type)) {
-            $item = $request['commentable_type']::find($id);
-            if(isset($item->id)) {
-                // update the row in the db
-                $htmlData = \View::make('inc.comment.comment_history',[
-                    'commentable_type' => get_class($item),
-                    'item' => $item
-                ])->render();
-                
-                return response()->json(['status' => 'success', 'message' => 'get html data', 'htmlData' => $htmlData]);
-            } else {
-                return response()->json(['status' => 'failed', 'message' => trans('stlc.data_not_found'), 'item'=> $item]);
-            }
-        } else {
-            return response()->json(['status' => 'failed', 'message' => 'modal class not exist']);
-        }
-    }
-
-    /**
      * save access of role and user perissions.
      *
      * @param  int  $id
@@ -921,7 +895,7 @@ class ModulesController extends StlcController
                 'html' => view('inc.table',$data)->render()
             ]);
         } else {
-            return view('inc.table',$data);
+            return view(config('stlc.view_path.inc.table','stlc::inc.table'),$data);
         }
     }
     

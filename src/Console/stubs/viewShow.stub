@@ -7,10 +7,10 @@
                 <div class="bg-dark-purple p-3">
                     <div class="row">
                         <div class="col-md-6">
-                            <h3 class="widget-user-username">{{ $item->$represent_attr }}</h3>
+                            <h3 class="widget-user-username">{{ $represent_value ?? "" }}</h3>
                         </div>
                         <div class="col-md-6 text-right pr30">
-                            @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.button_stack', ['stack' => 'line', 'src' => $crud->route.'/'.$item->id, 'name' => ['update','delete'], 'crud' => $crud])
+                            @include(config('stlc.view_path.inc.button_stack','stlc::inc.button_stack'), ['stack' => 'line', 'src' => $crud->route.'/'.$item->id, 'name' => ['update','delete'], 'crud' => $crud])
                         </div>
                     </div>
                 </div>
@@ -41,7 +41,7 @@
                         </div>
                     </div>
                     <div class="tab-pane fade" id="tab-logs">
-                        @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.activities.logs', ['crud' => $crud, 'item' => $item])
+                        @include(config('stlc.view_path.inc.activities.logs','stlc::inc.activities.logs'), ['crud' => $crud, 'item' => $item])
                     </div>
                 </div>
             </div>

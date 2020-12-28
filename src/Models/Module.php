@@ -56,10 +56,10 @@ class Module extends Model
                 $crud->allowAccess($data['allowAccess']);
             }
             if(isset($data['setColumnsOnly']) && count($data['setColumnsOnly']) > 0) {
-                $crud->setColumns($crud->fields,$data['setColumnsOnly']);
+                $crud->setColumns($module->fields,$data['setColumnsOnly']);
             }
             if(isset($data['setFieldsOnly']) && count($data['setFieldsOnly']) > 0) {
-                $crud->setFields($crud->fields,$data['setFieldsOnly']);
+                $crud->setFields($module->fields,$data['setFieldsOnly']);
             }
             if(isset($data['removeFields']) && count($data['removeFields']) > 0) {
                 foreach($data['removeFields'] as $field) {
@@ -351,16 +351,19 @@ class Module extends Model
             case 'Address':
                 $var = null;
                 if($field->maxlength == 0) {
-                    if($update) {
-                        $var = $table->text($field->name)->change();
+                    $var = $table->text($field->name);
+                } else {
+                    $var = $table->string($field->name, $field->maxlength);
+                }
+                if($update) {
+                    if($field->required && $nullable_required) {
+                        $var = $var->change();
                     } else {
-                        $var = $table->text($field->name);
+                        $var = $var->nullable()->change();
                     }
                 } else {
-                    if($update) {
-                        $var = $table->string($field->name, $field->maxlength)->nullable()->change();
-                    } else {
-                        $var = $table->string($field->name, $field->maxlength)->nullable();
+                    if(!($field->required && $nullable_required)) {
+                        $var = $var->nullable();
                     }
                 }
                 if($field->defaultvalue != "") {
@@ -370,17 +373,16 @@ class Module extends Model
                 }
                 break;
             case 'Checkbox':
+                $var = $table->string($field->name, 256);
                 if($update) {
                     if($field->required && $nullable_required) {
-                        $var = $table->string($field->name, 256)->change();
+                        $var = $var->change();
                     } else {
-                        $var = $table->string($field->name, 256)->nullable()->change();
+                        $var = $var->nullable()->change();
                     }
                 } else {
-                    if($field->required && $nullable_required) {
-                        $var = $table->string($field->name, 256);
-                    } else {
-                        $var = $table->string($field->name, 256)->nullable();
+                    if(!($field->required && $nullable_required)) {
+                        $var = $var->nullable();
                     }
                 }
                 if(is_array($field->defaultvalue)) {
@@ -404,30 +406,25 @@ class Module extends Model
             case 'Ckeditor':
                 $var = null;
                 if($field->maxlength == 0) {
-                    if($update) {
-                        if($field->required && $nullable_required) {
-                            $var = $table->text($field->name)->change();
-                        } else {
-                            $var = $table->text($field->name)->nullable()->change();
-                        }
+                    $var = $table->text($field->name);
+                } else {
+                    $var = $table->string($field->name, $field->maxlength);
+                }
+                if($update) {
+                    if($field->required && $nullable_required) {
+                        $var = $var->change();
                     } else {
-                        if($field->required && $nullable_required) {
-                            $var = $table->text($field->name);
-                        } else {
-                            $var = $table->text($field->name)->nullable();
-                        }
+                        $var = $var->nullable()->change();
                     }
                 } else {
-                    if($update) {
-                        $var = $table->string($field->name, $field->maxlength)->nullable()->change();
-                    } else {
-                        $var = $table->string($field->name, $field->maxlength)->nullable();
+                    if(!($field->required && $nullable_required)) {
+                        $var = $var->nullable();
                     }
-                    if($field->defaultvalue != "") {
-                        $var->default($field->defaultvalue);
-                    } else if($field->required) {
-                        $var->default("");
-                    }
+                }
+                if($field->defaultvalue != "") {
+                    $var->default($field->defaultvalue);
+                } else if($field->required) {
+                    $var->default("");
                 }
                 break;
             case 'Hidden':
@@ -495,17 +492,20 @@ class Module extends Model
                 }
                 break;
             case 'Currency':
+                if($field->maxlength == 0) {
+                    $var = $table->double($field->name, 15, 2);
+                } else {
+                    $var = $table->double($field->name, $field->maxlength, 2);
+                }
                 if($update) {
                     if($field->required && $nullable_required) {
-                        $var = $table->double($field->name, 15, 2)->change();
+                        $var = $var->change();
                     } else {
-                        $var = $table->double($field->name, 15, 2)->nullable()->change();
+                        $var = $var->nullable()->change();
                     }
                 } else {
-                    if($field->required && $nullable_required) {
-                        $var = $table->double($field->name, 15, 2);
-                    } else {
-                        $var = $table->double($field->name, 15, 2)->nullable();
+                    if(!($field->required && $nullable_required)) {
+                        $var = $var->nullable();
                     }
                 }
                 if($field->defaultvalue != "") {
@@ -515,17 +515,17 @@ class Module extends Model
                 }
                 break;
             case 'Date':
+            case 'Date_picker':
+                $var = $table->date($field->name);
                 if($update) {
                     if($field->required && $nullable_required) {
-                        $var = $table->date($field->name)->change();
+                        $var = $var->change();
                     } else {
-                        $var = $table->date($field->name)->nullable()->change();
+                        $var = $var->nullable()->change();
                     }
                 } else {
-                    if($field->required && $nullable_required) {
-                        $var = $table->date($field->name);
-                    } else {
-                        $var = $table->date($field->name)->nullable();
+                    if(!($field->required && $nullable_required)) {
+                        $var = $var->nullable();
                     }
                 }
                 
@@ -540,67 +540,17 @@ class Module extends Model
                 }
                 break;
             case 'Datetime':
-                if($update) {
-                    // Timestamp Edit Not working - http://stackoverflow.com/questions/34774628/how-do-i-make-doctrine-support-timestamp-columns
-                    // Error Unknown column type "timestamp" requested. Any Doctrine type that you use has to be registered with \Doctrine\DBAL\Types\Type::addType()
-                    // $var = $table->timestamp($field->name)->change();
-                } else {
-                    if($field->required && $nullable_required) {
-                        $var = $table->timestamp($field->name)->nullableTimestamps();
-                    } else {
-                        $var = $table->timestamp($field->name)->nullable()->nullableTimestamps();
-                    }
-                }
-                // $table->timestamp('created_at')->useCurrent();
-                if(isset($var)) {
-                    if($field->defaultvalue == NULL || $field->defaultvalue == "" || $field->defaultvalue == "NULL") {
-                        $var->default(NULL);
-                    } else if($field->defaultvalue == "now()") {
-                        $var->default(DB::raw('CURRENT_TIMESTAMP'));
-                    } else if($field->required) {
-                        $var->default("1970-01-01 01:01:01");
-                    } else {
-                        $var->default($field->defaultvalue);
-                    }
-                }
-                break;
-            case 'Date_picker':
-                if($update) {
-                    if($field->required && $nullable_required) {
-                        $var = $table->date($field->name)->change();
-                    } else {
-                        $var = $table->date($field->name)->nullable()->change();
-                    }
-                } else {
-                    if($field->required && $nullable_required) {
-                        $var = $table->date($field->name);
-                    } else {
-                        $var = $table->date($field->name)->nullable();
-                    }
-                }
-                
-                if($field->defaultvalue == NULL || $field->defaultvalue == "" || $field->defaultvalue == "NULL") {
-                    $var->default(NULL);
-                } else if($field->defaultvalue == "now()") {
-                    $var->default(NULL);
-                } else if($field->required) {
-                    $var->default("1970-01-01");
-                } else {
-                    $var->default($field->defaultvalue);
-                }
-                break;
             case 'Datetime_picker':
+                $var = $table->dateTime($field->name);
                 if($update) {
                     if($field->required && $nullable_required) {
-                        $var = $table->dateTime($field->name)->change();
+                        $var = $var->change();
                     } else {
-                        $var = $table->dateTime($field->name)->nullable()->change();
+                        $var = $var->nullable()->change();
                     }
                 } else {
-                    if($field->required && $nullable_required) {
-                        $var = $table->dateTime($field->name);
-                    } else {
-                        $var = $table->dateTime($field->name)->nullable();
+                    if(!($field->required && $nullable_required)) {
+                        $var = $var->nullable();
                     }
                 }
                 // $table->timestamp('created_at')->useCurrent();
@@ -615,11 +565,17 @@ class Module extends Model
                 }
                 break;
             case 'Decimal':
-                $var = null;
+                $var = $table->decimal($field->name, 38, 2);
                 if($update) {
-                    $var = $table->decimal($field->name, 15, 3)->change();
+                    if($field->required && $nullable_required) {
+                        $var = $var->change();
+                    } else {
+                        $var = $var->nullable()->change();
+                    }
                 } else {
-                    $var = $table->decimal($field->name, 15, 3);
+                    if(!($field->required && $nullable_required)) {
+                        $var = $var->nullable();
+                    }
                 }
                 if($field->defaultvalue != "") {
                     $var->default($field->defaultvalue);
@@ -627,26 +583,10 @@ class Module extends Model
                     $var->default("0.0");
                 }
                 break;
+            case 'Radio':
+            case 'Select':
             case 'Select2':
-                if($field->json_values == "") {
-                    if(is_int($field->defaultvalue)) {
-                        if($update) {
-                            $var = $table->unsignedBigInteger($field->name)->nullable()->change();
-                        } else {
-                            $var = $table->unsignedBigInteger($field->name)->nullable();
-                        }
-                        $var->default($field->defaultvalue);
-                        break;
-                    } else if(is_string($field->defaultvalue)) {
-                        if($update) {
-                            $var = $table->string($field->name)->nullable()->change();
-                        } else {
-                            $var = $table->string($field->name)->nullable();
-                        }
-                        $var->default($field->defaultvalue);
-                        break;
-                    }
-                }
+            case 'Select2_from_ajax':
                 $json_values = json_decode($field->json_values, true);
                 if(\Str::startsWith($field->json_values, "@")) {
                     $foreign_table_name = \Str::plural(ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', str_replace("@", "", $field->json_values))), '_'));
@@ -676,8 +616,6 @@ class Module extends Model
                             } else {
                                 $var = $table->string($field->name)->nullable()->change();
                             }
-                        } else {
-
                         }
                     } else {
                         if(isset($field->json_values) && is_array(json_decode($field->json_values))) {
@@ -702,119 +640,12 @@ class Module extends Model
                         }
                     }
                 } else if(is_object($json_values)) {
-                    // ############### Remaining
                     if($update) {
                         $var = $table->unsignedBigInteger($field->name)->nullable()->change();
                     } else {
                         $var = $table->unsignedBigInteger($field->name)->nullable();
                     }
-                    // if(is_int($field->defaultvalue)) {
-                    //     $var->default($field->defaultvalue);
-                    //     break;
-                    // }
                 }
-                break;
-            case 'Select2_from_array':
-                $json_values = json_decode($field->json_values, true);
-                if(is_array($json_values)) {
-                    if(isset($field->input_type) && ($field->input_type == "enum" || $field->input_type == "ENUM")) {
-                        if($update) {
-                            if($field->required && $nullable_required) {
-                                $var = $table->string($field->name)->change();
-                            } else {
-                                $var = $table->string($field->name)->nullable()->change();
-                            }
-                        } else {
-                            if($field->required && $nullable_required) {
-                                $var = $table->string($field->name)->change();
-                            } else {
-                                $var = $table->string($field->name)->nullable()->change();
-                            }
-                        }
-                        if($field->defaultvalue != "" && in_array($field->defaultvalue, $json_values)) {
-                            $var->default($field->defaultvalue);
-                        } else if($field->required) {
-                            $var->default(NULL);
-                        }
-                    } else {
-                        if($update) {
-                            if($field->required && $nullable_required) {
-                                $var = $table->string($field->name)->change();
-                            } else {
-                                $var = $table->string($field->name)->nullable()->change();
-                            }
-                        } else {
-                            if($field->required && $nullable_required) {
-                                $var = $table->string($field->name);
-                            } else {
-                                $var = $table->string($field->name)->nullable();
-                            }
-                        }
-                        if($field->defaultvalue != "") {
-                            $var->default($field->defaultvalue);
-                        } else if($field->required) {
-                            $var->default("");
-                        }
-                    }
-                } else if(is_object($json_values)) {
-                    if($update) {
-                        if($field->required && $nullable_required) {
-                            $var = $table->unsignedBigInteger($field->name)->change();
-                        } else {
-                            $var = $table->unsignedBigInteger($field->name)->nullable()->change();
-                        }
-                    } else {
-                        if($field->required && $nullable_required) {
-                            $var = $table->unsignedBigInteger($field->name);
-                        } else {
-                            $var = $table->unsignedBigInteger($field->name)->nullable();
-                        }
-                    }
-                }
-                break;
-            case 'Select2_from_ajax':
-                if($field->json_values == "") {
-                    if(is_int($field->defaultvalue)) {
-                        if($update) {
-                            $var = $table->unsignedBigInteger($field->name)->nullable()->change();
-                        } else {
-                            $var = $table->unsignedBigInteger($field->name)->nullable();
-                        }
-                        $var->default($field->defaultvalue);
-                        break;
-                    } else if(is_string($field->defaultvalue)) {
-                        if($update) {
-                            $var = $table->string($field->name)->nullable()->change();
-                        } else {
-                            $var = $table->string($field->name)->nullable();
-                        }
-                        $var->default($field->defaultvalue);
-                        break;
-                    }
-                }
-                $json_values = json_decode($field->json_values, true);
-                if(\Str::startsWith($field->json_values, "@")) {
-                    $foreign_table_name = \Str::plural(ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', str_replace("@", "", $field->json_values))), '_'));
-                    if($update) {
-                        $var = $table->unsignedBigInteger($field->name)->nullable()->change();
-                        if($field->defaultvalue == "" || $field->defaultvalue == "0") {
-                            $var->default(NULL);
-                        } else {
-                            $var->default($field->defaultvalue);
-                        }
-                        $table->dropForeign($field->module_obj->table . "_" . $field->name . "_foreign");
-                        $table->foreign($field->name)->references('id')->on($foreign_table_name)->onUpdate('cascade')->onDelete('cascade');
-                    } else {
-                        $var = $table->unsignedBigInteger($field->name)->nullable();
-                        if($field->defaultvalue == "" || $field->defaultvalue == "0") {
-                            $var->default(NULL);
-                        } else {
-                            $var->default($field->defaultvalue);
-                        }
-                        $table->foreign($field->name)->references('id')->on($foreign_table_name)->onUpdate('cascade')->onDelete('cascade');
-                    }
-                }
-
                 break;
             case 'Select2_tags':
                 $json_values = json_decode($field->json_values, true);
@@ -826,8 +657,6 @@ class Module extends Model
                             } else {
                                 $var = $table->string($field->name)->nullable()->change();
                             }
-                        } else {
-
                         }
                     } else {
                         if(isset($field->json_values) && is_array(json_decode($field->json_values))) {
@@ -853,163 +682,29 @@ class Module extends Model
                     }
                 }
                 break;
-
             case 'Select2_multiple_tags': 
                 $var = null;
                 if($field->maxlength == 0) {
-                    if($update) {
-                        if($field->required && $nullable_required) {
-                            $var = $table->text($field->name)->change();
-                        } else {
-                            $var = $table->text($field->name)->nullable()->change();
-                        }
+                    $var = $table->text($field->name);
+                } else {
+                    $var = $table->string($field->name, $field->maxlength);
+                }
+                
+                if($update) {
+                    if($field->required && $nullable_required) {
+                        $var = $var->change();
                     } else {
-                        if($field->required && $nullable_required) {
-                            $var = $table->text($field->name);
-                        } else {
-                            $var = $table->text($field->name)->nullable();
-                        }
+                        $var = $var->nullable()->change();
                     }
                 } else {
-                    if($update) {
-                        $var = $table->string($field->name, $field->maxlength)->nullable()->change();
-                    } else {
-                        $var = $table->string($field->name, $field->maxlength)->nullable();
-                    }
-                    if($field->defaultvalue != "") {
-                        $var->default($field->defaultvalue);
-                    } else if($field->required) {
-                        $var->default("");
+                    if(!($field->required && $nullable_required)) {
+                        $var = $var->nullable();
                     }
                 }
-                break;
-            case 'Select':
-                if($field->json_values == "") {
-                    if(is_int($field->defaultvalue)) {
-                        if($update) {
-                            $var = $table->unsignedBigInteger($field->name)->nullable()->change();
-                        } else {
-                            $var = $table->unsignedBigInteger($field->name)->nullable();
-                        }
-                        $var->default($field->defaultvalue);
-                        break;
-                    } else if(is_string($field->defaultvalue)) {
-                        if($update) {
-                            $var = $table->string($field->name)->nullable()->change();
-                        } else {
-                            $var = $table->string($field->name)->nullable();
-                        }
-                        $var->default($field->defaultvalue);
-                        break;
-                    }
-                }
-                $json_values = json_decode($field->json_values, true);
-                if(\Str::startsWith($field->json_values, "@")) {
-                    $foreign_table_name = \Str::plural(ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', str_replace("@", "", $field->json_values))), '_'));
-                    if($update) {
-                        $var = $table->unsignedBigInteger($field->name)->nullable()->change();
-                        if($field->defaultvalue == "" || $field->defaultvalue == "0") {
-                            $var->default(NULL);
-                        } else {
-                            $var->default($field->defaultvalue);
-                        }
-                        $table->dropForeign($field->module_obj->table . "_" . $field->name . "_foreign");
-                        $table->foreign($field->name)->references('id')->on($foreign_table_name)->onUpdate('cascade')->onDelete('cascade');
-                    } else {
-                        $var = $table->unsignedBigInteger($field->name)->nullable();
-                        if($field->defaultvalue == "" || $field->defaultvalue == "0") {
-                            $var->default(NULL);
-                        } else {
-                            $var->default($field->defaultvalue);
-                        }
-                        $table->foreign($field->name)->references('id')->on($foreign_table_name)->onUpdate('cascade')->onDelete('cascade');
-                    }
-                } else if(is_array($json_values)) {
-                    if($update) {
-                        if(isset($field->json_values) && is_array(json_decode($field->json_values))) {
-                            if($field->required && $nullable_required) {
-                                $var = $table->string($field->name)->change();
-                            } else {
-                                $var = $table->string($field->name)->nullable()->change();
-                            }
-                        } else {
-
-                        }
-                    } else {
-                        if(isset($field->json_values) && is_array(json_decode($field->json_values))) {
-                            if($field->required && $nullable_required) {
-                                $var = $table->string($field->name);
-                            } else {
-                                $var = $table->string($field->name)->nullable();
-                            }
-                        }
-                    }
-                    if(isset($field->json_values) && is_array(json_decode($field->json_values))) {
-                        if(isset($field->defaultvalue) && $field->defaultvalue != "" && is_string($field->defaultvalue)) {
-                            $var->default($field->defaultvalue);
-                        } else if($field->required && isset($field->defaultvalue) && $field->defaultvalue != "") {
-                            $var->default(Null);
-                        }
-                    } else {
-                        if($field->defaultvalue != "") {
-                            $var->default($field->defaultvalue);
-                        } else if($field->required) {
-                            $var->default(Null);
-                        }
-                    }
-                } else if(is_object($json_values)) {
-                    // ############### Remaining
-                    if($update) {
-                        $var = $table->unsignedBigInteger($field->name)->nullable()->change();
-                    } else {
-                        $var = $table->unsignedBigInteger($field->name)->nullable();
-                    }
-                    // if(is_int($field->defaultvalue)) {
-                    //     $var->default($field->defaultvalue);
-                    //     break;
-                    // }
-                }
-                break;
-            case 'Select_from_array':
-                $json_values = json_decode($field->json_values, true);
-                if(is_array($json_values)) {
-                    if($update) {
-                        if($field->required && $nullable_required) {
-                            $var = $table->string($field->name)->change();
-                        } else {
-                            $var = $table->string($field->name)->nullable()->change();
-                        }
-                    } else {
-                        if($field->required && $nullable_required) {
-                            $var = $table->string($field->name);
-                        } else {
-                            $var = $table->string($field->name)->nullable();
-                        }
-                    }
-                    if($field->defaultvalue != "") {
-                        $var->default($field->defaultvalue);
-                    } else if($field->required) {
-                        $var->default("");
-                    }
-                } else if(is_object($json_values)) {
-                    // ############### Remaining
-                    if($update) {
-                        if($field->required && $nullable_required) {
-                            $var = $table->unsignedBigInteger($field->name)->change();
-                        } else {
-                            $var = $table->unsignedBigInteger($field->name)->nullable()->change();
-                        }
-                    } else {
-                        if($field->required && $nullable_required) {
-                            $var = $table->unsignedBigInteger($field->name);
-                        } else {
-                            $var = $table->unsignedBigInteger($field->name)->nullable();
-                        }
-                    }
-                    // if(is_int($field->defaultvalue)) {
-                    //     $var->default($field->defaultvalue);
-                    //     break;
-                    // }
+                if($field->defaultvalue != "") {
+                    $var->default($field->defaultvalue);
+                } else if($field->required) {
+                    $var->default("");
                 }
                 break;
             case 'Table': 
@@ -1018,19 +713,17 @@ class Module extends Model
                     if($update) {
                         if(isset($field->json_values) && is_array(json_decode($field->json_values))) {
                             if($field->required && $nullable_required) {
-                                $var = $table->string($field->name)->change();
+                                $var = $table->text($field->name)->change();
                             } else {
-                                $var = $table->string($field->name)->nullable()->change();
+                                $var = $table->text($field->name)->nullable()->change();
                             }
-                        } else {
-
                         }
                     } else {
                         if(isset($field->json_values) && is_array(json_decode($field->json_values))) {
                             if($field->required && $nullable_required) {
-                                $var = $table->string($field->name);
+                                $var = $table->text($field->name);
                             } else {
-                                $var = $table->string($field->name)->nullable();
+                                $var = $table->text($field->name)->nullable();
                             }
                         }
                     }
@@ -1052,32 +745,19 @@ class Module extends Model
             case 'Email':
                 $var = null;
                 if($field->maxlength == 0) {
-                    if($update) {
-                        if($field->required && $nullable_required) {
-                            $var = $table->string($field->name, 100)->change();
-                        } else {
-                            $var = $table->string($field->name, 100)->nullable()->change();
-                        }
+                    $var = $table->string($field->name, 100);
+                } else {
+                    $var = $table->string($field->name, $field->maxlength);
+                }
+                if($update) {
+                    if($field->required && $nullable_required) {
+                        $var = $var->change();
                     } else {
-                        if($field->required && $nullable_required) {
-                            $var = $table->string($field->name, 100);
-                        } else {
-                            $var = $table->string($field->name, 100)->nullable();
-                        }
+                        $var = $var->nullable()->change();
                     }
                 } else {
-                    if($update) {
-                        if($field->required && $nullable_required) {
-                            $var = $table->string($field->name, $field->maxlength)->change();
-                        } else {
-                            $var = $table->string($field->name, $field->maxlength)->nullable()->change();
-                        }
-                    } else {
-                        if($field->required && $nullable_required) {
-                            $var = $table->string($field->name, $field->maxlength);
-                        } else {
-                            $var = $table->string($field->name, $field->maxlength)->nullable();
-                        }
+                    if(!($field->required && $nullable_required)) {
+                        $var = $var->nullable();
                     }
                 }
                 if($field->defaultvalue != "") {
@@ -1086,34 +766,45 @@ class Module extends Model
                     $var->default("");
                 }
                 break;
+            case 'Image':
             case 'File':
                 if($update) {
-                    if($field->required && $nullable_required) {
-                        $var = $table->integer($field->name)->change();
+                    $var = $table->unsignedBigInteger($field->name)->nullable()->change();
+                    if($field->defaultvalue == "" || $field->defaultvalue == "0") {
+                        $var->default(NULL);
                     } else {
-                        $var = $table->integer($field->name)->nullable()->change();
+                        $var->default($field->defaultvalue);
                     }
+                    $table->dropForeign($field->module_obj->table . "_" . $field->name . "_foreign");
+                    $table->foreign($field->name)->references('id')->on(config('stlc.upload_table','uploads'))->onUpdate('cascade')->onDelete('cascade');
                 } else {
-                    if($field->required && $nullable_required) {
-                        $var = $table->integer($field->name);
+                    $var = $table->unsignedBigInteger($field->name)->nullable();
+                    if($field->defaultvalue == "" || $field->defaultvalue == "0") {
+                        $var->default(NULL);
                     } else {
-                        $var = $table->integer($field->name)->nullable();
+                        $var->default($field->defaultvalue);
                     }
-                }
-                if($field->defaultvalue != "" && is_numeric($field->defaultvalue)) {
-                    $var->default($field->defaultvalue);
-                } else if($field->required) {
-                    $var->default(NULL);
+                    $table->foreign($field->name)->references('id')->on(config('stlc.upload_table','uploads'))->onUpdate('cascade')->onDelete('cascade');
                 }
                 break;
             case 'Files':
-
                 break;
             case 'Float':
-                if($update) {
-                    $var = $table->float($field->name)->change();
+                if($field->maxlength == 0) {
+                    $var = $table->float($field->name,8,2);
                 } else {
-                    $var = $table->float($field->name);
+                    $var = $table->float($field->name, $field->maxlength,2);
+                }
+                if($update) {
+                    if($field->required && $nullable_required) {
+                        $var = $var->change();
+                    } else {
+                        $var = $var->nullable()->change();
+                    }
+                } else {
+                    if(!($field->required && $nullable_required)) {
+                        $var = $var->nullable();
+                    }
                 }
                 if($field->defaultvalue != "") {
                     $var->default($field->defaultvalue);
@@ -1121,45 +812,22 @@ class Module extends Model
                     $var->default("0.0");
                 }
                 break;
-            case 'HTML':
-                if($update) {
-                    $var = $table->string($field->name, 10000)->nullable()->change();
-                } else {
-                    $var = $table->string($field->name, 10000)->nullable();
-                }
-                if($field->defaultvalue != null) {
-                    $var->default($field->defaultvalue);
-                } else if($field->required) {
-                    $var->default("");
-                }
-                break;
-            case 'Image':
-                if($update) {
-                    if($field->required && $nullable_required) {
-                        $var = $table->integer($field->name)->change();
-                    } else {
-                        $var = $table->integer($field->name)->nullable()->change();
-                    }
-                } else {
-                    if($field->required && $nullable_required) {
-                        $var = $table->integer($field->name);
-                    } else {
-                        $var = $table->integer($field->name)->nullable();
-                    }
-                }
-                if($field->defaultvalue != "" && is_numeric($field->defaultvalue)) {
-                    $var->default($field->defaultvalue);
-                } else if($field->required) {
-                    $var->default(NULL);
-                } else {
-                    $var->default(NULL);
-                }
-                break;
             case 'Json':
-                if($update) {
-                    $var = $table->string($field->name, 256)->change();
-                } else {
+                if($field->maxlength == 0) {
                     $var = $table->string($field->name, 256);
+                } else {
+                    $var = $table->string($field->name, $field->maxlength);
+                }
+                if($update) {
+                    if($field->required && $nullable_required) {
+                        $var = $var->change();
+                    } else {
+                        $var = $var->nullable()->change();
+                    }
+                } else {
+                    if(!($field->required && $nullable_required)) {
+                        $var = $var->nullable();
+                    }
                 }
                 if(is_array($field->defaultvalue)) {
                     $field->defaultvalue = json_encode($field->defaultvalue);
@@ -1179,18 +847,16 @@ class Module extends Model
                 }
                 break;
             case 'Number':
-                $var = null;
+                $var = $table->integer($field->name, false);
                 if($update) {
                     if($field->required && $nullable_required) {
-                        $var = $table->integer($field->name, false)->change();
+                        $var = $var->change();
                     } else {
-                        $var = $table->integer($field->name, false)->nullable()->change();
+                        $var = $var->nullable()->change();
                     }
                 } else {
-                    if($field->required && $nullable_required) {
-                        $var = $table->integer($field->name, false);
-                    } else {
-                        $var = $table->integer($field->name, false)->nullable();
+                    if(!($field->required && $nullable_required)) {
+                        $var = $var->nullable();
                     }
                 }
                 if($field->defaultvalue != "") {
@@ -1200,34 +866,20 @@ class Module extends Model
                 }
                 break;
             case 'Phone':
-                $var = null;
                 if($field->maxlength == 0) {
-                    if($update) {
-                        if($field->required && $nullable_required) {
-                            $var = $table->string($field->name)->change();
-                        } else {
-                            $var = $table->string($field->name)->nullable()->change();
-                        }
+                    $var = $table->string($field->name);
+                } else {
+                    $var = $table->string($field->name, $field->maxlength);
+                }
+                if($update) {
+                    if($field->required && $nullable_required) {
+                        $var = $var->change();
                     } else {
-                        if($field->required && $nullable_required) {
-                            $var = $table->string($field->name);
-                        } else {
-                            $var = $table->string($field->name)->nullable();
-                        }
+                        $var = $var->nullable()->change();
                     }
                 } else {
-                    if($update) {
-                        if($field->required && $nullable_required) {
-                            $var = $table->string($field->name, $field->maxlength)->change();
-                        } else {
-                            $var = $table->string($field->name, $field->maxlength)->nullable()->change();
-                        }
-                    } else {
-                        if($field->required && $nullable_required) {
-                            $var = $table->string($field->name, $field->maxlength);
-                        } else {
-                            $var = $table->string($field->name, $field->maxlength)->nullable();
-                        }
+                    if(!($field->required && $nullable_required)) {
+                        $var = $var->nullable();
                     }
                 }
                 if($field->defaultvalue != "") {
@@ -1242,40 +894,26 @@ class Module extends Model
                 if($update) {
                     $var->change();
                 }
-                
                 break;
             case 'Polymorphic_multiple':
-                
                 break;
             case 'Multiselect':
-                if($update) {
-                    $var = $table->string($field->name, 256)->change();
-                } else {
-                    $var = $table->string($field->name, 256);
-                }
-                if(is_array($field->defaultvalue)) {
-                    $field->defaultvalue = json_encode($field->defaultvalue);
-                    $var->default($field->defaultvalue);
-                } else if(is_string($field->defaultvalue) && \Str::startsWith($field->defaultvalue, "[")) {
-                    $var->default($field->defaultvalue);
-                } else if($field->defaultvalue == "" || $field->defaultvalue == null) {
-                    $var->default("[]");
-                } else if(is_string($field->defaultvalue)) {
-                    $field->defaultvalue = json_encode([$field->defaultvalue]);
-                    $var->default($field->defaultvalue);
-                } else if(is_int($field->defaultvalue)) {
-                    $field->defaultvalue = json_encode([$field->defaultvalue]);
-                    //echo "int: ".$field->defaultvalue;
-                    $var->default($field->defaultvalue);
-                } else if($field->required) {
-                    $var->default("[]");
-                }
-                break;
             case 'Select2_multiple':
-                if($update) {
-                    $var = $table->string($field->name, 256)->change();
+                if($field->maxlength == 0) {
+                    $var = $table->string($field->name,256);
                 } else {
-                    $var = $table->string($field->name, 256);
+                    $var = $table->string($field->name, $field->maxlength);
+                }
+                if($update) {
+                    if($field->required && $nullable_required) {
+                        $var = $var->change();
+                    } else {
+                        $var = $var->nullable()->change();
+                    }
+                } else {
+                    if(!($field->required && $nullable_required)) {
+                        $var = $var->nullable();
+                    }
                 }
                 if(is_array($field->defaultvalue)) {
                     $field->defaultvalue = json_encode($field->defaultvalue);
@@ -1293,58 +931,24 @@ class Module extends Model
                     $var->default($field->defaultvalue);
                 } else if($field->required) {
                     $var->default("[]");
-                }
-                break;
-            case 'Name':
-                $var = null;
-                if($field->maxlength == 0) {
-                    if($update) {
-                        $var = $table->string($field->name)->change();
-                    } else {
-                        $var = $table->string($field->name);
-                    }
-                } else {
-                    if($update) {
-                        $var = $table->string($field->name, $field->maxlength)->change();
-                    } else {
-                        $var = $table->string($field->name, $field->maxlength);
-                    }
-                }
-                if($field->defaultvalue != "") {
-                    $var->default($field->defaultvalue);
-                } else if($field->required) {
-                    $var->default("");
                 }
                 break;
             case 'Password':
                 $var = null;
                 if($field->maxlength == 0) {
-                    if($update) {
-                        if($field->required && $nullable_required) {
-                            $var = $table->string($field->name)->change();
-                        } else {
-                            $var = $table->string($field->name)->nullable()->change();
-                        }
+                    $var = $table->string($field->name);
+                } else {
+                    $var = $table->string($field->name, $field->maxlength);
+                }
+                if($update) {
+                    if($field->required && $nullable_required) {
+                        $var = $var->change();
                     } else {
-                        if($field->required && $nullable_required) {
-                            $var = $table->string($field->name)->nullable();
-                        } else {
-                            $var = $table->string($field->name);
-                        }
+                        $var = $var->nullable()->change();
                     }
                 } else {
-                    if($update) {
-                        if($field->required && $nullable_required) {
-                            $var = $table->string($field->name, $field->maxlength)->change();
-                        } else {
-                            $var = $table->string($field->name, $field->maxlength)->nullable()->change();
-                        }
-                    } else {
-                        if($field->required && $nullable_required) {
-                            $var = $table->string($field->name, $field->maxlength);
-                        } else {
-                            $var = $table->string($field->name, $field->maxlength)->nullable();
-                        }
+                    if(!($field->required && $nullable_required)) {
+                        $var = $var->nullable();
                     }
                 }
                 if($field->defaultvalue != "") {
@@ -1353,104 +957,22 @@ class Module extends Model
                     $var->default("");
                 }
                 break;
-            case 'Radio':
-                $var = null;
-                if($field->json_values == "") {
-                    if(is_int($field->defaultvalue)) {
-                        if($update) {
-                            $var = $table->unsignedBigInteger($field->name)->change();
-                        } else {
-                            $var = $table->unsignedBigInteger($field->name);
-                        }
-                        $var->default($field->defaultvalue);
-                        break;
-                    } else if(is_string($field->defaultvalue)) {
-                        if($update) {
-                            if($field->required && $nullable_required) {
-                                $var = $table->string($field->name)->change();
-                            } else {
-                                $var = $table->string($field->name)->nullable()->change();
-                            }
-                        } else {
-                            if($field->required && $nullable_required) {
-                                $var = $table->string($field->name);
-                            } else {
-                                $var = $table->string($field->name)->nullable();
-                            }
-                        }
-                        $var->default($field->defaultvalue);
-                        break;
-                    }
-                } else if(is_string($field->json_values) && \Str::startsWith($field->json_values, "@")) {
-                    if($update) {
-                        $var = $table->unsignedBigInteger($field->name)->change();
-                    } else {
-                        $var = $table->unsignedBigInteger($field->name);
-                    }
-                    break;
-                }
-                $json_values = json_decode($field->json_values, true);
-                if(is_array($json_values)) {
-                    if($update) {
-                        if($field->required && $nullable_required) {
-                            $var = $table->string($field->name)->change();
-                        } else {
-                            $var = $table->string($field->name)->nullable()->change();
-                        }
-                    } else {
-                        if($field->required && $nullable_required) {
-                            $var = $table->string($field->name);
-                        } else {
-                            $var = $table->string($field->name)->nullable();
-                        }
-                    }
-                    if($field->defaultvalue != "") {
-                        $var->default($field->defaultvalue);
-                    } else if($field->required) {
-                        $var->default("");
-                    }
-                } else if(is_object($json_values)) {
-                    // ############### Remaining
-                    if($update) {
-                        $var = $table->unsignedBigInteger($field->name)->change();
-                    } else {
-                        $var = $table->unsignedBigInteger($field->name);
-                    }
-                    // if(is_int($field->defaultvalue)) {
-                    //     $var->default($field->defaultvalue);
-                    //     break;
-                    // }
-                }
-                break;
             case 'Text':
                 $var = null;
                 if($field->maxlength == 0) {
-                    if($update) {
-                        if($field->required && $nullable_required) {
-                            $var = $table->string($field->name)->change();
-                        } else {
-                            $var = $table->string($field->name)->nullable()->change();
-                        }
+                    $var = $table->string($field->name);
+                } else {
+                    $var = $table->string($field->name, $field->maxlength);
+                }
+                if($update) {
+                    if($field->required && $nullable_required) {
+                        $var = $var->change();
                     } else {
-                        if($field->required && $nullable_required) {
-                            $var = $table->string($field->name);
-                        } else {
-                            $var = $table->string($field->name)->nullable();
-                        }
+                        $var = $var->nullable()->change();
                     }
                 } else {
-                    if($update) {
-                        if($field->required && $nullable_required) {
-                            $var = $table->string($field->name, $field->maxlength)->change();
-                        } else {
-                            $var = $table->string($field->name, $field->maxlength)->nullable()->change();
-                        }
-                    } else {
-                        if($field->required && $nullable_required) {
-                            $var = $table->string($field->name, $field->maxlength);
-                        } else {
-                            $var = $table->string($field->name, $field->maxlength)->nullable();
-                        }
+                    if(!($field->required && $nullable_required)) {
+                        $var = $var->nullable();
                     }
                 }
                 if($field->defaultvalue != null) {
@@ -1459,95 +981,22 @@ class Module extends Model
                     $var->default("");
                 }
                 break;
-            case 'Taginput':
-                $var = null;
-                if($update) {
-                    if($field->required && $nullable_required) {
-                        $var = $table->string($field->name, 1000)->change();
-                    } else {
-                        $var = $table->string($field->name, 1000)->nullable()->change();
-                    }
-                } else {
-                    if($field->required && $nullable_required) {
-                        $var = $table->string($field->name, 1000);
-                    } else {
-                        $var = $table->string($field->name, 1000)->nullable();
-                    }
-                }
-                if(is_string($field->defaultvalue) && \Str::startsWith($field->defaultvalue, "[")) {
-                    $field->defaultvalue = json_decode($field->defaultvalue, true);
-                }
-                
-                if(is_string($field->defaultvalue)) {
-                    $field->defaultvalue = json_encode([$field->defaultvalue]);
-                    //echo "string: ".$field->defaultvalue;
-                    $var->default($field->defaultvalue);
-                } else if(is_array($field->defaultvalue)) {
-                    $field->defaultvalue = json_encode($field->defaultvalue);
-                    //echo "array: ".$field->defaultvalue;
-                    $var->default($field->defaultvalue);
-                } else if($field->required) {
-                    $var->default("");
-                }
-                break;
             case 'Textarea':
                 $var = null;
                 if($field->maxlength == 0) {
-                    if($update) {
-                        if($field->required && $nullable_required) {
-                            $var = $table->text($field->name)->change();
-                        } else {
-                            $var = $table->text($field->name)->nullable()->change();
-                        }
-                    } else {
-                        if($field->required && $nullable_required) {
-                            $var = $table->text($field->name);
-                        } else {
-                            $var = $table->text($field->name)->nullable();
-                        }
-                    }
+                    $var = $table->text($field->name);
                 } else {
-                    if($update) {
-                        $var = $table->string($field->name, $field->maxlength)->nullable()->change();
-                    } else {
-                        $var = $table->string($field->name, $field->maxlength)->nullable();
-                    }
-                    if($field->defaultvalue != "") {
-                        $var->default($field->defaultvalue);
-                    } else if($field->required) {
-                        $var->default("");
-                    }
+                    $var = $table->string($field->name, $field->maxlength);
                 }
-                break;
-            case 'TextField':
-                $var = null;
-                if($field->maxlength == 0) {
-                    if($update) {
-                        if($field->required && $nullable_required) {
-                            $var = $table->string($field->name)->change();
-                        } else {
-                            $var = $table->string($field->name)->nullable()->change();
-                        }
+                if($update) {
+                    if($field->required && $nullable_required) {
+                        $var = $var->change();
                     } else {
-                        if($field->required && $nullable_required) {
-                            $var = $table->string($field->name);
-                        } else {
-                            $var = $table->string($field->name)->nullable();
-                        }
+                        $var = $var->nullable()->change();
                     }
                 } else {
-                    if($update) {
-                        if($field->required && $nullable_required) {
-                            $var = $table->string($field->name, $field->maxlength)->change();
-                        } else {
-                            $var = $table->string($field->name, $field->maxlength)->nullable()->change();
-                        }
-                    } else {
-                        if($field->required && $nullable_required) {
-                            $var = $table->string($field->name, $field->maxlength);
-                        } else {
-                            $var = $table->string($field->name, $field->maxlength)->nullable();
-                        }
+                    if(!($field->required && $nullable_required)) {
+                        $var = $var->nullable();
                     }
                 }
                 if($field->defaultvalue != "") {
@@ -1559,32 +1008,19 @@ class Module extends Model
             case 'URL':
                 $var = null;
                 if($field->maxlength == 0) {
-                    if($update) {
-                        if($field->required && $nullable_required) {
-                            $var = $table->string($field->name)->change();
-                        } else {
-                            $var = $table->string($field->name)->nullable()->change();
-                        }
+                    $var = $table->string($field->name);
+                } else {
+                    $var = $table->string($field->name, $field->maxlength);
+                }
+                if($update) {
+                    if($field->required && $nullable_required) {
+                        $var = $var->change();
                     } else {
-                        if($field->required && $nullable_required) {
-                            $var = $table->string($field->name);
-                        } else {
-                            $var = $table->string($field->name)->nullable();
-                        }
+                        $var = $var->nullable()->change();
                     }
                 } else {
-                    if($update) {
-                        if($field->required && $nullable_required) {
-                            $var = $table->string($field->name, $field->maxlength)->change();
-                        } else {
-                            $var = $table->string($field->name, $field->maxlength)->nullable()->change();
-                        }
-                    } else {
-                        if($field->required && $nullable_required) {
-                            $var = $table->string($field->name, $field->maxlength);
-                        } else {
-                            $var = $table->string($field->name, $field->maxlength)->nullable();
-                        }
+                    if(!($field->required && $nullable_required)) {
+                        $var = $var->nullable();
                     }
                 }
                 if($field->defaultvalue != "") {
@@ -1593,20 +1029,17 @@ class Module extends Model
                     $var->default("");
                 }
                 break;
-            case 'Week':
-                break;
             case 'Month':
+                $var = $table->date($field->name);
                 if($update) {
                     if($field->required && $nullable_required) {
-                        $var = $table->date($field->name)->change();
+                        $var = $var->change();
                     } else {
-                        $var = $table->date($field->name)->nullable()->change();
+                        $var = $var->nullable()->change();
                     }
                 } else {
-                    if($field->required && $nullable_required) {
-                        $var = $table->date($field->name);
-                    } else {
-                        $var = $table->date($field->name)->nullable();
+                    if(!($field->required && $nullable_required)) {
+                        $var = $var->nullable();
                     }
                 }
                 
@@ -1621,17 +1054,16 @@ class Module extends Model
                 }
                 break;
             case 'Time':
+                $var = $table->time($field->name);
                 if($update) {
                     if($field->required && $nullable_required) {
-                        $var = $table->time($field->name)->change();
+                        $var = $var->change();
                     } else {
-                        $var = $table->time($field->name)->nullable()->change();
+                        $var = $var->nullable()->change();
                     }
                 } else {
-                    if($field->required && $nullable_required) {
-                        $var = $table->time($field->name);
-                    } else {
-                        $var = $table->time($field->name)->nullable();
+                    if(!($field->required && $nullable_required)) {
+                        $var = $var->nullable();
                     }
                 }
                 // $table->timestamp('created_at')->useCurrent();
@@ -1648,7 +1080,6 @@ class Module extends Model
             default:
                 $var = $table->string($field->name, $field->maxlength)->nullable();
                 $var->default(NULL);
-
         }
         
         // set column unique
@@ -1893,8 +1324,19 @@ class Module extends Model
                         $col .= "date";
                     }
                     if($col != "") {
-                        if(in_array($ftypes[$field['field_type']["id"]], ['Checkbox','Multiselect','Select2_multiple','Select2_multiple_tags'])) {
-                            $rules[$field['name'].'.*'] = trim($col, "|");
+                        if(in_array($ftypes[$field['field_type']["id"]], ['Checkbox','Multiselect','Select2_multiple','Select2_multiple_tags','Table'])) {
+                            if($field['required']) {
+                                $rules[$field['name']] = 'required|array';
+                            } else {
+                                $rules[$field['name']] = 'nullable|array';
+                            }
+                            if(isset($field->json_values) && is_array($json_arrya = json_decode($field->json_values)) && count($json_arrya) > 0 && in_array($ftypes[$field['field_type']["id"]], ["Table"])) {
+                                foreach($json_arrya as $json_arr) {
+                                    $rules[$field['name'].'.*.'.$json_arr] = trim($col, "|");
+                                }
+                            } else {
+                                $rules[$field['name'].'.*'] = trim($col, "|");
+                            }
                         } else {
                             $rules[$field['name']] = trim($col, "|");
                         }
@@ -2197,7 +1639,7 @@ class Module extends Model
         foreach($show_indexs as $col) {
             // if(self::hasFieldAccess($module->id, $col['id'])) {
                 if($isObjects) {
-                    if(isset($col['field_type']['name']) && $col['field_type']['name'] == 'Polymorphic_multiple') {
+                    if(isset($col['field_type']['name']) && in_array($col['field_type']['name'], ['Polymorphic_multiple','Files'])) {
                         continue;
                     } else if(isset($col['field_type']['name']) && $col['field_type']['name'] == 'Polymorphic_select' && $module->fields->contains('name',$col->name)) {
                         $show_indexs_temp[] = $module->table_name.'.'.$col->name.'_id';
@@ -2207,7 +1649,7 @@ class Module extends Model
                         $show_indexs_temp[] = $col;
                     }
                 } else {
-                    if(isset($col['field_type']['name']) && $col['field_type']['name'] == 'Polymorphic_multiple') {
+                    if(isset($col['field_type']['name']) && in_array($col['field_type']['name'], ['Polymorphic_multiple','Files'])) {
                         $show_indexs_temp[] = $module->table_name.'.id as '.$col['name'];
                     } else if(isset($col['field_type']['name']) && $col['field_type']['name'] == 'Polymorphic_select' && $module->fields->contains('name',$col['name'])) {
                         $show_indexs_temp[] = $module->table_name.'.'.$col['name'].'_id';
@@ -2283,9 +1725,9 @@ class Module extends Model
      * Get the fields of this module.
      * \Module::field_names_array($name)
      */
-    public static function field_names_array($name)
+    public static function field_names_array($name = null)
     {
-        return self::select('fields.name as name')->where('modules.name',$name)
+        return self::select('fields.name as name')->where('modules.name',($name))
                 ->join('fields','fields.module_id','=','modules.id')->pluck('name');
     }
 

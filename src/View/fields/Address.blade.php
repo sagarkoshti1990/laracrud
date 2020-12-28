@@ -1,45 +1,36 @@
-<!-- text input -->
-@php
-if (isset($field['value']) && (is_array($field['value']) || is_object($field['value']))) {
-    $field['value'] = json_encode($field['value']);
-}
-@endphp
-<div @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_wrapper_attributes',['field_name' => $field['name']]) >
-    <label>{!! $field['label'] !!}</label>
+@component(config('stlc.view_path.inc.input_group','stlc::inc.input_group'),['field' => $field])
+@slot('beforInput')
+    @php
+    if (isset($field['value']) && (is_array($field['value']) || is_object($field['value']))) {
+        $field['value'] = json_encode($field['value']);
+    }
+    @endphp
     <input type="hidden" value="{{ old($field['name']) ? old($field['name']) : (isset($field['value']) ? $field['value'] : (isset($field['default']) ? $field['default'] : '' )) }}" name="{{ $field['name'] }}">
-    @if(isset($field['prefix']) || isset($field['suffix'])) <div class="input-group"> @endif
-        @if(isset($field['prefix'])) <div class="input-group-prepend"><span class="input-group-text">{!! $field['prefix'] !!}</span></div> @endif
-        @if(isset($field['store_as_json']) && $field['store_as_json'])
+@endslot
+@slot('onInput')
+    @if(isset($field['store_as_json']) && $field['store_as_json'])
         <input
             type="text"
             data-address="{&quot;field&quot;: &quot;{{$field['name']}}&quot;, &quot;full&quot;: {{isset($field['store_as_json']) && $field['store_as_json'] ? 'true' : 'false'}} }"
-            @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_attributes')
+            @include(config('stlc.view_path.inc.field_attributes','stlc::inc.field_attributes'))
         >
-        @else
+    @else
         <input
             type="text"
             data-address="{&quot;field&quot;: &quot;{{$field['name']}}&quot;, &quot;full&quot;: {{isset($field['store_as_json']) && $field['store_as_json'] ? 'true' : 'false'}} }"
             name="{{ $field['name'] }}"
             value="{{ old($field['name']) ? old($field['name']) : (isset($field['value']) ? $field['value'] : (isset($field['default']) ? $field['default'] : '' )) }}"
-            @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_attributes')
+            @include(config('stlc.view_path.inc.field_attributes','stlc::inc.field_attributes'))
         >
-        @endif
-        @if(isset($field['suffix'])) <div class="input-group-append"><span class="input-group-text">{!! $field['suffix'] !!}</span></div> @endif
-    @if(isset($field['prefix']) || isset($field['suffix'])) </div> @endif
-    @if ($errors->has($field['name']))
-        <div class="is-invalid"></div><span class="invalid-feedback">{{ $errors->first($field['name']) }}</span>
     @endif
-    @if (isset($field['hint'])){{-- HINT --}}
-        <p class="form-text">{!! $field['hint'] !!}</p>
-    @endif
-</div>
+@endslot
+@endcomponent
 {{-- FIELD CSS - will be loaded in the after_styles section --}}
 @pushonce('crud_fields_styles')
     <style>
-        .ap-input-icon.ap-icon-pin {
-            right: 5px !important; }
-        .ap-input-icon.ap-icon-clear {
-            right: 10px !important; }
+        .ap-input-icon.ap-icon-pin {right: 5px !important; }
+        .ap-input-icon.ap-icon-clear {right: 10px !important; }
+        .algolia-places{flex: 1 1 0%;}
     </style>
 @endpushonce
 {{-- FIELD JS - will be loaded in the after_scripts section --}}

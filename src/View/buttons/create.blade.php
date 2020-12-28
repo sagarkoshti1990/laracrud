@@ -2,7 +2,7 @@
 	<div class="dropdown">
 		<button class="btn btn-primary btn-lg position-fixed"
 			type="button" id="dropdownMenuButton"
-			style="right:2rem;bottom:2rem;border-radius:100%;z-index: 9999;"
+			style="right:2rem;bottom:2rem;border-radius:100%;z-index: 9999;font-size:1.25rem !important;"
 			data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
 		>@if($crud->hasAccess('create'))<i class="fa fa-plus"></i>@else <i class="fa fa-plus"></i> @endif</button>
 		<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">

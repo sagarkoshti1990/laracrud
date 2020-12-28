@@ -1,48 +1,26 @@
 <!-- number input -->
-<div @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_wrapper_attributes',['field_name' => $field['name']]) >
-    @if((isset($field['attributes']['label']) && $field['attributes']['label']) || !isset($field['attributes']['label']))
-        <label for="{{ $field['name'] }}" class="control-label" style="display:block;">{!! $field['attributes']['label'] ?? $field['label'] !!}</label>
-    @endif
-    @php 
-        $field['attributes']['class'] = $field['attributes']['class'].' phone_input';
-        $code = $field['attributes']['code'] ?? null;
-        $allowDropdown = $field['attributes']['allowDropdown'] ?? true;
-    @endphp
-    @if(isset($field['prefix']) || isset($field['suffix'])) <div class="input-group"> @endif
-        @if(isset($field['prefix'])) <div class="input-group-prepend"><span class="input-group-text">{!! $field['prefix'] !!}</span></div> @endif
+@php 
+    $field['attributes']['class'] = $field['attributes']['class'].' phone_input';
+    $code = $field['attributes']['code'] ?? null;
+    $allowDropdown = $field['attributes']['allowDropdown'] ?? true;
+@endphp
+@component(config('stlc.view_path.inc.input_group','stlc::inc.input_group'),['field' => $field])
+    @slot('onInput')
         <input
             type="tel"
             name="{{ $field['name'] }}"
             value="{{ old($field['name']) ? old($field['name']) : (isset($field['value']) ? $field['value'] : (isset($field['default']) && $field['default'] != '' ? $field['default'] : '' )) }}"
-            @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_attributes')
+            @include(config('stlc.view_path.inc.field_attributes','stlc::inc.field_attributes'))
         >
-        @if(isset($code))
-            <input type="hidden" name="{{$code}}" value="91">
-        @endif
-        @if(isset($field['suffix'])) <div class="input-group-append"><span class="input-group-text">{!! $field['suffix'] !!}</span></div> @endif
-    @if(isset($field['prefix']) || isset($field['suffix'])) </div> @endif
-    @if ($errors->has($field['name']))
-        <div class="is-invalid"></div><span class="invalid-feedback">{{ $errors->first($field['name']) }}</span>
-    @endif
-    @if (isset($field['hint'])){{-- HINT --}}
-        <p class="form-text">{!! $field['hint'] !!}</p>
-    @endif
-</div>
+    @endslot
+@endcomponent
 @pushonce('after_styles')
 <link rel="stylesheet" href="{{ asset('node_modules/intl-tel-input/build/css/intlTelInput.min.css') }}">
 <style>
-    .input-group, .input-group > .intl-tel-input.allow-dropdown{
-        width: 100% !important;
-    }
-    .intl-tel-input .country-list{
-        z-index: 5;
-    }
-    .intl-tel-input {
-        color: #333;
-    }
-    .iti.iti--separate-dial-code{
-        display:block;
-    }
+    .input-group, .input-group > .intl-tel-input.allow-dropdown{width: 100% !important;}
+    .intl-tel-input .country-list{z-index: 5;}
+    .intl-tel-input {color: #333;}
+    .iti.iti--separate-dial-code{display:block;flex: 1 1 0%;}
 </style>
 @endpushonce
 {{-- FIELD JS - will be loaded in the after_scripts section --}}
@@ -54,25 +32,28 @@
         jQuery(document).ready(function($) {
             var input = document.querySelector(".phone_input");
             var iti = window.intlTelInput(input,{
-                customPlaceholder: 'polite',
+                hiddenInput:"{{ $code ?? 'code' }}",
                 separateDialCode:true,
                 allowDropdown:{{ $allowDropdown }},
                 placeholderNumberType:"MOBILE",
-                preferredCountries:['In'],
-                geoIpLookup: function(callback) {
-                    callback("In");
-                    // $.get("https://ipinfo.io", function() {}, "jsonp").always(function(resp) {
-                    //     var countryCode = (resp && resp.country) ? resp.country : "";
-                    //     callback(countryCode);
-                    // });
-                }
+                preferredCountries:['In']
+            });
+            $('.modal').on('shown.bs.modal', function(){
+                let phone = $(input), lPadd = phone.prev('.iti__flag-container').width() + 6;
+                phone.css('padding-left', lPadd);
             });
             @if(isset($code))
                 input.addEventListener("countrychange", function(e) {
-                    $code_input = $(this).parents('.form-group').find(':input[type=hidden]').first();
+                    $code_input = $(this).parents('.f-form-group').find(':input[name={{ $code ?? 'code' }}]').first();
                     dialCode = iti.getSelectedCountryData();
                     $code_input.val(dialCode.dialCode);
                 });
+                var data = window.intlTelInputGlobals.getCountryData().filter(function(X,y){
+                    return X.dialCode == "{{ old($code) ? old($code) : (isset($crud->row->{$code}) ? $crud->row->{$code} : "91") }}";
+                });
+                if(isset(data[0].iso2)) {
+                    iti.setCountry(data[0].iso2);
+                }
             @endif
         });
     </script>

@@ -28,7 +28,7 @@ class MyAccountController extends Controller
             $this->data['crud']->row = \Module::user()->context();
         }
         
-        return view(config('stlc.stlc_modules_folder_name','stlc::').'auth.account.update_info', $this->data);
+        return view(config('stlc.view_path.auth.account.update_info','stlc::auth.account.update_info'), $this->data);
     }
 
     /**
@@ -58,7 +58,7 @@ class MyAccountController extends Controller
         $this->data['title'] = trans('base.my_account');
         $this->data['user'] = $this->guard()->user();
 
-        return view(config('stlc.stlc_modules_folder_name','stlc::').'auth.account.change_password', $this->data);
+        return view(config('stlc.view_path.auth.account.change_password','stlc::auth.account.change_password'), $this->data);
     }
 
     /**

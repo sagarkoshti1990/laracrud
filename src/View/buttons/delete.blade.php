@@ -3,7 +3,7 @@
 		href="{{ url($crud->route.'/'.$item->getKey()) }}"
 		src="@if(isset($src)){{ $src }}@else{{ $crud->route }}@endif"
 		@if(!isset($text) || (isset($text) && $text != true))
-			class="btn @if(isset($class_btn)){{ $class_btn }}@else btn-flat btn-sm mb-2 @endif btn-danger"
+			class="btn @if(isset($class_btn)){{ $class_btn }}@else btn-flat btn-sm mb-2 @endif bg-maroon"
 		@endif
 		title="{{ trans('stlc.delete') }}"
 		data-button-type="confirm_ajax"

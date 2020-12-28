@@ -4,43 +4,24 @@
         $field['value'] = $field['value']->format('Y-m-d H:i:s');
     }
     $field_language = isset($field['datetime_picker_options']['language'])?$field['datetime_picker_options']['language']:\App::getLocale();
+    $field['prefix'] = $field['prefix'] ?? '<span class="fa fa-calendar-alt"></span>';
 @endphp
-<div @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_wrapper_attributes',['field_name' => $field['name']]) >
-    <input
-        @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_attributes')
-        type="hidden"
-        name="{{ $field['name'] }}" value="{{ old($field['name']) ? old($field['name']) : (isset($field['value']) ? $field['value'] : (isset($field['default']) ? $field['default'] : '' )) }}">
-    @if((isset($field['attributes']['label']) && $field['attributes']['label']) || !isset($field['attributes']['label']))
-        <label for="{{ $field['name'] }}" class="control-label">{!! $field['label'] !!}</label>
-    @endif
-    <div class="input-group date">
+@component(config('stlc.view_path.inc.input_group','stlc::inc.input_group'),['field' => $field])
+    @slot('onInput')
         <input
             data-bs-datetimepicker="{{ isset($field['datetime_picker_options']) ? json_encode($field['datetime_picker_options']) : '{}'}}"
             type="text"
-            @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.field_attributes')
+            @include(config('stlc.view_path.inc.field_attributes','stlc::inc.field_attributes'))
         >
-        <div class="input-group-append">
-            <div class="input-group-text"><span class="fa fa-calendar"></span></div>
-        </div>
-    </div>
-    @if ($errors->has($field['name']))
-        <div class="is-invalid"></div><span class="invalid-feedback">{{ $errors->first($field['name']) }}</span>
-    @endif
-    @if (isset($field['hint'])){{-- HINT --}}
-        <p class="form-text">{!! $field['hint'] !!}</p>
-    @endif
-</div>
+        <input
+            @include(config('stlc.view_path.inc.field_attributes','stlc::inc.field_attributes'))
+            type="hidden"
+            name="{{ $field['name'] }}" value="{{ old($field['name']) ? old($field['name']) : (isset($field['value']) ? $field['value'] : (isset($field['default']) ? $field['default'] : '' )) }}"
+        >
+    @endslot
+@endcomponent
 @pushonce('crud_fields_styles')
-<!-- datetime picker -->
 <link rel="stylesheet" href="{{ asset('node_modules/bootstrap-datetimepicker-npm/build/css/bootstrap-datetimepicker.min.css') }}">
-<style>
-    .bootstrap-datetimepicker-widget.dropdown-menu {
-        display: inline-block;
-        z-index: 99999 !important;
-        width: 100% !important;
-        padding-left: 20px !important;
-    }
-</style>
 @endpushonce
 {{-- FIELD JS - will be loaded in the after_scripts section --}}
 @pushonce('crud_fields_scripts')
@@ -52,17 +33,11 @@
             $field = $fake.parents('.form-group').find('input[type="hidden"]'),
             $customConfig = $.extend({
                 icons: {
-                    time: "fa fa-clock",
-                    date: "fa fa-calendar",
-                    up: "fa fa-chevron-up",
-                    down: "fa fa-chevron-down",
-                    previous: 'fa fa-chevron-left',
-                    next: 'fa fa-chevron-right',
-                    today: 'fa fa-sun',
-                    clear: 'fa fa-trash',
-                    close: 'fa fa-times'
+                    time: "fa fa-clock",date: "fa fa-calendar",up: "fa fa-chevron-up",
+                    down: "fa fa-chevron-down",previous: 'fa fa-chevron-left',next: 'fa fa-chevron-right',
+                    today: 'fa fa-sun',clear: 'fa fa-trash',close: 'fa fa-times'
                 },
-                format: 'DD/MM/YYYY hh:mm:a',
+                format: '{{ config("stlc.date_format.datetime_picker","DD/MM/YYYY hh:mm:a") }}',
                 sideBySide: true,
                 //  minDate:new Date(),
                 useCurrent: false,

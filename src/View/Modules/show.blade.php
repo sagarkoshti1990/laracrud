@@ -7,7 +7,7 @@
                 <div class="bg-dark-purple p-3">
                     <div class="row">
                         <div class="col-md-6">
-                            <h3 class="widget-user-username fonttxt">{{ $module->$represent_attr }}</h3>
+                            <h3 class="widget-user-username fonttxt">{{ $represent_value ?? '' }}</h3>
                             {{--  <h5 class="widget-user-desc">Founder &amp; CEO</h5>  --}}
                         </div>
                         <div class="col-md-6 text-right">
@@ -36,9 +36,6 @@
                     <div class="tab-pane fade in" id="tab-information">
                         <div class="tab-content">
                             <div class="card">
-                                <div class="card-header with-border">
-                                    <h4 class="card-title">Information</h4>
-                                </div>
                                 <div class="card-body list-group-flush">
                                     @displayAll($crud, [], ["class" => "col-md-6"])
                                 </div>
@@ -49,8 +46,8 @@
                         <div class="tab-content">
                             <div class="card infolist">
                                 <div class="card-body table-responsive">
-                                    <table id="crudTable" class="table table-bordered table-striped display crudTable">
-                                        <thead class="table-success">
+                                    <table id="crudTable" class="{{ config('stlc.css.table','table display crudTable') }}">
+                                        <thead class="{{ config('stlc.css.thead','thead-light') }}">
                                             <tr>
                                                 <th>ID</th>
                                                 <th>Name</th>
@@ -90,7 +87,7 @@
                                                     <td>{{ $field->json_values ?? "" }}</td>
                                                     @if ( $crud->buttons->where('stack', 'line')->count() )
                                                         <td>
-                                                            @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.button_stack', ['stack' => 'line', 'src' => $crud->route.'/'.$module->id, 'crud' => $crud_filed, 'item' => $field])
+                                                            @include(config('stlc.view_path.inc.button_stack','stlc::inc.button_stack'), ['stack' => 'line', 'src' => $crud->route.'/'.$module->id, 'crud' => $crud_filed, 'item' => $field])
                                                         </td>
                                                     @endif
                                                 </tr>
@@ -130,7 +127,7 @@
                         </div>
                     </div>
                     <div class="modal-footer border">
-                        @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.form_save_buttons', ['model_close' => "add_field_modal"])
+                        @include(config('stlc.view_path.inc.form_save_buttons','stlc::inc.form_save_buttons'), ['model_close' => "add_field_modal"])
                     </div>
                 </form>
             </div>

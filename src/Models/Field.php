@@ -90,47 +90,6 @@ class Field extends Model
         return $fields_popup;
     }
     
-    /**
-     * Get Field Value when its associated with another Module / Table via "@"
-     * e.g. "@employees"
-     *
-     * @param $field Module Field Object
-     * @param $value_id This is a ID for which we wanted the Value from another table
-     * @return mixed Returns Value found in table or Value id itself
-     */
-    public static function getFieldValue($field, $value_id)
-    {
-        $external_table_name = substr($field->json_values, 1);
-        $module = \Module::where('name', $external_table_name)->first();
-        if(\Schema::hasTable($module->table_name)) {
-            $external_value = DB::table($module->table_name)->where('id', $value_id)->first();
-            if(isset($external_value->id)) {
-                $external_module = $module;
-                if(isset($external_module->represent_attr)) {
-                    if(in_array($external_table_name, ["Employees","Leads","Cilets"])) {
-                            if(isset($external_value->first_name)) {
-                                return $external_value->first_name." ".$external_value->last_name;
-                            } else {
-                                return $external_value->last_name;
-                            }
-                    } else {
-                        $represent_attr = $external_module->represent_attr;
-                        return $external_value->$represent_attr;
-                    }
-                } else {
-                    if(isset($external_value->name)) {
-                        return $external_value->name;
-                    } else if(isset($external_value->title)) {
-                        return $external_value->title;
-                    }
-                }
-            } else {
-                return $value_id;
-            }
-        } else {
-            return $value_id;
-        }
-    }
     /*
     |--------------------------------------------------------------------------
     | SCOPES

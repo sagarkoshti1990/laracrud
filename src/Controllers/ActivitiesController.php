@@ -68,7 +68,7 @@ class ActivitiesController extends StlcController
             $activities = \Activity::all();
             $this->data['crud'] = $crud;
             $this->data['title'] = ucfirst($crud->labelPlural);
-            return view('stlc::Activities.index', $this->data);
+            return view(config('stlc.view_path.Activities.index','stlc::Activities.index'), $this->data);
         } else {
             abort(403, trans('stlc.unauthorized_access'));
         }
@@ -92,7 +92,7 @@ class ActivitiesController extends StlcController
             $modal = $request->context_type;
             $item = $modal::find($request->context_id);
             $activities = $item->activities()->orderBy('created_at', 'desc')->paginate(10);
-            $data = view(config('stlc.stlc_modules_folder_name','stlc::').'inc.activities.logs_data',['activities' => $activities])->render();
+            $data = view(config('stlc.view_path.inc.activities.logs_data','stlc::inc.activities.logs_data'),['activities' => $activities])->render();
 
             return response()->json(['status' => 'success', 'message' => 'success', 'data' => $activities,'html' => $data]);
         }

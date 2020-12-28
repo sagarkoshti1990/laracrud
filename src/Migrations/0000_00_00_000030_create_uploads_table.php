@@ -3,7 +3,7 @@
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateUsersTable extends Migration
+class CreateUploadsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,77 +12,78 @@ class CreateUsersTable extends Migration
      */
     public function up()
     {
-        \Module::generate('Users', 'users', 'last_name', 'fa fa-users', [
+        \Module::generate('Uploads', 'uploads', 'name', 'fa fa-cloud-upload-alt', [
             [
-				'name' => 'title',
-				'label' => 'Title',
-				'field_type' => 'Text',
-			],[
-				'name' => 'first_name',
-				'label' => 'First name',
-				'field_type' => 'Text',
-				'required' => true
-			],[
-				'name' => 'last_name',
-				'label' => 'Last name',
+				'name' => 'name',
+				'label' => 'Name',
 				'field_type' => 'Text',
 				'required' => true,
 				'show_index' => true
 			],[
-				'name' => 'email',
-				'label' => 'Email',
-				'field_type' => 'Email',
-				'unique' => true,
-				'maxlength' => '250',
-				'required' => true,
+				'name' => 'label',
+				'label' => 'Label Name',
+				'field_type' => 'Text'
+			],[
+				'name' => 'path',
+				'label' => 'Path',
+				'field_type' => 'Text',
 				'show_index' => true
 			],[
-				'name' => 'country_phone_code',
-				'label' => 'Country Phone Code',
-				'field_type' => 'Hidden',
-				'maxlength' => '5'
-			],[
-				'name' => 'phone_no',
-				'label' => 'Phone Number',
-				'field_type' => 'Phone',
-				'unique' => true,
-                'required' => true,
-				'nullable_required' => true,
+				'name' => 'extension',
+				'label' => 'Extension',
+				'field_type' => 'Text',
 				'show_index' => true
 			],[
-				'name' => 'gender',
-				'label' => 'Gender',
-				'field_type' => 'Radio',
-				'show_index' => true,
-				'json_values' => ["Male","Female","Other"]
+				'name' => 'caption',
+				'label' => 'Caption',
+				'field_type' => 'Text',
+				'show_index' => true
 			],[
-				'name' => 'date_of_birth',
-				'label' => 'Date Of Birth',
-				'field_type' => 'Date_picker',
-				'nullable_required' => false,
-			],[
-				'name' => 'profile_pic',
-				'label' => 'Profile Picture',
-				'field_type' => 'Image',
-			],[
-				'name' => 'context',
-				'label' => 'Context Type',
-				'field_type' => 'Polymorphic_select',
-				'json_values' => ["MasterUsers","Employees"]
-			],[
-				'name' => 'password',
-				'label' => 'Password',
-				'field_type' => 'Password',
+                'name' => 'context',
+                'label' => 'Context',
+                'field_type' => 'Polymorphic_select',
                 'required' => true,
-				'nullable_required' => true,
+                'show_index' => true,
+				'json_values' => ['Users','Employees']
+			],[
+				'name' => 'hash',
+				'label' => 'Hash',
+				'field_type' => 'Text',
+				'show_index' => true
+			],[
+				'name' => 'public',
+				'label' => 'Is Public',
+				'field_type' => 'Checkbox',
+				'show_index' => true
 			]
         ],[
-            'model' => config('stlc.user_model'),
-            'controller' => \Sagartakle\Laracrud\Controllers\UsersController::class
+            'model' => config('stlc.upload_model'),
+            'controller' => \Sagartakle\Laracrud\Controllers\UploadsController::class
         ]);
-        
+		
+		\Module::generate('Uploadables', 'uploadables', 'upload_id', 'fa fa-scissors', [
+            [
+                'name' => 'upload_id',
+                'label' => 'Upload',
+                'field_type' => 'Select2',
+                'required' => true,
+                'show_index' => true,
+                'json_values' => '@Uploads'
+            ],[
+                'name' => 'uploadable',
+                'label' => 'Uploadable',
+                'field_type' => 'Polymorphic_select',
+                'required' => true,
+                'show_index' => true,
+			],[
+                'name' => 'attribute',
+                'label' => 'Attribute',
+                'field_type' => 'Text',
+                'required' => true
+            ]
+		]);
         /*
-        \Module::generate('Users' 'users', 'last_name', 'fa fa-users', [
+        \Module::generate('Uploads' 'uploads', 'name', 'fa fa-cloud-upload-alt', [
             [
                 'name' => 'name',
                 'label' => 'Name',
@@ -147,8 +148,7 @@ class CreateUsersTable extends Migration
      */
     public function down()
     {
-        if(Schema::hasTable('users')) {
-            Schema::drop('users');
-        }
+		Schema::dropIfExists('uploads');
+		Schema::dropIfExists('uploadables');
     }
 }

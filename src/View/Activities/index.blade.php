@@ -37,8 +37,8 @@
                         @include('crud::inc.filters_navbar')
                     @endif --}}
 
-                    <table id="crudTable" class="table table-bordered table-striped display">
-                        <thead class="table-success">
+                    <table id="crudTable" class="{{ config('stlc.css.table','table display crudTable') }}">
+                        <thead class="{{ config('stlc.css.thead','thead-light') }}">
                             <tr>
                                 <th>Id</th>
                                 @foreach ($crud->columns as $column)

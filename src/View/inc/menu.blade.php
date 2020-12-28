@@ -36,6 +36,7 @@
                 <a href="#" class="dropdown-item dropdown-footer">See All Notifications</a>
             </div>
         </li>
+        @if(\Module::user() != NULL)
         <li class="nav-item dropdown user-menu" data-toggle="tooltip" title="Profile">
             <a href="#" class="nav-item nav-link dropdown-toggle mr-md-2" data-toggle="dropdown" id="bd-versions-user">
                 <img src="{{ \Module::user()->profile_pic() }}" class="user-image" alt="">
@@ -62,8 +63,8 @@
                                 </a>
                             </li>
                             <li class="nav-item" role="presentation">
-                                <a class="nav-link" href="{{ url(config('stlc.route_prefix').'/settings') }}">
-                                    <i class="fa fa-cog"></i> Setting
+                                <a class="nav-link" href="{{ url(config('stlc.stlc_route_prefix').'/activity_log') }}">
+                                    <i class="fa fa-cog"></i> {{ trans('stlc.logs') }}
                                 </a>
                             </li>
                         </ul>
@@ -71,12 +72,6 @@
                 @endif
                 <!-- Menu Footer-->
                 <li class="user-footer text-center">
-                    {{-- <div class="float-left">
-                        <a href="#" class="btn btn-default btn-flat">Profile</a>
-                    </div>
-                    <div class="float-right">
-                        <a href="#" class="btn btn-default btn-flat">Sign out</a>
-                    </div> --}}
                     <a href="{{ route('stlc.account.info') }}" class="btn bg-green btn-flat btn-sm mb5">
                         <span><i class="fa fa-user-circle"></i> My Account</span>
                     </a>
@@ -86,5 +81,6 @@
                 </li>
             </ul>
         </li>
+        @endif
     </ul>
 </nav>

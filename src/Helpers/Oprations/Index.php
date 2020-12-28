@@ -8,7 +8,19 @@ use Yajra\DataTables\Datatables;
 
 trait Index
 {
-
+    public function changeDataIndex(Request $request) : Array
+    {
+        $filters = [];
+        foreach($request->all() as $key => $value) {
+            if(in_array($key,$this->crud->column_names) || $key == 'id') {
+                $filters[$this->crud->table_name.'.'.$key] = $value;
+            }
+        }
+        return [
+            'crud' => $this->crud,
+            'filters' => $filters
+        ];
+    }
     /**
      * Display a listing of the resource.
      *
@@ -17,15 +29,23 @@ trait Index
     public function index(Request $request)
     {
 		if($this->crud->hasAccess('view')) {
-            $crud = $this->crud;
             if($request->wantsJson()) {
-                $query = $crud->model;
+                $query = $this->crud->model;
                 if(isset($request->q)) {
-                    $query = $query->where($crud->represent_attr,'LIKE',"%".$request->q."%");
+                    $field_names = $this->crud->column_names;
+                    foreach($field_names as $value) {
+                        if(in_array($value,config('stlc.represent_attr.'.$this->crud->name,[$this->crud->represent_attr]))) {
+                            $query = $query->orWhere($value,'LIKE',"%".$request->q."%");
+                        }
+                    }
                 }
-                return response()->json(['status' => '200', 'message' => 'success', 'item' => $query->paginate(10)]);
+                $result = $query->paginate(10);
+                foreach($result as $value) {
+                    $arr[] = ['text'=>\CustomHelper::get_represent_attr($value),'value'=>$value->id];
+                }
+                return response()->json(['status' => '200', 'message' => 'success', 'item' => $arr ?? []]);
             } else {
-                return view($crud->view_path['index'], ['crud' => $crud]);
+                return view($this->crud->view_path['index'], $this->changeDataIndex($request));
             }
         } else {
             if($request->wantsJson()) {
@@ -37,6 +57,59 @@ trait Index
     }
 
     /**
+     * queryDatatable
+    */
+    public function queryDatatable(Request $request)
+    {
+        $listing_cols = \Module::getListingColumns($this->crud);
+        $values = DB::table($this->crud->table_name)->select($listing_cols)->latest();
+        if(isset($request->filter)) {
+			$values->where($request->filter);
+        }
+        return $values;
+    }
+    /**
+     * changeDatatable
+    */
+    public function changeDatatable(Array $data,Array $listing_cols,$item)
+    {
+        for($j = 0; $j < count($listing_cols); $j++) {
+            $col = $listing_cols[$j];
+            $data[$j] = \FormBuilder::get_field_value($this->crud, $col);
+            if(isset($data[$j]) && $col == $this->crud->module->represent_attr && !isset($item->deleted_at)) {
+                $data[$j] = '<a href="' . url($this->crud->route .'/'. $item->id) . '"><i class="fa fa-eye mr-1"></i>' . \CustomHelper::get_represent_attr($item). '</a>';
+            }
+        }
+        return $data;
+    }
+    /**
+     * actionBtnDatatable
+    */
+    public function actionBtnDatatable($item)
+    {
+        return \View::make(config('stlc.view_path.inc.button_stack','stlc::inc.button_stack'), ['stack' => 'line'])
+                ->with('crud', $this->crud)
+                ->with('entry', $item)
+                ->render();
+    }
+    /**
+     * on Datatable fetch via Ajax
+    */
+    public function onDatatable($data){
+        // array_splice($listing_cols, 2, 0, "index_name");
+        for($i = 0; $i < count($data); $i++) {
+            $collectuser = collect($data[$i]);
+            $data[$i] = $collectuser->values()->all();
+            $this->crud->row = $item = $this->crud->model->withTrashed()->find($data[$i][0]);
+            // array_splice($data[$i], 2, 0, true);
+            $data[$i] = $this->changeDatatable($data[$i],$collectuser->keys()->all(),$item);
+            if ($this->crud->buttons->where('stack', 'line')->count()) {
+                $data[$i][] = $this->actionBtnDatatable($item);
+            }
+        }
+        return $data;
+    }
+    /**
      * Server side Datatable fetch via Ajax
      *
      * @param \Illuminate\Http\Request $request
@@ -44,46 +117,9 @@ trait Index
      */
     public function datatable(Request $request)
     {
-        $crud = $this->crud;
-        $listing_cols = \Module::getListingColumns($crud);
-        $values = DB::table($crud->table_name)->select($listing_cols)->latest();
-        if(isset($request->filter)) {
-			$values->where($request->filter);
-		}
-        
-        $out = Datatables::of($values)->make();
+        $out = Datatables::of($this->queryDatatable($request))->make();
         $data = $out->getData();
-        $fields_popup = \Field::getFields($crud->name);
-        // array_splice($listing_cols, 2, 0, "index_name");
-        
-        for($i = 0; $i < count($data->data); $i++) {
-            $collectuser = collect($data->data[$i]);
-            $listing_cols = $collectuser->keys()->all();
-            $data->data[$i] = $collectuser->values()->all();
-            // \CustomHelper::ajprint($collectuser);
-            $crud->row = $item = $crud->model->withTrashed()->find($data->data[$i][0]);
-            // array_splice($data->data[$i], 2, 0, true);
-            for($j = 0; $j < count($listing_cols); $j++) {
-                $col = $listing_cols[$j];
-                $data->data[$i][$j] = \FormBuilder::get_field_value($crud, $col);
-                if(isset($data->data[$i][$j]) && $col == $crud->module->represent_attr && !isset($item->deleted_at)) {
-                    $data->data[$i][$j] = '<a href="' . url($crud->route .'/'. $item->id) . '"><i class="fa fa-eye mr-1"></i>' . $data->data[$i][$j] . '</a>';
-                }
-            }
-            
-            if ($crud->buttons->where('stack', 'line')->count()) {
-                $crud->datatable = true;
-                $output = '';
-                
-                $output .= \View::make(config('stlc.stlc_modules_folder_name','stlc::').'inc.button_stack', ['stack' => 'line'])
-                ->with('crud', $crud)
-                ->with('entry', $item)
-                ->render();
-
-                $data->data[$i][] = (string)$output;
-            }
-        }
-        $out->setData($data);
-        return $out;
+        $data->data = $this->onDatatable($data->data);
+        return $out->setData($data);
     }
 } 

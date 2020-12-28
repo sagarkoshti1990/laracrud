@@ -1,4 +1,4 @@
-@extends(config('stlc.stlc_modules_folder_name','stlc::').'layouts.parentapp')
+@extends(config('stlc.view_path.layouts.parentapp','stlc::layouts.parentapp'))
 
 @section('p_content')
     <div class="wrapper">
@@ -7,13 +7,13 @@
                 <span class="logo-mini">{!! config('stlc.logo_mini') !!}</span>
                 <span class="logo-lg">{!! config('stlc.logo_lg') !!}</span>
             </a> --}}
-        @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.menu')
-        @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.sidebar')
-        @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.files_manager')
+        @include(config('stlc.view_path.inc.menu','stlc::inc.menu'))
+        @include(config('stlc.view_path.inc.sidebar','stlc::inc.sidebar'))
+        @include(config('stlc.view_path.inc.files_manager','stlc::inc.files_manager'))
         <div class="content-wrapper">
             @yield('header')
             @if(isset($crud))
-                @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.grouped_errors', ['style_class' => 'mx-4 mt-4 mb-0'])
+                @include(config('stlc.view_path.inc.grouped_errors','stlc::inc.grouped_errors'), ['style_class' => 'mx-4 mt-4 mb-0'])
             @endif
             <section class="content">
                 @yield('content')
@@ -47,7 +47,7 @@
     @stack('crud_fields_scripts')
     <script src="{{ asset('public/js/customapp.js') }}"></script>
     
-    @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.datatable_ajax')
+    @include(config('stlc.view_path.inc.datatable_ajax','stlc::inc.datatable_ajax'))
     @stack('after_scripts')
     <script>
         var current_url = "{{ Request::fullUrl() }}";

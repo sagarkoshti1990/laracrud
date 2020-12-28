@@ -6,18 +6,21 @@ use Illuminate\Http\Request;
 
 trait Show
 {
-    public function beforeShow(Request $request,$item){}
+    public function changeDataShow(Request $request,$item) : Array
+    {
+        return [
+            'crud' => $this->crud,
+            'item' => $item,
+            'src' => $request->src ?? null,
+            'represent_value' => \CustomHelper::get_represent_attr($item)
+        ];
+    }
     public function onShow(Request $request,$item){
         $this->crud->row = $item;
         if($request->wantsJson()) {
             return response()->json(['status' => '200', 'message' => 'updated', 'item' => $item],200);
         } else {
-            return view($this->crud->view_path['show'], [
-                'crud' => $this->crud,
-                'item' => $item,
-                'src' => $request->src ?? null,
-                'represent_attr' => $this->crud->module->represent_attr
-            ]);
+            return view($this->crud->view_path['show'], $this->changeDataShow($request,$item));
         }
     }
     /**
@@ -31,7 +34,6 @@ trait Show
         if($this->crud->hasAccess('view')) {
             $item = $this->crud->model->find($id);
             if(isset($item->id)) {
-                $this->beforeShow($request,$item);
                 return $this->onShow($request,$item);
             } else {
                 if($request->wantsJson()) {

@@ -25,10 +25,10 @@
     <div class="row">
         <div class="col-md-12">
             <div class="card mob-card">
-                @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.button_stack', ['stack' => 'top'])
+                @include(config('stlc.view_path.inc.button_stack','stlc::inc.button_stack'), ['stack' => 'top'])
                 <div class="card-body">
-                    <table id="crudTable" class="table crudTable display" cellspacing="0" width="100%">
-                        <thead class="thead-light mob-hide">
+                    <table id="crudTable" class="{{ config('stlc.css.table','table display crudTable') }}">
+                        <thead class="{{ config('stlc.css.thead','thead-light') }}">
                             <tr>
                                 <th>ID</th>
                                 {{-- Table columns --}}
@@ -64,7 +64,7 @@
                         @form($crud, [], ["class" => "col-md-6"],'input',true)
                     </div>
                     <div class="modal-footer">
-                        @include(config('stlc.stlc_modules_folder_name','stlc::').'inc.form_save_buttons',['model_close' => 'add_modal'])
+                        @include(config('stlc.view_path.inc.form_save_buttons','stlc::inc.form_save_buttons'),['model_close' => 'add_modal'])
                     </div>
                 {!! Form::close() !!}
             </div>
@@ -84,6 +84,9 @@
                             $(form).find('[type=submit]').attr('disabled', true).find('i').remove().append('<i class="fa fa-circle-notch fa-spin"></i>');
                         },
                         success: function(data) {
+                            ajax_form_notification(form,data);
+                        },
+                        error:function(data) {
                             ajax_form_notification(form,data);
                         }
                     })
@@ -106,6 +109,9 @@
                         if(deleted == 'true') {
                             data.filter = [['deleted_at','!=',null]];
                         }
+                        @foreach($filters ?? [] as $key => $value)
+                            data.filter.push(['{{$key}}','{{$value}}']);
+                        @endforeach
                     }
                 },
                 dom: "<'row'<'col-sm-8'i><'col-sm-4'f>><'mb-3'tr><'row'<'col-sm-3'l><'col-sm-9'p><'col-sm-1'>>",
