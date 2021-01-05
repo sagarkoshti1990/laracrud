@@ -217,8 +217,8 @@ function datatable_assined(table,table_data) {
     });
 }
 
-$(':input.f-show-password+.input-group-append .fa').on('click',function(){
-    $input = $(this).closest('.form-group').find(':input.f-show-password');
+$('.fa.f-show-password').on('click',function(){
+    $input = $(this).closest('.f-form-group').find(':input:not(:input[type=hidden])');
     if(typeof $input != undefined && $input.attr('type') == 'password') {
         $input.attr('type','text');
         $(this).removeClass('fa-eye-slash').addClass('fa-eye');

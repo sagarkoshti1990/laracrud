@@ -77,7 +77,7 @@ trait Index
             $col = $listing_cols[$j];
             $data[$j] = \FormBuilder::get_field_value($this->crud, $col);
             if(isset($data[$j]) && $col == $this->crud->module->represent_attr && !isset($item->deleted_at)) {
-                $data[$j] = '<a href="' . url($this->crud->route .'/'. $item->id) . '"><i class="fa fa-eye mr-1"></i>' . \CustomHelper::get_represent_attr($item). '</a>';
+                $data[$j] = '<a href="' . url($this->crud->route .'/'. $item->id) . '"><i class="'.config('stlc.view.icon.button.preview','fa fa-eye').' mr-1"></i>' . \CustomHelper::get_represent_attr($item). '</a>';
             }
         }
         return $data;
@@ -87,7 +87,7 @@ trait Index
     */
     public function actionBtnDatatable($item)
     {
-        return \View::make(config('stlc.view_path.inc.button_stack','stlc::inc.button_stack'), ['stack' => 'line'])
+        return \View::make(config('stlc.view_path.inc.button_stack','stlc::inc.button_stack'), ['stack' => 'line','from_view'=>'index'])
                 ->with('crud', $this->crud)
                 ->with('entry', $item)
                 ->render();

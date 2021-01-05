@@ -60,8 +60,7 @@ Route::group([
     
     // modules
     Route::resource("modules", "ModulesController");
-    Route::post('employees/access/{id}', 'ModulesController@module_permissions');
-    Route::post('roles/access/{id}', 'ModulesController@module_permissions');
+    Route::post('modules/access/{id}', 'ModulesController@module_permissions');
 
     // activity
     Route::resource("activity_log", "ActivitiesController", ['only' => ['index']]);

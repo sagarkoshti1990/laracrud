@@ -1,6 +1,5 @@
 @php
-    $field['attributes']['class'] = $field['attributes']['class']." f-show-password";
-    $field['suffix'] = $field['suffix'] ?? '<span class="fa fa-eye-slash"></span>';
+    $field['prefix'] = $field['prefix'] ?? '<span class="fa fa-eye-slash f-show-password"></span>';
 @endphp
 @component(config('stlc.view_path.inc.input_group','stlc::inc.input_group'),['field' => $field])
     @slot('onInput')

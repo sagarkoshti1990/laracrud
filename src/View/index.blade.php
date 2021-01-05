@@ -1,69 +1,48 @@
 @extends(config('stlc.stlc_layout_path','stlc::layouts.app'))
 @section('header')
-    <div class="content-header">
-        <div class="container-fluid">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>
-                        <span class="{{ $crud->icon }}"></span>
-                        <span class="text-capitalize">{{ $crud->labelPlural }}</span>
-                        <small>{{ trans('stlc.list') }}</small>
-                    </h1>
-                </div><!-- /.col -->
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ url(config('stlc.route_prefix'), 'dashboard') }}">{{ trans('stlc.dashboard') }}</a></li>
-                        <li class="breadcrumb-item"><a href="{{ url($crud->route) }}" class="text-capitalize">{{ $crud->labelPlural }}</a></li>
-                        <li class="breadcrumb-item active">{{ trans('stlc.list') }}</li>
-                    </ol>
-                </div><!-- /.col -->
-            </div><!-- /.row -->
-        </div><!-- /.container-fluid -->
-    </div>
+    @include(config('stlc.view_path.inc.header','stlc::inc.header'),['sub_headeing'=>trans('stlc.list')])
 @endsection
 @section('content')
     <div class="row">
         <div class="col-md-12">
-            <div class="card mob-card">
+            <div @attributes($crud,'index.card',['class'=>"card"])>
                 @include(config('stlc.view_path.inc.button_stack','stlc::inc.button_stack'), ['stack' => 'top'])
-                <div class="card-body">
-                    <table id="crudTable" class="{{ config('stlc.css.table','table display crudTable') }}">
-                        <thead class="{{ config('stlc.css.thead','thead-light') }}">
-                            <tr>
-                                <th>ID</th>
-                                {{-- Table columns --}}
+                <div @attributes($crud,'index.card_body',['class'=>"card-body"])>
+                    <table @attributes($crud,'index.table',['class'=>'table display crudTable',"id"=>"crudTable"])>
+                        <thead @attributes($crud,'index.thead',['class' => 'thead-light'])>
+                            <tr @attributes($crud,'index.tr',[])>
+                                <th @attributes($crud,'index.th_id',[])>ID</th>
                                 @foreach ($crud->columns as $column)
-                                <th>{{ $column['label'] }}</th>
+                                    <th @attributes($crud,'index.th',[],$column['attributes'] ?? null)>{{ $column['label'] }}</th>
                                 @endforeach
                                 @if ( $crud->buttons->where('stack', 'line')->count() )
-                                <th style="width: 110px;">{{ trans('stlc.actions') }}</th>
+                                <th @attributes($crud,'index.th_action',['style'=>'min-width:130px'])>{{ trans('stlc.actions') }}</th>
                                 @endif
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody @attributes($crud,'index.tbody',[])>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
     </div>
-    <div id="add_modal" class="modal fade" role="dialog">
-        <div class="modal-dialog modal-xl">
+    <div @attributes($crud,'index.modal',['id'=>"add_modal",'class'=>"modal fade",'role'=>"dialog"])>
+        <div @attributes($crud,'index.modal_dialog',['class'=>"modal-dialog modal-xl"])>
             <!-- Modal content-->
-            <div class="modal-content">
-                {!! Form::open(array('url' => $crud->route, 'method' => 'post', 'id' => 'add_form')) !!}
-                    <div class="modal-header">
-                        <h4 class="card-title">{{ trans('stlc.add') }} {{ $crud->label }}</h4>
-                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <div @attributes($crud,'index.modal_content',['class'=>"modal-content"])>
+                {!! Form::open($crud->getViewAtrributes('index.submit_form',['url' => $crud->route, 'method' => 'post', 'id' => 'add_form'])) !!}
+                    <div @attributes($crud,'index.modal_header',['class'=>"modal-header"])>
+                        <h4 @attributes($crud,'index.card_title',['class'=>"card-title"])>{{ trans('stlc.add') }} {{ $crud->label }}</h4>
+                        <button @attributes($crud,'index.modal_button_close',['type'=>"button",'class'=>"close","data-dismiss"=>"modal"])>&times;</button>
                     </div>
-
-                    <div class="modal-body pb5">
+                    <div @attributes($crud,'index.modal_body',['class'=>"modal-body"])>
                         @if(isset($src))
                             {{ Form::hidden('src', $src) }}
                         @endif
                         @form($crud, [], ["class" => "col-md-6"],'input',true)
                     </div>
-                    <div class="modal-footer">
+                    <div @attributes($crud,'index.modal_footer',['class'=>"modal-footer"])>
                         @include(config('stlc.view_path.inc.form_save_buttons','stlc::inc.form_save_buttons'),['model_close' => 'add_modal'])
                     </div>
                 {!! Form::close() !!}

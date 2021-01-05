@@ -217,7 +217,7 @@ class Activity extends Model
         }
         
         // set the user ID
-        if (!isset($data['user_id'])) {
+        if (!isset($data['user_id']) && \Module::user() != null) {
             $data['user_id'] = \Module::user()->id ?? null;
             $data['user_type'] = get_class(\Module::user());
         }

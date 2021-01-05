@@ -815,17 +815,18 @@ class ModulesController extends StlcController
 	public function module_permissions(Request $request, $id)
 	{
         $validator = Validator::make($request->all(),[
-            'assessor' => 'required|in:user,role'
+            'assessor' => 'required'
         ]);
                 
         if ($validator->fails()) {
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
-        if($request->assessor == 'user') {
-            $assessor = config('stlc.user_model')::find($id);
-        } else if($request->assessor == 'role') {
-            $assessor = config('stlc.role_model')::find($id);
+        if(class_exists($request->assessor)) {
+            $assessor = $request->assessor::find($id);
+        } else {
+            Alert::error($request->assessor.' assessor not allow')->flash();
+            return redirect()->back();
         }
 		if(\Module::user()->isAdmin() && isset($assessor->id)) {
             
@@ -834,7 +835,7 @@ class ModulesController extends StlcController
 			foreach($modules_access as $module) {
                 $module_name = $module->name;
                 // echo json_encode($request->$module_name);
-                $access_arr = ['view','create','edit','deactivate'];
+                $access_arr = config('stlc.access_list',['view','create','edit','delete','restore','permanently_delete']);
                 // 1. Set Module Access
                 foreach($access_arr as $access) {
                     if(isset($request->$module_name) && in_array($access, $request->$module_name)) {
@@ -865,12 +866,7 @@ class ModulesController extends StlcController
             \Alert::success("Modify all permissions.")->flash();
             return redirect($request->back_url);
         } else {
-            if(!isset($employee->user()->id)) {
-                Alert::error("Employee user not exit. please edit employee, give password & generate user")->flash();
-                return redirect()->back();
-            } else {
                 abort(403, 'Unauthorized Access');
-            }
         }
     }
 

@@ -152,5 +152,9 @@ class LaraCrudServiceProvider extends ServiceProvider
         Blade::directive('ajprint', function ($expression) {
             return "<?php \CustomHelper::ajprint(".$expression.") ?>";
         });
+        
+        Blade::directive('attributes', function ($expression) {
+            return "<?php echo \CustomHelper::attributes(".$expression."); ?>";
+        });
     }
 }

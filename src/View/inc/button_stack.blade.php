@@ -1,7 +1,7 @@
 @php
 	$item = $item ?? $crud->row ?? [];
 	if(isset($name) && is_array($name) && count($name) && !isset($item->deleted_at)) {
-		$buttons = $crud->buttons->where('stack', $stack)->whereIn('name', $name);
+		$buttons = $crud->buttons->whereIn('name', $name);
 	} elseif (isset($item->deleted_at)) {
 		$buttons = $crud->buttons->where('type', 'deleted');
 	} else {
@@ -13,9 +13,9 @@
 		@if ($button->type == 'model_function')
 			{!! $item->{$button->content}(); !!}
 		@elseif($button->name == "delete" || $button->type == 'deleted')
-			@include($button->content, ['src' => $delete_src ?? null])
+			@include($button->content, ['src' => $delete_src ?? null,'from_view' => $from_view ?? 'index'])
 		@else
-			@include($button->content)
+			@include($button->content,['from_view' => $from_view ?? 'index'])
 		@endif
 	@endforeach
 @endif

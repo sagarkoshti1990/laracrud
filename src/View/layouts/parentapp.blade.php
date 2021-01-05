@@ -8,7 +8,6 @@
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <link rel="icon" href="{{ asset('public/img/icon.png') }}" type="image/png">
 	<link rel="stylesheet" href="{{ asset('node_modules/admin-lte/plugins/fontawesome-free/css/all.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('node_modules/admin-lte/plugins/bootstrap/js/bootstrap.bundle.min.js') }}">
     <link rel="stylesheet" href="{{ asset('node_modules/admin-lte/plugins/icheck-bootstrap/icheck-bootstrap.min.css') }}">
     @stack('p_before_styles')
     <link rel="stylesheet" href="{{ asset('node_modules/admin-lte/dist/css/AdminLTE.min.css') }}">

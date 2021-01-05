@@ -36,6 +36,7 @@ class ObjectHelper
     public $name;
     public $labelPlural;
     public $view_path = [];
+    public $view_atrributes = [];
 
     /**
      * This function binds the CRUD to its corresponding Model (which extends Eloquent).
@@ -203,7 +204,7 @@ class ObjectHelper
         $defult = [
             ['stack' => 'line', 'name' => 'preview', 'type' => 'view', 'content' => 'stlc::buttons.preview'],
             ['stack' => 'line', 'name' => 'clone', 'type' => 'view', 'content' => 'stlc::buttons.clone'],
-            ['stack' => 'line', 'name' => 'update', 'type' => 'view', 'content' => 'stlc::buttons.update'],
+            ['stack' => 'line', 'name' => 'edit', 'type' => 'view', 'content' => 'stlc::buttons.edit'],
             ['stack' => 'line', 'name' => 'delete', 'type' => 'view', 'content' => 'stlc::buttons.delete'],
             ['stack' => 'line', 'name' => 'restore', 'type' => 'deleted', 'content' => 'stlc::buttons.restore'],
             ['stack' => 'line', 'name' => 'permanently_delete', 'type' => 'deleted', 'content' => 'stlc::buttons.permanently_delete'],
@@ -391,5 +392,38 @@ class ObjectHelper
     public function setColumnLabel($column_name, $label)
     {
         $this->columns[$column_name]['label'] = $label;
+    }
+
+    public function getViewAtrributes($path,$updateAtribute=[])
+    {
+        $arr = \Arr::get($this->view_atrributes,$path,[]);
+        if(is_array($arr) && count($arr) == 0) {
+            if(\Str::contains($path,['index.','form.','show.'])) {
+                $arr = \Arr::get($this->view_atrributes,str_replace(['index.','form.','show.'],"",$path),[]);
+            }
+        }
+
+        if(is_array($arr) && count($arr) == 0) {
+            $arr = config('stlc.view.attributes.'.$this->name.'.'.$path,[]);
+            if(is_array($arr) && count($arr) == 0) {
+                if(\Str::contains($path,['index.','form.','show.'])) {
+                    $arr = config('stlc.view.attributes.'.$this->name.'.'.str_replace(['index.','form.','show.'],"",$path),[]);
+                }
+            }
+        }
+        
+        if(is_array($arr) && count($arr) == 0) {
+            $arr = config('stlc.view.attributes.'.$path,[]);
+            if(is_array($arr) && count($arr) == 0) {
+                if(\Str::contains($path,['index.','form.','show.'])) {
+                    $arr = config('stlc.view.attributes.'.str_replace(['index.','form.','show.'],"",$path),[]);
+                }
+            }
+        }
+        
+        if(is_string($arr)) {
+            $arr = ['string' => $arr];
+        }
+        return array_replace($updateAtribute,$arr);
     }
 }

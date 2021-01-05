@@ -25,18 +25,11 @@ return [
 				maroon, orange, lime, teal, olive
 	*/
 
-	// css class
-	'css' => [
-		'table' => 'table display crudTable',
-		'thead' => 'thead-light',
-		'file_show_size' => '35px',
-		'image_show_size' => '50',
-	],
-
 	// represent_attr change by module
 	'represent_attr' => [
-		'Uploads' => ['public',' - ','extension', ' - ','name']
+		// 'module_name' => [represent_attr,represent_attr2],
 	],
+	'access_show' => [],
     /*
     |--------------------------------------------------------------------------
     | Registration Open
@@ -298,21 +291,60 @@ return [
 
 	/*
 	|--------------------------------------------------------------------------
-	| Content Types
+	| view atributes class icon
 	|--------------------------------------------------------------------------
-	|
-	| The content types array can be used to link models and URLs to content
-	| types. The index of a content type array will be a snakecased version of
-	| the content type, so if your content type is "Content Page", your index
-	| will be "content_page". Within a content type array, you may specify a
-	| URI, a subdomain, and a model.
+	| custome class atribute of stlc view content 
 	|
 	*/
-	'content_types' => [
-		/* 'item' => [
-			'uri'       => 'view/:id',
-			'subdomain' => 'items',
-			'model'     => 'App\Models\Item',
-		], */
+	
+	'view' => [
+		'attributes' => [
+			// 'card' => ['class'=>'card bg-green'],
+			// 'table' => ['class'=>'table display crudTable table-dark'],
+			// 'thead' => ['class'=>'thead-light'],
+			// 'th_action_attributes' => ["style" => "max-width: 150px;"],
+			// 'th_id_attributes' => ['style' => 'max-width:10px'],
+			// 'th_attributes' => ['style' => 'max-width: 50px;'],
+			
+			// 'button' => [
+			// 'clone' => ['class'=>'btn btn-flat btn-sm mb-2 bg-gray'],
+			// 	'create' => ['class'=>'btn btn-primary btn-lg position-fixed'],
+			// 	'delete' => ['class'=>'btn btn-flat btn-sm mb-2 bg-maroon'],
+			// 	'edit' => ['class'=>'btn btn-flat btn-sm mb-2 bg-orange'],
+			// 	'permanently_delete' => ['class'=>'btn btn-flat btn-sm mb-2 bg-danger'],
+			// 	'preview' => ['class'=>'btn btn-flat btn-sm mb-2 bg-purple'],
+			// 	'restore' => ['class'=>'btn btn-flat btn-sm mb-2 bg-purple'],
+			// ],
+			// 'form' => ['autocomplete'=>"off"],
+			
+			// 'index' => [
+			// ],
+			// 'form' => [
+			// ],
+			// 'show' => [
+			// ],
+		],
+
+		// 'icon' => [
+		// 	'show_info' => 'fa fa-user mr-2',
+		// 	'show_arrow_left' => 'fa fa-user mr-2',
+		// 	'show_log' => 'fa fa-user mr-2',
+		// 	'show_access' => 'fa fa-user mr-2',
+		// 	'button' => [
+		// 		'clone' => 'fa fa-user',
+		// 		'delete' => 'fa fa-user',
+		// 		'edit' => 'fa fa-user',
+		// 		'preview' => 'far fa-user',
+		// 		'permanently_delete' => 'fa fa-user',
+		// 		'create' => 'fa fa-user',
+		// 		'restore' => 'fa fa-user',
+		// 	],
+		// ],
+
+		// 'size' => [
+		// 	'file_show_size' => '35px',
+		// 	'file_card_size' => '200px',
+		// 	'image_show_size' => '50',
+		// ],
 	],
 ];

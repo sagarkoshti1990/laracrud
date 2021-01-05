@@ -344,28 +344,28 @@
 			var image = "";
 			switch (upload.extension) {
 				case "jpg": case "JPG": case "jpeg": case "png": case "gif": case "bmp":
-					image = '<div class="img-square-wrapper" style="width:{{config('stlc.css.file_show_size','70px')}}"><img src="'+bsurl+'/files/'+upload.hash+'/'+upload.name+'?s={{config('stlc.css.image_show_size','70')}}" class="card-img-top"></div>';
+					image = '<div class="img-square-wrapper" style="width:{{config('stlc.view.size.file_show_size','35px')}}"><img src="'+bsurl+'/files/'+upload.hash+'/'+upload.name+'?s={{config('stlc.view.size.image_show_size','50')}}" class="card-img-top"></div>';
 					break;
 				case "ogg": case "wav": case "mp3":
-					image = '<i class="far fa-file-audio text-warning" style="font-size:{{config('stlc.css.file_show_size','70px')}}"></i>';
+					image = '<i class="far fa-file-audio text-warning" style="font-size:{{config('stlc.view.size.file_show_size','70px')}}"></i>';
 					break;
 				case "mp4": case "WEBM": case "MPEG": case "AVI": case "WMV": case "MOV": case "FLV": case "SWF":
-					image = '<i class="far fa-file-video text-success" style="font-size:{{config('stlc.css.file_show_size','70px')}}"></i>';
+					image = '<i class="far fa-file-video text-success" style="font-size:{{config('stlc.view.size.file_show_size','70px')}}"></i>';
 					break;
 				case "pdf": case "PDF":
-					image = '<i class="far fa-file-pdf text-danger" style="font-size:{{config('stlc.css.file_show_size','70px')}}"></i>';
+					image = '<i class="far fa-file-pdf text-danger" style="font-size:{{config('stlc.view.size.file_show_size','70px')}}"></i>';
 					break;
 				case "xls": case "XLS": case "xlsx": case "XLSX":
-					image = '<i class="far fa-file-excel text-success" style="font-size:{{config('stlc.css.file_show_size','70px')}}"></i>';
+					image = '<i class="far fa-file-excel text-success" style="font-size:{{config('stlc.view.size.file_show_size','70px')}}"></i>';
 					break;
 				case "docx": case "DOCX":
-					image = '<i class="far fa-file-word" style="font-size:{{config('stlc.css.file_show_size','70px')}}"></i>';
+					image = '<i class="far fa-file-word" style="font-size:{{config('stlc.view.size.file_show_size','70px')}}"></i>';
 					break;
 				case "csv": case "CSV":
-					image = '<i class="fa fa-file-csv text-success" style="font-size:{{config('stlc.css.file_show_size','70px')}}"></i>';
+					image = '<i class="fa fa-file-csv text-success" style="font-size:{{config('stlc.view.size.file_show_size','70px')}}"></i>';
 					break;
 				default:
-					image = '<i class="far fa-file-alt" style="font-size:{{config('stlc.css.file_show_size','70px')}}"></i>';
+					image = '<i class="far fa-file-alt" style="font-size:{{config('stlc.view.size.file_show_size','70px')}}"></i>';
 				break;
 			}
 			

@@ -6,45 +6,24 @@
         $form_id = (isset($crud->row->id) && !isset($_GET['copy'])) ? 'edit_form' : 'add_form';
         $add_edit = (isset($crud->row->id) && !isset($_GET['copy'])) ? trans('stlc.edit') : trans('stlc.add');
     @endphp
-    <div class="content-header">
-        <div class="container-fluid">
-            <div class="row mb-2">
-                <div class="col-sm-6">
-                    <h1>
-                        <a href="{{ url($crud->route) }}">
-                            <span class="{{ $crud->icon }}"></span>
-                            <span class="text-capitalize">{{ $crud->label }}</span>
-                        </a>
-                        <small>{{ $add_edit }}</small>
-                    </h1>
-                </div><!-- /.col -->
-                <div class="col-sm-6">
-                    <ol class="breadcrumb float-sm-right">
-                        <li class="breadcrumb-item"><a href="{{ url(config('stlc.route_prefix'), 'dashboard') }}">{{ trans('stlc.dashboard') }}</a></li>
-                        <li class="breadcrumb-item"><a href="{{ url($crud->route) }}" class="text-capitalize">{{ $crud->labelPlural }}</a></li>
-                        <li class="breadcrumb-item active">{{ $add_edit }}</li>
-                    </ol>
-                </div><!-- /.col -->
-            </div><!-- /.row -->
-        </div><!-- /.container-fluid -->
-    </div>
+    @include(config('stlc.view_path.inc.header','stlc::inc.header'),['sub_headeing'=>$add_edit,'title_link' => true])
 @endsection
 @section('content')
 <div class="row">
     <div class="col-md-12">
-        {!! Form::open(['url' => $route, 'method' => $method, 'id' => $form_id]) !!}
-            <div class="card">
-                {{-- <div class="card-header">
+        {!! Form::open($crud->getViewAtrributes('form.submit_form',['url' => $route, 'method' => $method, 'id' => $form_id])) !!}
+            <div @attributes($crud,'form.card',['class'=>"card"])>
+                <div @attributes($crud,'form.card_header',['class'=>"card-header d-none"])>
                     <h4 class="card-title">{{ $add_edit }} {{ $crud->label }}</h4>
-                </div> --}}
-                <div class="card-body">
+                </div>
+                <div @attributes($crud,'form.card_body',['class'=>"card-body"])>
                     @if(isset($src))
                         {{ Form::hidden('src', $src) }}
                     @endif
                     @form($crud, [], ["class" => "col-md-6"])
                 </div>
-                <div class="card-footer">
-                    @include(config('stlc.view_path.inc.form_save_buttons','stlc::inc.form_save_buttons'))
+                <div @attributes($crud,'form.card_footer',['class'=>"card-footer"])>
+                    @include(config('stlc.view_path.inc.form_save_buttons','stlc::inc.form_save_buttons'),['from_view'=>'form'])
                 </div>
             </div>
         {!! Form::close() !!}

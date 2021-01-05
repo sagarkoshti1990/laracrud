@@ -2,7 +2,6 @@
 @php
     $optionValue = [];
     $optionPointer = 0;
-    $field['wrapperAttributes']['class'] = "form-group";
     if((old($field['name'])) && is_array(old($field['name']))) {
         $optionValue = old($field['name']);
     } else if(old($field['name']) && is_array(json_decode(old($field['name'])))) {

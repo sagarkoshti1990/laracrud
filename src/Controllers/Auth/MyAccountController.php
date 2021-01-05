@@ -20,12 +20,17 @@ class MyAccountController extends Controller
      */
     public function getAccountInfoForm()
     {
-        $this->data['title'] = trans('base.my_account');
-        $this->data['user'] = $this->guard()->user();
-        $this->data['crud'] = \Module::make('Users');
-        $this->data['crud']->datatable = true;
-        if(isset(\Module::user()->id) && isset(\Module::user()->context()->id)) {
-            $this->data['crud']->row = \Module::user()->context();
+        $this->data['title'] = trans('stlc.my_account');
+        $this->data['user'] = \Module::user();
+        if(\Module::user() != null) {
+            $module = \Module::where('model',get_class(\Module::user()))->first();
+            if(isset($module->id)) {
+                $this->data['crud'] = \Module::make($module->name);
+                $this->data['crud']->fields = collect($this->data['crud']->fields)->where('name',"!=",'password');
+                if(isset(\Module::user()->id) && isset(\Module::user()->id)) {
+                    $this->data['crud']->row = \Module::user();
+                }
+            }
         }
         
         return view(config('stlc.view_path.auth.account.update_info','stlc::auth.account.update_info'), $this->data);
@@ -40,11 +45,11 @@ class MyAccountController extends Controller
         // $result = $this->guard()->user()->update($user_request);
         // $context = ['primary_email' => $request->email, 'first_name' => $request->first_name, 'last_name' => $request->last_name];
         $context = ['theme_skin' => $request->theme_skin];
-        $result = $this->guard()->user()->context()->update($context);
+        $result = \Module::user()->update($context);
         if ($result) {
             Alert::success('Theme Skin Update')->flash();
         } else {
-            Alert::error(trans('base.error_saving'))->flash();
+            Alert::error(trans('stlc.error_saving'))->flash();
         }
 
         return redirect()->back();
@@ -55,7 +60,7 @@ class MyAccountController extends Controller
      */
     public function getChangePasswordForm()
     {
-        $this->data['title'] = trans('base.my_account');
+        $this->data['title'] = trans('stlc.my_account');
         $this->data['user'] = $this->guard()->user();
 
         return view(config('stlc.view_path.auth.account.change_password','stlc::auth.account.change_password'), $this->data);

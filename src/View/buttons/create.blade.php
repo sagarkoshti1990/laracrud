@@ -1,10 +1,14 @@
+@php
+	$from_view = $from_view ?? 'index';
+@endphp
 @if ($crud->hasAccess('create') || $crud->hasAccess('restore') || $crud->hasAccess('permanently-delete'))
 	<div class="dropdown">
-		<button class="btn btn-primary btn-lg position-fixed"
-			type="button" id="dropdownMenuButton"
-			style="right:2rem;bottom:2rem;border-radius:100%;z-index: 9999;font-size:1.25rem !important;"
-			data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-		>@if($crud->hasAccess('create'))<i class="fa fa-plus"></i>@else <i class="fa fa-plus"></i> @endif</button>
+		<button @attributes($crud,$from_view.'.button.create',[
+			'class'=>'btn btn-primary btn-lg position-fixed',
+			'type'=>"button", 'id'=>"dropdownMenuButton",
+			'style'=>"right:2rem;bottom:2rem;border-radius:100%;z-index: 9999;font-size:1.25rem !important;",
+			'data-toggle'=>"dropdown", 'aria-haspopup'=>"true", 'aria-expanded'=>"false"
+		])><i class="{{ config('stlc.view.icon.button.create','fa fa-plus') }}"></i></button>
 		<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 			@if($crud->hasAccess('restore') || $crud->hasAccess('permanently-delete'))
 				@if(isset($_GET['__deleted__']) && $_GET['__deleted__'] == "true")

@@ -25,7 +25,6 @@ class FormBuilder
      */
     public static function input($crud, $field_name, $params = [], $default_val = null, $required2 = null)
     {
-
         $row = null;
         $field = [];
         $fields = $crud->fields;
@@ -72,6 +71,12 @@ class FormBuilder
         if(isset($params['wrapperAttributes'])) {
             $field['wrapperAttributes'] = $params['wrapperAttributes'];
             unset($params['wrapperAttributes']);
+        } else if(config('stlc.view.attributes.'.$crud->name.'.'.$field_name.'.wrapperAttributes',null) != null) {
+            $field['wrapperAttributes'] = config('stlc.view.attributes.'.$crud->name.'.'.$field_name.'.wrapperAttributes');
+        } else if(config('stlc.view.attributes.'.$crud->name.'.wrapperAttributes',null) != null) {
+            $field['wrapperAttributes'] = config('stlc.view.attributes.'.$crud->name.'.wrapperAttributes');
+        } else if(config('stlc.view.attributes.wrapperAttributes',null) != null) {
+            $field['wrapperAttributes'] = config('stlc.view.attributes.wrapperAttributes');
         } else if($field['type'] == 'Radio') {
             $field['wrapperAttributes']['radio_inline'] = true;
         }
@@ -91,9 +96,23 @@ class FormBuilder
         
         if(isset($field['attributes']) && is_array($field['attributes'])) {
             $field['attributes'] = array_replace($field['attributes'],$params);
+            if(!isset($field['attributes']['class'])) {
+                $field['attributes']['class'] = 'form-control';
+            }
+            if(!isset($field['attributes']['placeholder'])) {
+                $field['attributes']['placeholder'] = $label;
+            }
         } else {
-            $field['attributes'] = ['placeholder' => $label];
+            $field['attributes'] = ['placeholder' => $label,'class' => 'form-control'];
+            if(config('stlc.view.attributes.'.$crud->name.'.'.$field_name.'.field_attributes',null) != null) {
+                $field['attributes'] = array_replace($field['attributes'],config('stlc.view.attributes.'.$crud->name.'.'.$field_name.'.field_attributes'));
+            } else if(config('stlc.view.attributes.'.$crud->name.'.field_attributes',null) != null) {
+                $field['attributes'] = array_replace($field['attributes'],config('stlc.view.attributes.'.$crud->name.'.field_attributes'));
+            } else if(config('stlc.view.attributes.field_attributes',null) != null) {
+                $field['attributes'] = array_replace($field['attributes'],config('stlc.view.attributes.field_attributes'));
+            }
         }
+        
         $unique = $fields[$field_name]->unique ?? false;
         $field['default'] = $fields[$field_name]->defaultvalue ?? Null;
         $minlength = $fields[$field_name]->minlength ?? "0";
@@ -159,7 +178,7 @@ class FormBuilder
                     } else {
                         $field['prefix'] = ($field_type == 'Decimal') ? '<b>D</b>' : '<b>F</b>';
                     }
-                    $field['attributes'] = array_merge($field['attributes'],['step' => 0.01]);
+                    $field['attributes'] = array_replace($field['attributes'],['step' => 0.01]);
                 }
                 $field_type = 'Number';
                 break;
@@ -180,8 +199,8 @@ class FormBuilder
                 }
                 break;
             case 'Polymorphic_multiple':
-                $class = config("stlc.css.form_control","form-control")." select2_multiple";
-                $field['attributes'] = ['placeholder' => 'Select ' . $label];
+                $field['attributes']['class'] .= " select2_multiple";
+                $field['attributes']['placeholder'] = 'Select ' . $label;
                 if(isset($module)) {
                     $ralasion_field = $module->fields->firstWhere('name',($module->represent_attr ?? ""));
                     $polymorphic_module = $ralasion_field->getJsonModule();
@@ -209,7 +228,7 @@ class FormBuilder
                 break;
             case 'Radio':
                 $field['inline'] = 1;
-                $class = config("stlc.css.form_control","form-control")." flat-green";
+                $field['attributes']['class'] .=" flat-green";
                 if(isset($module) && isset($module->model)) {
                     $field['model'] = $module->model ?? null;
                     if(isset($params['attribute']) && is_array($params['attribute'])) {
@@ -229,7 +248,7 @@ class FormBuilder
                 }
                 break;
             case 'Checkbox':
-                $class = config("stlc.css.form_control","form-control")." form-check-input";
+                $field['attributes']['class'] .= " form-check-input";
                 $field['inline'] = 1;
                 if(!\Str::startsWith($json_values, "@") && is_array(json_decode($json_values))) {
                     $arr = [];
@@ -257,11 +276,11 @@ class FormBuilder
                     $params['id'] = 'ckeditor-'.$field['name'].'-'.$crud->name;
                 }
                 if(isset($required) && $required) {
-                    $class = config("stlc.css.form_control","form-control")." ckeditor_required";
+                    $field['attributes']['class'] .= " ckeditor_required";
                 }
                 break;
             case 'Month':
-                $class = config("stlc.css.form_control","form-control")." month_combodate";
+                $field['attributes']['class'] .= " month_combodate";
                 break;
             case 'Select':
                 if(isset($module) && isset($module->model)) {
@@ -331,7 +350,7 @@ class FormBuilder
                 break;
             case 'Select2':
                 if(isset($module) && isset($module->model)) {
-                    $class = config("stlc.css.form_control","form-control")." select2_field";
+                    $field['attributes']['class'] .= " select2_field";
                     if(isset($params['query']) || isset($fields[$field_name]->query)) {
                         $field['model'] = $params['query'] ?? $fields[$field_name]->query;
                         unset($params['query']);
@@ -356,7 +375,7 @@ class FormBuilder
                     foreach ($collection as $key => $value) {
                         $arr[$value] = $value;
                     }
-                    $class = config("stlc.css.form_control","form-control")." select2_field";
+                    $field['attributes']['class'] .= " select2_field";
                     $field['options'] = $arr;
                     if(isset($required) && $required) {
                         $field['allows_null'] = false;
@@ -367,8 +386,8 @@ class FormBuilder
                 
                 break;
             case 'Select2_multiple':
-                $class = config("stlc.css.form_control","form-control")." select2_multiple";
-                $field['attributes'] = ['placeholder' => 'Select ' . $label];
+                $field['attributes']['class'] .= " select2_multiple";
+                $field['attributes']['placeholder'] = 'Select ' . $label;
                 if(isset($module)) {
                     if(isset($params['query']) || isset($fields[$field_name]->query)) {
                         $field['model'] = $params['query'] ?? $fields[$field_name]->query;
@@ -388,7 +407,7 @@ class FormBuilder
                     foreach ($collection as $key => $value) {
                         $arr[$value] = $value;
                     }
-                    $class = config("stlc.css.form_control","form-control")." select2_multiple";
+                    $field['attributes']['class'] .= " select2_multiple";
                     $field['options'] = $arr;
                 }
                 
@@ -404,7 +423,7 @@ class FormBuilder
                 foreach ($collection as $key => $value) {
                     $arr[$value] = $value;
                 }
-                $class = config("stlc.css.form_control","form-control")." select2_from_array";
+                $field['attributes']['class'] .= " select2_from_array";
                 $field['options'] = $arr;
                 if(isset($required) && $required) {
                     $field['allows_null'] = false;
@@ -418,7 +437,7 @@ class FormBuilder
                 foreach ($collection as $key => $value) {
                     $arr[$value] = $value;
                 }
-                $class = config("stlc.css.form_control","form-control")." select2_from_array";
+                $field['attributes']['class'] .= " select2_from_array";
                 $field['options'] = $arr;
                 if(isset($required) && $required) {
                     $field['allows_null'] = false;
@@ -447,7 +466,7 @@ class FormBuilder
                     foreach ($collection as $key => $value) {
                         $arr[$value] = $value;
                     }
-                    $class = config("stlc.css.form_control","form-control")." select2_field";
+                    $field['attributes']['class'] .= " select2_field";
                     $field['options'] = $arr;
                     if(isset($required) && $required) {
                         $field['allows_null'] = false;
@@ -462,7 +481,7 @@ class FormBuilder
                 foreach ($collection as $key => $value) {
                     $arr[$value] = $value;
                 }
-                $class = config("stlc.css.form_control","form-control")." select2_field_tag";
+                $field['attributes']['class'] .= " select2_field_tag";
                 $field['options'] = $arr;
                 if(isset($required) && $required) {
                     $field['allows_null'] = false;
@@ -482,7 +501,7 @@ class FormBuilder
                         $arr[$value] = $value;
                     }
                 }
-                $class = config("stlc.css.form_control","form-control")." select2_field_tag";
+                $field['attributes']['class'] .= " select2_field_tag";
                 $field['options'] = $arr;
                 if(isset($required) && $required) {
                     $field['allows_null'] = false;
@@ -518,7 +537,6 @@ class FormBuilder
                 }
                 break;
             case 'Json':
-                $class = config("stlc.css.form_control","form-control");
                 $arr = [];
                 $collection = collect(json_decode($json_values));
                 foreach ($collection as $key => $value) {
@@ -529,16 +547,12 @@ class FormBuilder
                 $params['input_type'] = 'text';
                 break;
             case 'Password':
-                $class = config("stlc.css.form_control","form-control")." f-show-password";
+                
             break;
         }
         
         if(isset($params) && count($params)) {
             $params = collect($params)->except(['attribute'])->all();
-        }
-        
-        if(!isset($params['class'])) {
-            $params['class'] = $class ?? config("stlc.css.form_control","form-control");
         }
         
         if(!isset($params['placeholder'])) {
@@ -569,13 +583,12 @@ class FormBuilder
             unset($params['required']);
         }
         
-        // $field = collect($field)->diffAssoc($params)->all();
         if(isset($params['name']) && is_string($params['name'])) {
             $field['name'] = $params['name'];
         }
         
         $field['attributes'] = array_replace($field['attributes'],$params);
-        
+
         switch($field_type) {
             case 'Currency':
                 $field_type = 'Number';

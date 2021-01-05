@@ -1,18 +1,20 @@
+@php
+	$from_view = $from_view ?? 'index';
+@endphp
 @if ($crud->hasAccess('delete'))
 	<a
 		href="{{ url($crud->route.'/'.$item->getKey()) }}"
 		src="@if(isset($src)){{ $src }}@else{{ $crud->route }}@endif"
-		@if(!isset($text) || (isset($text) && $text != true))
-			class="btn @if(isset($class_btn)){{ $class_btn }}@else btn-flat btn-sm mb-2 @endif bg-maroon"
-		@endif
-		title="{{ trans('stlc.delete') }}"
-		data-button-type="confirm_ajax"
-		method="DELETE",
-		stlc-title="{{ trans('stlc.delete_confirm') }}"
-		stlc-text="{{ trans('stlc.delete_confirm_text') }}"
+		@attributes($crud,$from_view.'.button.delete',[
+			'class'=>'btn btn-flat btn-sm mb-2 bg-maroon',
+			'method' => "DELETE",'data-button-type'=>"confirm_ajax",
+			'stlc-title'=>trans('stlc.delete_confirm'),
+			'stlc-text'=>trans('stlc.delete_confirm_text'),
+			'data-toggle'=>"tooltip", 'title'=>trans('stlc.delete')
+		])
 	>
 		@if(!isset($text) || (isset($text) && $text != true))
-			<i class="fa fa-trash"></i>
+		<i class="{{ config('stlc.view.icon.button.delete','fa fa-trash') }}"></i>
 		@else
 			{{ trans('stlc.delete') }}
 		@endif

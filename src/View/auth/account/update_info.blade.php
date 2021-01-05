@@ -31,7 +31,7 @@
         <div id="tab-information">
             <div class="card">
                 <div class="card-body list-group-flush">
-                    @if(isset(auth()->user()->context()->id))
+                    @if(isset(\Module::user()->id,$crud))
                         @displayAll($crud)
                     @else
                         <h3 class="text-center"><span class="badge bg-red text-center">No Context Found</span></h3>
