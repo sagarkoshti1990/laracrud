@@ -246,7 +246,7 @@ class ObjectHelper
     public function removeButton($name)
     {
         $this->buttons = $this->buttons->reject(function ($button) use ($name) {
-            return $button->name == $name;
+            return isset($button->name) && $button->name == $name;
         });
     }
 

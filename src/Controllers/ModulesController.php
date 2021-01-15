@@ -558,15 +558,12 @@ class ModulesController extends StlcController
                 // add activity log
                 // \Activity::log(config('activity_log.context.DELETED'), $this->crud, ['old' => $old_item]);
                 
-                if(isset($request->src_ajax) && $request->src_ajax) {
-                    return response()->json(['status' => 'success', 'message' => trans('stlc.delete_confirmation_message')]);
+                if($request->wantsJson()) {
+                    return response()->json(['status' => '200', 'message' => $this->crud->label." ".trans('stlc.delete_success')],200);
                 } else if(isset($request->src)) {
-                    Alert::success(trans('stlc.delete_confirmation_message'))->flash();
                     return redirect($request->src);
                 } else {
-                    Alert::success(trans('stlc.delete_confirmation_message'))->flash();
-                    // return redirect()->route(config('stlc.route_prefix') . 'modules');
-                    return (string) $module;
+                    return (string) $item;
                 }
             } else {
                 if(isset($request->src_ajax) && $request->src_ajax) {

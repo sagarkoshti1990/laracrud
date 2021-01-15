@@ -884,10 +884,14 @@ class FormBuilder
             case 'Select':
             case 'Select2':
             case 'Select2_from_ajax':
-                if(\Str::startsWith($fields[$field_name]->json_values, "@")) {
-                    $module = \Module::where('name',substr($fields[$field_name]->json_values, 1))->first();
+                $json_values = null;
+                if(isset($fields[$field_name]->json_values) || (is_array($fields[$field_name]) && isset($fields[$field_name]['json_values']))) {
+                    $json_values = $fields[$field_name]->json_values ?? $fields[$field_name]['json_values'];
+                }
+                if(isset($json_values) && \Str::startsWith($json_values, "@")) {
+                    $module = \Module::where('name',substr($json_values, 1))->first();
                     if(!isset($module->model)) {
-                        $json_values_arr = explode('|',$fields[$field_name]->json_values);
+                        $json_values_arr = explode('|',$json_values);
                         $module = (object)[];
                         $module->model = collect(str_replace("@", "", $json_values_arr))->first();
                         $module->table_name = (new $module->model)->getTable();
@@ -901,13 +905,17 @@ class FormBuilder
                 }
                 break;
             case 'Select2_multiple':
+                $json_values = null;
+                if(isset($fields[$field_name]->json_values) || (is_array($fields[$field_name]) && isset($fields[$field_name]['json_values']))) {
+                    $json_values = $fields[$field_name]->json_values ?? $fields[$field_name]['json_values'];
+                }
                 $data = "";
-                if(\Str::startsWith($fields[$field_name]->json_values, "@")) {
+                if(isset($json_values) && \Str::startsWith($json_values, "@")) {
                     if(isset($value) && is_array(json_decode($value))) {
                         foreach(json_decode($value) as $val) {
-                            $module = \Module::where('name',substr($fields[$field_name]->json_values, 1))->first();
+                            $module = \Module::where('name',substr($json_values, 1))->first();
                             if(!isset($module->model)) {
-                                $json_values_arr = explode('|',$fields[$field_name]->json_values);
+                                $json_values_arr = explode('|',$json_values);
                                 $module = (object)[];
                                 $module->model = collect(str_replace("@", "", $json_values_arr))->first();
                                 $module->table_name = (new $module->model)->getTable();

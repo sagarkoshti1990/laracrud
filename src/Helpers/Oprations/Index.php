@@ -62,7 +62,7 @@ trait Index
     public function queryDatatable(Request $request)
     {
         $listing_cols = \Module::getListingColumns($this->crud);
-        $values = DB::table($this->crud->table_name)->select($listing_cols)->latest();
+        $values = DB::table($this->crud->table_name)->select($listing_cols);
         if(isset($request->filter)) {
 			$values->where($request->filter);
         }

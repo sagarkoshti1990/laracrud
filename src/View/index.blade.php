@@ -79,6 +79,7 @@
                 "serverSide": true,
                 "responsive": true,
                 "language": {"paginate": {"next":">","previous":"<"}},
+                "order": [[ 0, "desc" ]],
                 "ajax": {
                     "url": "{!! url($crud->route.'/datatable') !!}",
                     "type": "POST",
