@@ -1311,7 +1311,7 @@ class Module extends Model
                         $filed_unique_value = isset($request->{$field['name']})? ','.$request->{$field['name']}:"";
                         $col .= "unique:" . $crud->table_name.','.$field['name'].$filed_unique_value;
                     } else if($isEdit && $field['unique']) {
-                        $col .= "unique:" . $crud->table_name.','.$field['name'].','.($segment ? $segment : !is_array($request) ? $request->segment(3) : "");
+                        $col .= "unique:" . $crud->table_name.','.$field['name'].','.(isset($segment) ? $segment : (!is_array($request) ? $request->segment(3) : ""));
                     }
                     if(\Str::startsWith($field->json_values, "@") && (isset($request->{$field['name']}) || (is_array($request) && isset($request[$field['name']])))) {
                         $foreign_table_name = \Str::plural(ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', str_replace("@", "", $field->json_values))), '_'));
