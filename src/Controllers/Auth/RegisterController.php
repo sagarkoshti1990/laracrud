@@ -132,7 +132,7 @@ class RegisterController extends Controller
         $this->validator($request->all())->validate();
         $item = $this->create($request->all());
         
-        if (($item instanceof \App\User)) {
+        if (get_class($item) == config('stlc.user_model')) {
             $this->guard()->login($item);
             return redirect($this->redirectPath());
         } else {

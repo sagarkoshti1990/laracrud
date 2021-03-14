@@ -236,7 +236,7 @@ class ModulesController extends StlcController
      */
     public function select2(Request $request)
     {
-        $modules = \Module::custome_all_modules();
+        $modules = new \Module;
         
         if(isset($request->searchTerm)) {
             $fetchData = $modules->where('name', 'like', '%'.$request->searchTerm.'%')->get();

@@ -31,6 +31,39 @@ class Field extends Model
     | FUNCTIONS
     |--------------------------------------------------------------------------
     */
+    public static function relationModules($name)
+    {
+        # code...
+        $arr = [];
+        $moduleAllow = config('stlc.relationalModules.'.$name,[]);
+        $query = self::select('fields.*','modules.name as module_name')
+            ->where('json_values','@'.$name)
+            ->whereIn('field_type_id',function($q){
+                $q->from('field_types')->select('field_types.id')->whereIn('name',['Select','Select2','Select2_from_ajax','Radio']);
+            })
+            ->whereNotIn('modules.name',config('stlc.restrictedModules.routeAdmin',[]))
+            ->leftJoin('modules','modules.id','=','fields.module_id');
+        $responce = $query->get();
+        if(count($moduleAllow) > 0) {
+            $data = collect([]);
+            foreach($responce as $rvalue) {
+                foreach($moduleAllow as $key => $filter) {
+                    $filter['only'] = $filter['only'] ?? false;
+                    if($filter['module'] != $rvalue->module_name || ($filter['module'] == $rvalue->module_name && (($filter['only'] != false && in_array($rvalue->name,$filter['attr'])) || ($filter['only'] == false && !in_array($rvalue->name,$filter['attr'])) ) )) {
+                        $data[] = $rvalue;
+                    }
+                }
+            }
+        } else {
+            $data = $responce;
+        }
+        
+        $data = $data->groupby('module_name');
+        foreach($data as $key => $value) {
+            $arr[] = (object)['module' => \Module::make($key),'value' => $value];
+        }
+        return $arr;
+    }
 
     /*
     |--------------------------------------------------------------------------

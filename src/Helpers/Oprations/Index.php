@@ -117,9 +117,13 @@ trait Index
      */
     public function datatable(Request $request)
     {
-        $out = Datatables::of($this->queryDatatable($request))->make();
-        $data = $out->getData();
-        $data->data = $this->onDatatable($data->data);
-        return $out->setData($data);
+        if($this->crud->hasAccess('view')) {
+            $out = Datatables::of($this->queryDatatable($request))->make();
+            $data = $out->getData();
+            $data->data = $this->onDatatable($data->data);
+            return $out->setData($data);
+        } else {
+            return response()->json(['data'=>[],'recordsFiltered' => 0,'recordsTotal'=>0,'status' => '403', 'message' => trans('stlc.unauthorized_access')]);
+        }
     }
 } 

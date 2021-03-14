@@ -12,7 +12,8 @@ trait Show
             'crud' => $this->crud,
             'item' => $item,
             'src' => $request->src ?? null,
-            'represent_value' => \CustomHelper::get_represent_attr($item)
+            'represent_value' => \CustomHelper::get_represent_attr($item),
+            'ralations' => \Field::relationModules($this->crud->name)
         ];
     }
     public function onShow(Request $request,$item){

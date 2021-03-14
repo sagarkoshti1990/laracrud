@@ -77,7 +77,7 @@
             select_data('Json');
         @endif
 
-        $('#edit_form :input[name="json_type"]').on('ifChecked',function(e){
+        $('#edit_form :input[name="json_type"]').on('change',function(e){
             select_data(this.value);
         });
 
@@ -106,7 +106,7 @@
                     placeholder: "Select Module",
                     data: [{id:json_values,text:json_values}],
                     ajax: {
-                        url: "{{ url(config('lara.base.route_prefix').'/data_select') }}",
+                        url: "{{ url(config('stlc.stlc_route_prefix').'/data_select') }}",
                         type: "get",
                         dataType: 'json',
                         delay: 250,

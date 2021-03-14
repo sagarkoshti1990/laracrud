@@ -31,6 +31,9 @@
                     @if(\Module::user()->isAdmin() && in_array($crud->name ,config('stlc.access_show',[])))
                         <a @attributes($crud,'show.nav_tabs',["class"=>"nav-item nav-link","data-toggle"=>"tab"]) href="#access" data-target="#tab-access"><i class="{{ config('stlc.view.icon.show_access','fa fa-lock mr-2') }}"></i>{{ trans('stlc.access') }}</a>
                     @endif
+                    @if(isset($ralations))
+                        @include(config('stlc.view_path.inc.ralation','stlc::inc.ralation'))
+                    @endif
                 </div>
                 <div @attributes($crud,'show.tab_content',["class"=>"tab-content"])>
                     <div @attributes($crud,'show.tab_pane_active',['class'=>"tab-pane fade show in active"]) id="tab-information">
@@ -50,6 +53,9 @@
                         <div @attributes($crud,'show.tab_pane',['class'=>"tab-pane fade"]) id="tab-access">
                             @include(config('stlc.view_path.inc.access','stlc::inc.access'), ['crud' => $crud, 'item' => $item])
                         </div>
+                    @endif
+                    @if(isset($ralations))
+                        @include(config('stlc.view_path.inc.ralation','stlc::inc.ralation'),['link' => false])
                     @endif
                 </div>
             </div>

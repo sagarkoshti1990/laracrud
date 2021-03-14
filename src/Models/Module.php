@@ -1311,7 +1311,7 @@ class Module extends Model
                         $filed_unique_value = isset($request->{$field['name']})? ','.$request->{$field['name']}:"";
                         $col .= "unique:" . $crud->table_name.','.$field['name'].$filed_unique_value;
                     } else if($isEdit && $field['unique']) {
-                        $col .= "unique:" . $crud->table_name.','.$field['name'].','.(isset($segment) ? $segment : (!is_array($request) ? $request->segment(3) : ""));
+                        $col .= "unique:" . $crud->table_name.','.$field['name'].','.($segment ? $segment : !is_array($request) ? $request->segment(3) : "");
                     }
                     if(\Str::startsWith($field->json_values, "@") && (isset($request->{$field['name']}) || (is_array($request) && isset($request[$field['name']])))) {
                         $foreign_table_name = \Str::plural(ltrim(strtolower(preg_replace('/[A-Z]/', '_$0', str_replace("@", "", $field->json_values))), '_'));
@@ -1401,11 +1401,13 @@ class Module extends Model
      */
     public static function hasRoleAccess($crud, $permission = "view", $role_id = false)
     {
+        if(\Module::user() == null) {
+            return false;
+        }
         if(\Module::user()->isSuperAdmin()) {
             return true;
         }
 
-        $roles = [];
         if($crud instanceof Page) {
             $module = $crud;
         } else if(is_string($crud) && !isset($crud->module->id)) {
@@ -1419,19 +1421,21 @@ class Module extends Model
             if(isset($role->id)) {
                 $roles = $role->roles();
             }
-        } else {
+        } else if(\Module::user() != null){
             $roles = \Module::user()->roles();
         }
-        foreach($roles->get() as $role) {
-            if(isset($module->id)) {
-                $access = $role->access_modules()->where([
-                    ['accessible_id', $module->id],
-                    ['accessible_type', get_class($module)],
-                    ['access', $permission]
-                ])->count();
-            }
-            if(isset($access) && $access > 0) {
-                return true;
+        if(isset($roles)) {
+            foreach($roles->get() as $role) {
+                if(isset($module->id)) {
+                    $access = $role->access_modules()->where([
+                        ['accessible_id', $module->id],
+                        ['accessible_type', get_class($module)],
+                        ['access', $permission]
+                    ])->count();
+                }
+                if(isset($access) && $access > 0) {
+                    return true;
+                }
             }
         }
         
@@ -1513,6 +1517,9 @@ class Module extends Model
      */
     public static function hasAccess($crud, $permission = "view", $user_id = false)
     {
+        if(\Module::user() == null) {
+            return false;
+        }
         if(\Module::user()->isSuperAdmin() || self::hasRoleAccess($crud, $permission)) {
             return true;
         }
@@ -1526,12 +1533,6 @@ class Module extends Model
             $module = $crud->module;
         }
         
-        if(\Module::user()->isAdmin() && !(isset($crud->name) && in_array($crud->name, ['Employees']))) {
-            return true;
-        } else if((isset($crud->name) && in_array($crud->name, ['Employees']))) {
-            return false;
-        }
-
         if($user_id) {
             $user = config('stlc.user_model')::find($user_id);
             if(isset($user->id)) {

@@ -289,6 +289,13 @@ return [
 		'send'       => 'bg-orange',
 	],
 
+	// relationalModules
+	'relationalModules' => [
+		// 'Users' => [
+		// 	["module"=>"Enquiries",'attr' => ['email'], 'only' => false],
+		// ]
+	],
+
 	/*
 	|--------------------------------------------------------------------------
 	| view atributes class icon

@@ -1,7 +1,7 @@
 <!-- number input -->
 @php 
     $field['attributes']['class'] = $field['attributes']['class'].' phone_input';
-    $code = $field['attributes']['code'] ?? null;
+    $code = $field['attributes']['code'] ?? 'country_code';
     $allowDropdown = $field['attributes']['allowDropdown'] ?? true;
 @endphp
 @component(config('stlc.view_path.inc.input_group','stlc::inc.input_group'),['field' => $field])
@@ -21,8 +21,7 @@
 <link rel="stylesheet" href="{{ asset('node_modules/intl-tel-input/build/css/intlTelInput.min.css') }}">
 <style>
     .iti,.input-group, .input-group > .intl-tel-input.allow-dropdown{width: 100% !important;}
-    .intl-tel-input .country-list{z-index: 5;}
-    .intl-tel-input {color: #333;}
+    .intl-tel-input .country-list{z-index: 5;} .intl-tel-input {color: #333;}
     .iti.iti--separate-dial-code{display:block;flex: 1 1 0%;}
 </style>
 @endpushonce

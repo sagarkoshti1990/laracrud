@@ -92,6 +92,13 @@
                         @foreach($filters ?? [] as $key => $value)
                             data.filter.push(['{{$key}}','{{$value}}']);
                         @endforeach
+                    },
+                    "dataSrc": function(d){
+                        if(d.data.length === 0 && d.status == '403'){
+                            var settings = $("#crudTable").DataTable().settings()[0];
+                            settings.oLanguage.sEmptyTable = d.message;
+                        }
+                        return d.data;
                     }
                 },
                 dom: "<'row'<'col-sm-8'i><'col-sm-4'f>><'mb-3'tr><'row'<'col-sm-3'l><'col-sm-9'p><'col-sm-1'>>",

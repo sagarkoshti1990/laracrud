@@ -17,15 +17,21 @@ class RouteHelper
         $this->name = $name;
         $this->controller = $controller;
         $this->options = $options;
-        $this->route_list = ['datatable','restore','permanently_delete'];
-        if(isset($options['only']) && is_array($options['only'])) {
-            $this->route_list = collect($this->route_list)->intersect($options['only'])->toArray();
-        }
-        if(isset($options['except']) && is_array($options['except'])) {
-            $this->route_list = collect($this->route_list)->diff($options['except'])->toArray();
-        }
 
-        $this->namePrefix = $options['namePrefix'] ?? 'crud';
+        Route::post($this->name.'/datatable', [
+            'as' => 'crud.'.$this->name.'.datatable',
+            'uses' => $this->controller.'@datatable',
+        ]);
+        
+        Route::Post($this->name.'/{id}/restore', [
+            'as' => 'crud.'.$this->name.'.restore',
+            'uses' => $this->controller.'@restore',
+        ]);
+        
+        Route::Post($this->name.'/{id}/permanently_delete', [
+            'as' => 'crud.'.$this->name.'.permanently_delete',
+            'uses' => $this->controller.'@permanently_delete',
+        ]);
     }
 
     /**
@@ -35,36 +41,16 @@ class RouteHelper
     {
         $options_with_default_route_names = array_merge([
             'names' => [
-                'index'     => $this->namePrefix.'.'.$this->name.'.index',
-                'create'    => $this->namePrefix.'.'.$this->name.'.create',
-                'store'     => $this->namePrefix.'.'.$this->name.'.store',
-                'edit'      => $this->namePrefix.'.'.$this->name.'.edit',
-                'update'    => $this->namePrefix.'.'.$this->name.'.update',
-                'show'      => $this->namePrefix.'.'.$this->name.'.show',
-                'destroy'   => $this->namePrefix.'.'.$this->name.'.destroy',
+                'index'     => 'crud.'.$this->name.'.index',
+                'create'    => 'crud.'.$this->name.'.create',
+                'store'     => 'crud.'.$this->name.'.store',
+                'edit'      => 'crud.'.$this->name.'.edit',
+                'update'    => 'crud.'.$this->name.'.update',
+                'show'      => 'crud.'.$this->name.'.show',
+                'destroy'   => 'crud.'.$this->name.'.destroy',
             ],
         ], $this->options);
 
-        if(in_array('datatable',$this->route_list)) {
-            Route::post($this->name.'/datatable', [
-                'as' => $this->namePrefix.'.'.$this->name.'.datatable',
-                'uses' => $this->controller.'@datatable',
-            ]);
-        }
-        
-        if(in_array('restore',$this->route_list)) {
-            Route::Post($this->name.'/{id}/restore', [
-                'as' => $this->namePrefix.'.'.$this->name.'.restore',
-                'uses' => $this->controller.'@restore',
-            ]);
-        }
-        
-        if(in_array('permanently_delete',$this->route_list)) {
-            Route::Post($this->name.'/{id}/permanently_delete', [
-                'as' => $this->namePrefix.'.'.$this->name.'.permanently_delete',
-                'uses' => $this->controller.'@permanently_delete',
-            ]);
-        }
         Route::resource($this->name, $this->controller, $options_with_default_route_names);
     }
 
